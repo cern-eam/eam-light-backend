@@ -48,12 +48,12 @@ The docker container exposes the following ports:
 
 | Port        | Description  |
 | ------------- | -----:|
-| 8080          | EAM Light Backend | 
-| 9090          | JBoss Management Port |
+| 8081          | EAM Light Backend | 
+| 9091          | JBoss Management Port |
 
 Once you have your own environment variables set up, you can start a new docker container:
 ```
-docker run -p 8080:8080 -p 9090:9090 --env-file .env cerneam/eam-light-backend:latest
+docker run -p 8081:8081 -p 9091:9091 --env-file .env cerneam/eam-light-backend:latest
 ``` 
 
 Once the docker container is started, the REST web services are available at the endpoint `/SSO/eamlightws/rest`
