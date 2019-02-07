@@ -1,0 +1,27 @@
+# Eclipse core
+.settings/
+.project
+eam-light-backend.iml
+
+# EAR
+eam-light-backendear/.settings/
+eam-light-backendear/target/
+eam-light-backendear/.project
+eam-light-backendear/eam-light-backendear.iml
+
+# EJB
+eam-light-backendejb/.settings/
+eam-light-backendejb/bin/
+eam-light-backendejb/target/
+eam-light-backendejb/.classpath
+eam-light-backendejb/.project
+eam-light-backendejb/eam-light-backendejb.iml
+
+# WEB
+eam-light-backendweb/.settings/
+eam-light-backendweb/target/
+eam-light-backendweb/.classpath
+eam-light-backendweb/.project
+eam-light-backendweb/.tern-project
+eam-light-backendweb/src/main/webapp/WEB-INF/.faces-config.xml.jsfdia
+eam-light-backendweb/eam-light-backendweb.iml

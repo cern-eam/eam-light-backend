@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ch.cern.cmms</groupId>
+		<artifactId>eam-light-backend</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>eam-light-backendear</artifactId>
+	<packaging>ear</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>ch.cern.cmms</groupId>
+			<artifactId>eam-light-backendejb</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.cern.cmms</groupId>
+			<artifactId>eam-light-backendweb</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<type>war</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.cern.cmms</groupId>
+			<artifactId>eamtools</artifactId>
+			<version>2.0.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.cern.eam</groupId>
+			<artifactId>eam-wshub-core</artifactId>
+			<version>11.4-3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>eam-light-backend</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.wildfly.plugins</groupId>
+				<artifactId>wildfly-maven-plugin</artifactId>
+				<version>1.0.2.Final</version>
+				<configuration>
+					<filename>eam-light-backend.ear</filename>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<includeLibInApplicationXml>true</includeLibInApplicationXml>
+					<displayName>wshub</displayName>
+					<modules>
+						<webModule>
+							<groupId>ch.cern.cmms</groupId>
+							<artifactId>eam-light-backendweb</artifactId>
+							<contextRoot>/SSO/eamlightws</contextRoot>
+						</webModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
