@@ -54,12 +54,12 @@
 				<version>2.8</version>
 				<configuration>
 					<includeLibInApplicationXml>true</includeLibInApplicationXml>
-					<displayName>wshub</displayName>
+					<displayName>eam-light-backend</displayName>
 					<modules>
 						<webModule>
 							<groupId>ch.cern.cmms</groupId>
 							<artifactId>eam-light-backendweb</artifactId>
-							<contextRoot>/SSO/eamlightws</contextRoot>
+							<contextRoot>/eam-light-apis</contextRoot>
 						</webModule>
 					</modules>
 				</configuration>

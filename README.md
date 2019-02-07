@@ -1,8 +1,8 @@
 # EAM Light Backend
-EAM Light Backend is Web application that provides a REST facade for the EAM Light Frontend Application. 
+EAM Light Backend is a web application that provides a REST facade for the EAM Light Frontend Application. 
 
 ## Configuration
-The docker image needs to be parametrized with environment variables.
+The docker image needs to be parametrized with the following environment variables:
 
 
 | Variable        | Required?  | Default value |
@@ -56,7 +56,7 @@ Once you have your own environment variables set up, you can start a new docker 
 docker run -p 8080:8080 -p 9090:9090 --env-file .env cerneam/eam-light-backend:latest
 ``` 
 
-Once the docker container is started, the REST web services are available at the endpoint `/SSO/eamlightws/rest`
+Once the docker container is started, the REST web services are available at the endpoint `/eam-light-apis/rest`
 
 ## License
 This software is published under the GNU General Public License v3.0 or later.
