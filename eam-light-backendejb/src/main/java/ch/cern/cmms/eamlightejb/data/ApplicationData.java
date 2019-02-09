@@ -33,7 +33,7 @@ public class ApplicationData  {
 	}
 
 	public String getOrganization() {
-		return getVariableValue("INFOR_ORGANIZATION_CODE");
+		return getVariableValue("INFOR_ORGANIZATION");
 	}
 
 	public String getInforWSURL() {

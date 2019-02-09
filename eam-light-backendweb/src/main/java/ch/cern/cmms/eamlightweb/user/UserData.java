@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.cmms.eamlightejb.tools.LoggingService;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,14 +22,13 @@ import ch.cern.cmms.eamlightejb.layout.ScreenInfo;
 import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
+import org.jboss.logging.Logger;
 
 @RequestScoped
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserData {
 
-	@EJB
-	private WorkOrdersEJB wosEJB;
 	@EJB
 	private LayoutBean layoutBean;
 	@Inject
@@ -37,6 +37,8 @@ public class UserData {
 	private AuthenticationTools authenticationTools;
 	@Inject
 	private InforClient inforClient;
+	@Inject
+	private LoggingService loggingService;
 
 	@PostConstruct
 	private void init() {
@@ -51,7 +53,7 @@ public class UserData {
 				return;
 			}
 		} catch (Exception e) {
-			System.out.println("Couldn't read eam user info" + e.getMessage());
+			loggingService.log(Logger.Level.FATAL, "Couldn't read eam user " + e.getMessage());
 		}
 		//
 		// USER SCREENS

@@ -1,5 +1,5 @@
 # EAM Light Backend
-EAM Light Backend is a web application that provides a REST facade for the EAM Light Frontend Application. 
+EAM Light Backend is a web application that provides a REST facade for EAM Light Frontend Application. 
 
 ## Configuration
 The docker image needs to be parametrized with the following environment variables:
@@ -9,7 +9,7 @@ The docker image needs to be parametrized with the following environment variabl
 | ------------- | -----:|---------:|
 | INFOR_WS_URL           | **Yes** |  |
 | INFOR_TENANT         | **Yes** |  |
-| INFOR_ORGANIZATION_CODE         | **Yes** |  |
+| INFOR_ORGANIZATION         | **Yes** |  |
 | DB_CONNECTION_URL   | **Yes** |  |
 | DB_DRIVER_CLASS   | **Yes** |  |
 | DB_USERNAME   | **Yes** |  |
@@ -27,7 +27,7 @@ You can for instance store your environment variables in a dedicated .env file:
 ```
 INFOR_WS_URL=<url>
 INFOR_TENANT=<tenant>
-INFOR_ORGANIZATION_CODE=<organization-code>
+INFOR_ORGANIZATION=<organization-code>
 DB_CONNECTION_URL=<db-url>
 DB_DRIVER_CLASS=oracle.jdbc.OracleDriver
 DB_USERNAME=<db-username>
@@ -56,7 +56,7 @@ Once you have your own environment variables set up, you can start a new docker 
 docker run -p 8080:8080 -p 9090:9090 --env-file .env cerneam/eam-light-backend:latest
 ``` 
 
-Once the docker container is started, the REST web services are available at the endpoint `/eam-light-apis/rest`
+Once the docker container is started, the REST web services are available at the endpoint `/apis/rest`
 
 ## License
 This software is published under the GNU General Public License v3.0 or later.
