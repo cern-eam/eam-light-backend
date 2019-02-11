@@ -59,7 +59,7 @@
 						<webModule>
 							<groupId>ch.cern.cmms</groupId>
 							<artifactId>eam-light-backendweb</artifactId>
-							<contextRoot>/apis</contextRoot>
+							<contextRoot>>/SSO/eamlightws</contextRoot>
 						</webModule>
 					</modules>
 				</configuration>
