@@ -129,6 +129,10 @@ public class ApplicationData  {
 		return eamlightValues.get("GIS_PROCEDURE_LINK_EQP");
 	}
 
+	public String getEDMSDoclightURL() {
+		return eamlightValues.get("EDMS_DOCLIGHT_URL");
+	}
+
 	public ApplicationData copy() {
 		ApplicationData applicationData = new ApplicationData();
 		return applicationData;
