@@ -51,7 +51,6 @@ public class AutocompleteWOEquipment extends Autocomplete {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@QueryParam("s") String code) {
-		System.out.println("code: " + code);
 		try {
 			// Input
 			SimpleGridInput in = prepareInput();
