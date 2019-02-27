@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-core</artifactId>
-			<version>11.4-5-SNAPSHOT</version>
+			<version>11.4-6-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
