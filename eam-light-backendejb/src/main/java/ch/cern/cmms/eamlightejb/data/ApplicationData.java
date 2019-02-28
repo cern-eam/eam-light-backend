@@ -154,6 +154,10 @@ public class ApplicationData {
 		return eamlightValues.get("PANORAMAS_VIEWER_LINK");
 	}
 
+	public String getPanoramasViewerLink() {
+		return eamlightValues.get("PANORAMAS_VIEWER_LINK");
+	}
+
 	public ApplicationData copy() {
 		ApplicationData applicationData = new ApplicationData();
 		return applicationData;
