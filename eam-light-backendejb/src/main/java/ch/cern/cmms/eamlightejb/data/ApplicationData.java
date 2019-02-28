@@ -142,13 +142,29 @@ public class ApplicationData {
         return eamlightValues.get("EDMS_DOCLIGHT_URL");
     }
 
-    private String getVariableValue(String variableName) {
-        String valueFromEnv = System.getenv().get(variableName);
-        if (valueFromEnv != null && !valueFromEnv.isEmpty()) {
-            return valueFromEnv;
-        } else {
-            return null;
-        }
-    }
 
+	//
+	// Getters for individual properties
+	//
+	public String getOrganization() {
+		return getVariableValue("INFOR_ORGANIZATION");
+	}
+
+	public String getPanoramasViewerLink() {
+		return eamlightValues.get("PANORAMAS_VIEWER_LINK");
+	}
+
+	public ApplicationData copy() {
+		ApplicationData applicationData = new ApplicationData();
+		return applicationData;
+	}
+
+	private String getVariableValue(String variableName) {
+		String valueFromEnv = System.getenv().get(variableName);
+		if (valueFromEnv != null && !valueFromEnv.isEmpty()) {
+			return valueFromEnv;
+		} else {
+			return null;
+		}
+	}
 }
