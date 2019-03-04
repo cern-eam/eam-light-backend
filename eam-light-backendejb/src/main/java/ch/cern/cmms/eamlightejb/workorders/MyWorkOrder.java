@@ -24,9 +24,9 @@ import javax.persistence.NamedNativeQuery;
 				+ "AND a.EVT_MRC in (:departments) AND a.EVT_RSTATUS NOT IN('C','A') AND c.USR_CODE = :user AND a.EVT_RTYPE in('JOB','PPM')) WHERE rnum < 5001 order by EVT_TARGET", resultClass = MyWorkOrder.class),
 		@NamedNativeQuery(name = MyWorkOrder.GET_WOS, query = "select EVT_CODE, EVT_DESC, EVT_OBJECT, EVT_MRC, EVT_RTYPE, null as UCO_DESC, EVT_TARGET, EVT_SCHEDEND,"
 				+ " EVT_CREATED, EVT_COMPLETED from r5events where EVT_CODE like :codeParam AND EVT_RTYPE in('JOB','PPM')", resultClass = MyWorkOrder.class),
-		@NamedNativeQuery(name = MyWorkOrder.GET_OBJWOS, query = "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_OBJECT, a.EVT_DESC,"
+		@NamedNativeQuery(name = MyWorkOrder.GET_OBJWOS, query = "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_STATUS, a.EVT_JOBTYPE, a.EVT_OBJECT, a.EVT_DESC,"
 				+ " a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY FROM"
-				+ " R5EVENTS a, R5UCOdES b  WHERE (a.EVT_OBJECT = :objectCode) and a.EVT_RTYPE in('JOB','PPM') AND evt_jobtype != 'EDH' "
+				+ " R5EVENTS a, R5UCOdES b  WHERE (a.EVT_OBJECT = :objectCode) and a.EVT_RTYPE in('JOB','PPM') AND a.EVT_JOBTYPE != 'EDH' "
 				+ "AND a.EVT_STATUS=b.UCO_CODE AND b.UCO_RENTITY='EVST' order by EVT_CREATED DESC", resultClass = MyWorkOrder.class)
 		})
 public class MyWorkOrder implements Serializable {
@@ -43,6 +43,10 @@ public class MyWorkOrder implements Serializable {
 	private String desc;
 	@Column(name = "UCO_DESC")
 	private String status;
+	@Column(name="EVT_STATUS")
+	private String statusCode;
+	@Column(name="EVT_JOBTYPE")
+	private String jobType;
 	@Column(name = "EVT_OBJECT")
 	private String object;
 	@Column(name = "EVT_MRC")
@@ -76,6 +80,22 @@ public class MyWorkOrder implements Serializable {
 
 	public String getStatus() {
 		return status;
+	}
+
+	public String getStatusCode () {
+		return statusCode;
+	}
+
+	public void setStatusCode (String statusCode) {
+		this.statusCode = statusCode;
+	}
+
+	public String getJobType() {
+		return jobType;
+	}
+
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
 	}
 
 	public void setStatus(String status) {
