@@ -20,8 +20,6 @@
 		<class>ch.cern.cmms.eamlightejb.workorders.WorkOrderEquipment</class>
 		<class>ch.cern.cmms.eamlightejb.equipment.EquipmentChildren</class>
 		<class>ch.cern.cmms.eamlightejb.equipment.EquipmentTreeNode</class>
-		<class>ch.cern.cmms.eamlightejb.impact.ImpactWOEntity</class>
-		<class>ch.cern.cmms.eamlightejb.impact.ImpactCernAisLocationFacility</class>
 		<class>ch.cern.eam.wshub.core.services.entities.InstallParameters</class>
 		<class>ch.cern.eam.wshub.core.services.entities.EAMUser</class>
 		<class>ch.cern.eam.wshub.core.services.grids.entities.GridField</class>
@@ -40,8 +38,6 @@
 		<class>ch.cern.cmms.eamlightejb.layout.ElementInfo</class>
 		<class>ch.cern.cmms.eamlightejb.layout.ScreenInfo</class>
 		<class>ch.cern.cmms.eamlightejb.layout.TabInfo</class>
-		<class>ch.cern.cmms.commons.gis.GisLink</class>
-		<class>ch.cern.cmms.commons.entities.UserConnection</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>
 </persistence>
