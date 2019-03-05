@@ -37,8 +37,6 @@ public class ActivitiesRest extends WSHubController {
 		}
 	}
 
-
-
 	@POST
 	@Produces("application/json")
 	@Consumes("application/json")

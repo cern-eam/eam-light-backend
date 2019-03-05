@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightejb.data;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -127,6 +128,18 @@ public class ApplicationData  {
 
 	public String getGISProcedureLinkEQP() {
 		return eamlightValues.get("GIS_PROCEDURE_LINK_EQP");
+	}
+
+	public String getDismacURL () {
+		return eamlightValues.get("DISMAC_URL");
+	}
+
+	public String[] getDismacUserGroups () {
+		return eamlightValues.get("DISMAC_USER_GROUPS").replaceAll("\\s+","").trim().split(",");
+  }
+  
+	public String getEDMSDoclightURL() {
+		return eamlightValues.get("EDMS_DOCLIGHT_URL");
 	}
 
 	public ApplicationData copy() {
