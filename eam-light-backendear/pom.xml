@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-core</artifactId>
-			<version>11.4-7-SNAPSHOT</version>
+			<version>11.4-8-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -59,7 +59,7 @@
 						<webModule>
 							<groupId>ch.cern.cmms</groupId>
 							<artifactId>eam-light-backendweb</artifactId>
-							<contextRoot>/apis</contextRoot>
+							<contextRoot>/SSO/eamlightws</contextRoot>
 						</webModule>
 					</modules>
 				</configuration>
