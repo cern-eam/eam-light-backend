@@ -82,16 +82,18 @@ public class WorkOrdersEJB {
 	}
 
 	public List<MyWorkOrder> getTeamWOs(InforContext inforContext) {
-		// Just execute if there are departments
-		// TODO
-		/*
-		if (eamAccount.getUserDepartments() == null || eamAccount.getUserDepartments().isEmpty())
-			return new ArrayList<>();
-		List<MyWorkOrder> types = em.createNamedQuery(MyWorkOrder.GET_MY_TEAMS_WOS, MyWorkOrder.class)
-				.setParameter("user", eamAccount.getUserCode())
-				.setParameter("departments", eamAccount.getUserDepartments()).getResultList();
-		return types;
-		*/
+		List<String> departmentCodes = em
+				.createNativeQuery("SELECT UDE_MRC FROM U5USERDEPARTMENTS WHERE UDE_CODE = :userId and UDE_NOTUSED <> '+'")
+				.setParameter("userId", inforContext.getCredentials().getUsername())
+				.getResultList();
+
+		if (!departmentCodes.isEmpty()) {
+			List<MyWorkOrder> types = em.createNamedQuery(MyWorkOrder.GET_MY_TEAMS_WOS, MyWorkOrder.class)
+					.setParameter("user", inforContext.getCredentials().getUsername())
+					.setParameter("departments", departmentCodes)
+					.getResultList();
+			return types;
+		}
 		return new ArrayList<>();
 	}
 
