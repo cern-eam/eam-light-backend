@@ -12,13 +12,13 @@ import javax.persistence.NamedNativeQuery;
 @Entity
 @NamedNativeQueries({
 	
-		@NamedNativeQuery(name = MyWorkOrder.GET_MY_OPEN_WOS, query = "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_OBJECT, a.EVT_DESC, a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY  "
+		@NamedNativeQuery(name = MyWorkOrder.GET_MY_OPEN_WOS, query = "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_OBJECT, a.EVT_DESC, a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY, a.EVT_STATUS, a.EVT_JOBTYPE  "
 				+ "FROM R5EVENTS a, R5UCOdES b, R5PERSONNEL c, R5OBJECTS d  "
 				+ "WHERE a.EVT_STATUS=b.UCO_CODE AND b.UCO_RENTITY='EVST' " + "AND a.EVT_PERSON = c.PER_CODE "
 				+ "AND a.EVT_RSTATUS NOT IN('C','A') AND c.PER_USER = :user "
 				+ "AND d.OBJ_CODE = a.EVT_OBJECT AND a.EVT_RTYPE in('JOB','PPM') AND rownum < 5001 order by EVT_TARGET", resultClass = MyWorkOrder.class),
 		@NamedNativeQuery(name = MyWorkOrder.GET_MY_TEAMS_WOS, query = "SELECT * FROM (  "
-				+ "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_OBJECT, a.EVT_DESC, a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY, ROWNUM RNUM  "
+				+ "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_OBJECT, a.EVT_DESC, a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY, a.EVT_STATUS, a.EVT_JOBTYPE, ROWNUM RNUM  "
 				+ "FROM R5EVENTS a, R5UCODES b, R5USERS c     "
 				+ "WHERE a.EVT_STATUS=b.UCO_CODE AND b.UCO_RENTITY='EVST'    "
 				+ "AND a.EVT_MRC in (:departments) AND a.EVT_RSTATUS NOT IN('C','A') AND c.USR_CODE = :user AND a.EVT_RTYPE in('JOB','PPM')) WHERE rnum < 5001 order by EVT_TARGET", resultClass = MyWorkOrder.class),
@@ -57,6 +57,8 @@ public class MyWorkOrder implements Serializable {
 	private String priority;
 	@Column(name = "EVT_SCHEDEND")
 	private Date schedulingEndDate;
+	@Column(name = "EVT_TARGET")
+	private Date schedulingStartDate;
 	@Column(name = "EVT_CREATED")
 	private Date createdDate;
 	@Column(name = "EVT_COMPLETED")
@@ -132,6 +134,14 @@ public class MyWorkOrder implements Serializable {
 
 	public void setSchedulingEndDate(Date schedulingEndDate) {
 		this.schedulingEndDate = schedulingEndDate;
+	}
+
+	public Date getSchedulingStartDate() {
+		return schedulingStartDate;
+	}
+
+	public void setSchedulingStartDate(Date schedulingStartDate) {
+		this.schedulingStartDate = schedulingStartDate;
 	}
 
 	/**
