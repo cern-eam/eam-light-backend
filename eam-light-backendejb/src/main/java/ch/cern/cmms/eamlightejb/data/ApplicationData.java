@@ -1,7 +1,7 @@
 package ch.cern.cmms.eamlightejb.data;
 
-import java.io.Serializable;
-import java.util.List;
+import ch.cern.cmms.eamlightejb.tools.ApplicationDataReader;
+
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -9,13 +9,12 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.xml.bind.annotation.XmlTransient;
 
-import ch.cern.cmms.eamtools.config.ApplicationDataReader;
-
 @Dependent
 public class ApplicationData  {
 
 	private Map<String, String> eamlightValues;
 	private Map<String, String> kioskValues;
+	private Map<String, String> edmsValues;
 
 	@Inject
 	private ApplicationDataReader configReader;
@@ -24,6 +23,7 @@ public class ApplicationData  {
 	private void init() {
 		eamlightValues = configReader.getProperties("EAMLIGHT");
 		kioskValues = configReader.getProperties("KIOSK");
+		edmsValues = configReader.getProperties("EDMS");
 	}
 
 	//
@@ -45,6 +45,8 @@ public class ApplicationData  {
 	public String getPassphrase() {
 		return getVariableValue("EAMLIGHT_PASSPHRASE");
 	}
+
+	public String getEdmsDocListLink() {return edmsValues.get("DOCLIST_LINK");}
 
 	/************************
 	 * KIOSK PROPERTIES
