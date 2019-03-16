@@ -11,6 +11,12 @@
 		<module>eam-light-backendejb</module>
 	</modules>
 
+	<properties>
+		<ch.cern.eam.eam-wshub-core.version>11.4-11-SNAPSHOT</ch.cern.eam.eam-wshub-core.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>javax</groupId>
@@ -33,7 +39,7 @@
 		<dependency>
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-core</artifactId>
-			<version>11.4-11-SNAPSHOT</version>
+			<version>${ch.cern.eam.eam-wshub-core.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

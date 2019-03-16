@@ -34,14 +34,13 @@ public class InforClientProducer {
 	@PostConstruct
 	public void init() {
 			inforClient = new InforClient.Builder(applicationData.getInforWSURL(), applicationData.getTenant())
-					.withDefaultOrganizationCode("*")
+					.withDefaultOrganizationCode(applicationData.getDefaultOrganization())
 					.withSOAPHandlerResolver(new SOAPHandlerResolver())
 					.withDataSource(datasource)
 					.withEntityManagerFactory(entityManagerFactory)
 					.withExecutorService(executorService)
 					.withInforInterceptor(inforInterceptor)
 					.build();
-
 	}
 	
 }

@@ -26,18 +26,19 @@ public class AuthenticationTools {
         String password = null;
         String organization = null;
         String sessionid = null;
+        String authenticationMode = applicationData.getAuthenticationMode();
 
-        if ("LOCAL".equalsIgnoreCase(System.getProperty("AUTHENTICATION_MODE"))) {
+        if ("LOCAL".equalsIgnoreCase(authenticationMode)) {
             user = request.getParameter("user");
             if (user == null) {
                 user = System.getProperty("DEFAULT_USER").toUpperCase();
             }
             password = applicationData.getPassphrase();
-            organization = applicationData.getOrganization();
-        } else if ("CERNSSO".equalsIgnoreCase(System.getProperty("AUTHENTICATION_MODE"))) {
+            organization = applicationData.getDefaultOrganization();
+        } else if ("SSO".equalsIgnoreCase(authenticationMode)) {
             user = request.getHeader("ADFS_LOGIN").toUpperCase();
             password = applicationData.getPassphrase();
-            organization = applicationData.getOrganization();
+            organization = applicationData.getDefaultOrganization();
         } else {
             user = request.getHeader("INFOR_USER");
             password = request.getHeader("INFOR_PASSWORD");
