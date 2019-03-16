@@ -38,6 +38,7 @@
 		<class>ch.cern.cmms.eamlightejb.layout.ElementInfo</class>
 		<class>ch.cern.cmms.eamlightejb.layout.ScreenInfo</class>
 		<class>ch.cern.cmms.eamlightejb.layout.TabInfo</class>
+		<class>ch.cern.cmms.eamlightejb.tools.entities.Property</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>
 </persistence>

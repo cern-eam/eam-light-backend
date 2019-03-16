@@ -25,7 +25,7 @@ import javax.persistence.Transient;
 				resultClass = EquipmentTreeNode.class),
 		@NamedNativeQuery(name = EquipmentTreeNode.GET_TREE, 
 				query = " select * from ( "+
-						" select obj_code as id, null as parent, obj_desc as name, obj_obrtype as type, 0 as treelevel  "+
+						" select obj_code as id, null as parent, obj_desc as name, obj_obrtype as type, 0 as treelevel, 0 as sequence "+
 						" from r5objects where obj_code = :equipment "+
 						" union "+
 						" SELECT  distinct a.stc_child as id "+
@@ -33,6 +33,7 @@ import javax.persistence.Transient;
 						" , c.obj_desc as name  "+
 						" , c.OBJ_OBTYPE as type "+
 						" , LEVEL as treelevel "+
+						" , STC_SEQUENCE sequence " +
 						" FROM r5structures a, r5objects b, r5objects c "+
 						" WHERE  a.stc_parent = b.obj_code "+
 						" AND  a.stc_child = c.obj_code  "+
@@ -41,7 +42,7 @@ import javax.persistence.Transient;
 						" AND  c.OBJ_NOTUSED = '-' "+
 						" START WITH a.stc_parent = :equipment or a.stc_child = :equipment "+
 						" CONNECT BY NOCYCLE PRIOR a.stc_child = a.stc_parent "+
-						" ) order by treelevel", 
+						" ) order by treelevel, sequence",
 				resultClass = EquipmentTreeNode.class)})
 public class EquipmentTreeNode  implements Serializable{
 

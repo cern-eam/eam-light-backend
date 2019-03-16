@@ -45,7 +45,6 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.tools.InforException;
-import ch.cern.eamtools.eamlight.EquipmentReplacementService;
 
 @Path("/equipment")
 @RequestScoped
