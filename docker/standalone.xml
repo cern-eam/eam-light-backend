@@ -23,7 +23,7 @@
         <extension module="org.jboss.as.sar"/>
         <extension module="org.jboss.as.security"/>
         <extension module="org.jboss.as.transactions"/>
-        <extension module="org.jboss.as.edms.webservices"/>
+        <extension module="org.jboss.as.webservices"/>
         <extension module="org.jboss.as.weld"/>
         <extension module="org.wildfly.extension.batch"/>
         <extension module="org.wildfly.extension.bean-validation"/>
@@ -509,11 +509,8 @@
                 <response-header name="Access-Control-Max-Age" header-name="Access-Control-Max-Age" header-value="1"/>
             </filters>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:edms.webservices:2.0">
-            <wsdl-host>cmmsx-test.cern.ch</wsdl-host>
-            <wsdl-secure-port>443</wsdl-secure-port>
-            <wsdl-uri-scheme>https</wsdl-uri-scheme>
-            <wsdl-path-rewrite-rule>s/SOAPWS/WSHub/g</wsdl-path-rewrite-rule>
+        <subsystem xmlns="urn:jboss:domain:webservices:2.0">
+            <wsdl-host>${jboss.bind.address:127.0.0.1}</wsdl-host>
             <endpoint-config name="Standard-Endpoint-Config"/>
             <endpoint-config name="Recording-Endpoint-Config">
                 <pre-handler-chain name="recording-handlers" protocol-bindings="##SOAP11_HTTP ##SOAP11_HTTP_MTOM ##SOAP12_HTTP ##SOAP12_HTTP_MTOM">
