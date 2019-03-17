@@ -1,9 +1,8 @@
 package ch.cern.cmms.eamlightejb.tools;
 
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.cmms.eamlightejb.tools.soaphandler.SOAPHandlerResolver;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
-import ch.cern.eamtools.core.soaphandler.SOAPHandlerResolver;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -27,8 +26,6 @@ public class InforClientProducer {
 	@Resource
 	private ManagedExecutorService executorService;
 	@Inject
-	private InforInterceptor inforInterceptor;
-	@Inject
 	private ApplicationData applicationData;
 
 	@PostConstruct
@@ -39,7 +36,6 @@ public class InforClientProducer {
 					.withDataSource(datasource)
 					.withEntityManagerFactory(entityManagerFactory)
 					.withExecutorService(executorService)
-					.withInforInterceptor(inforInterceptor)
 					.build();
 	}
 	
