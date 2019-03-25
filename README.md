@@ -9,7 +9,6 @@ The docker image needs to be parametrized with the following environment variabl
 | ------------- | -----:|---------:|
 | INFOR_WS_URL           | **Yes** |  |
 | INFOR_TENANT         | **Yes** |  |
-| INFOR_ORGANIZATION         | **Yes** |  |
 | DB_CONNECTION_URL   | **Yes** |  |
 | DB_DRIVER_CLASS   | **Yes** |  |
 | DB_USERNAME   | **Yes** |  |
@@ -21,6 +20,7 @@ The docker image needs to be parametrized with the following environment variabl
 | DB_VALID_CONNECTION_CHECKER   | No |  |
 | DB_STALE_CONNECTION_CHECKER   | No |  |
 | DB_EXCEPTION_SORTER   | No |  |
+| INFOR_ORGANIZATION         | No |  |
 
 You can for instance store your environment variables in a dedicated .env file:
 
@@ -48,15 +48,15 @@ The docker container exposes the following ports:
 
 | Port        | Description  |
 | ------------- | -----:|
-| 8080          | EAM Light Backend | 
+| 8081          | EAM Light Backend | 
 | 9090          | JBoss Management Port |
 
 Once you have your own environment variables set up, you can start a new docker container:
 ```
-docker run -p 8080:8080 -p 9090:9090 --env-file .env cerneam/eam-light-backend:latest
+docker run -p 8081:8081 -p 9090:9090 --env-file .env cerneam/eam-light-backend:latest
 ``` 
 
-Once the docker container is started, the REST web services are available at the endpoint `/apis/rest`
+Once the docker container is started, the EAM Light REST backend is available at the endpoint `/apis/rest`
 
 ## License
 This software is published under the GNU General Public License v3.0 or later.

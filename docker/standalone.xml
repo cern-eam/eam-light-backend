@@ -538,7 +538,7 @@
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9090}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:9993}"/>
         <socket-binding name="ajp" port="${jboss.ajp.port:10809}"/>
-        <socket-binding name="http" port="${jboss.http.port:8080}"/>
+        <socket-binding name="http" port="${jboss.http.port:8081}"/>
         <socket-binding name="https" port="${jboss.https.port:8443}"/>
         <socket-binding name="iiop" interface="unsecure" port="13528"/>
         <socket-binding name="iiop-ssl" interface="unsecure" port="13529"/>
