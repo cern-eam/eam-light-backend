@@ -8,6 +8,6 @@ ADD docker/sqljdbc4.jar /opt/jboss/wildfly/standalone/deployments/
 ADD eam-light-backendear/target/eam-light-backend.ear /opt/jboss/wildfly/standalone/deployments/
 ADD docker/standalone.xml /opt/jboss/wildfly/standalone/configuration/
 
-EXPOSE 8080/tcp
+EXPOSE 8081/tcp
 EXPOSE 9090/tcp
 
