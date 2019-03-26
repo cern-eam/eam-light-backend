@@ -30,18 +30,18 @@ public class ApplicationData {
     // Getters for individual properties
     //
     public String getTenant() {
-        return getVariableValue("INFOR_TENANT");
+        return getVariableValue("EAMLIGHT_INFOR_TENANT");
     }
 
-    public String getDefaultOrganization() { return getVariableValue("INFOR_ORGANIZATION"); }
+    public String getDefaultOrganization() { return getVariableValue("EAMLIGHT_INFOR_ORGANIZATION"); }
 
     public String getInforWSURL() {
-        return getVariableValue("INFOR_WS_URL");
+        return getVariableValue("EAMLIGHT_INFOR_WS_URL");
     }
 
-    public String getAuthenticationMode() {
-        return getVariableValue("EAMLIGHT_AUTHENTICATION_MODE");
-    }
+    public String getAuthenticationMode() { return getVariableValue("EAMLIGHT_AUTHENTICATION_MODE"); }
+
+    public String getDefaultUser() { return getVariableValue("EAMLIGHT_DEFAULT_USER"); }
 
     @XmlTransient
     public String getPassphrase() { return getVariableValue("EAMLIGHT_PASSPHRASE"); }

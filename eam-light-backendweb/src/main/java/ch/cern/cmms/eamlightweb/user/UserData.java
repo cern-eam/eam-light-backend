@@ -202,6 +202,9 @@ public class UserData {
 	}
 
 	public UserData copy(String currentScreen, String screenCode) {
+		if (screenCode.equals("undefined")) {
+			screenCode = "";
+		}
 		UserData userData = new UserData();
 		userData.eamAccount = eamAccount;
 		userData.assetScreen = getAssetScreen(
