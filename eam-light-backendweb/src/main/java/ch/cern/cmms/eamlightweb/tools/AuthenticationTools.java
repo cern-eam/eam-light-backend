@@ -29,7 +29,7 @@ public class AuthenticationTools {
         String authenticationMode = applicationData.getAuthenticationMode();
 
         if ("LOCAL".equalsIgnoreCase(authenticationMode)) {
-            user = request.getParameter("user");
+            user = applicationData.getDefaultUser();
             if (user == null) {
                 user = System.getProperty("DEFAULT_USER").toUpperCase();
             }
