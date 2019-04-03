@@ -1,5 +1,7 @@
 package ch.cern.cmms.eamlightejb.meter;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @Entity
 @NamedNativeQueries({
@@ -159,6 +162,7 @@ public class MeterReadingEntity  implements Serializable{
 	/**
 	 * @return the lastReading
 	 */
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getLastReading() {
 		return lastReading;
 	}
