@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.sql.DataSource;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class InforClientProducer {
@@ -40,6 +41,7 @@ public class InforClientProducer {
 					.withEntityManagerFactory(entityManagerFactory)
 					.withExecutorService(executorService)
 					.withInforInterceptor(inforInterceptor)
+					.withLogger(Logger.getLogger("wshublogger"))
 					.build();
 	}
 	

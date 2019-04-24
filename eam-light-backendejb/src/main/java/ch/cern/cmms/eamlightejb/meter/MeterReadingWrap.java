@@ -1,7 +1,9 @@
 package ch.cern.cmms.eamlightejb.meter;
 
+import ch.cern.eam.wshub.core.adapters.DateAdapter;
 import ch.cern.eam.wshub.core.services.workorders.entities.MeterReading;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 public class MeterReadingWrap {
@@ -43,6 +45,7 @@ public class MeterReadingWrap {
 	/**
 	 * @return the lastUpdateDate
 	 */
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getLastUpdateDate() {
 		return lastUpdateDate;
 	}
@@ -71,6 +74,7 @@ public class MeterReadingWrap {
 	/**
 	 * @return the meterReading
 	 */
+
 	public MeterReading getMeterReading() {
 		return meterReading;
 	}
