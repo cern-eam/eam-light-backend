@@ -36,9 +36,10 @@ public class EquipmentLists extends DropdownValues {
 	@Path("/statuscodes")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp) {
+	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp, @QueryParam("oldStatusCode") String oldStatusCode) {
 		try {
-			List<EquipmentStatus> statuses = equipmentEJB.getEquipmentStatuses(authenticationTools.getInforContext(), "-","EN", "OBJ",
+			if (oldStatusCode == null || oldStatusCode.isEmpty()) oldStatusCode = "-";
+			List<EquipmentStatus> statuses = equipmentEJB.getEquipmentStatuses(authenticationTools.getInforContext(), oldStatusCode,"EN", "OBJ",
 					neweqp);
 			return ok(statuses.stream().map(status -> new Pair(status.getCode(), status.getDesc()))
 					.collect(Collectors.toList()));
