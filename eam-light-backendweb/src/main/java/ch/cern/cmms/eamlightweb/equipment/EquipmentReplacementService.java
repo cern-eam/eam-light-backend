@@ -1,5 +1,6 @@
 package ch.cern.cmms.eamlightweb.equipment;
 
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
@@ -13,13 +14,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 @ApplicationScoped
 public class EquipmentReplacementService {
 
     @Inject
-    InforClient inforClient;
+    private InforClient inforClient;
+
+    @Inject
+    private ApplicationData applicationData;
 
     // Replace Equipment modes
     private static final String STANDARD = "Standard";
@@ -254,6 +260,8 @@ public class EquipmentReplacementService {
             inforClient.getAssetService().updateAsset(inforContext, toUpdate);
         }
 
+        introduceCernExtensions(inforContext, oldEquipment.getCode(), newEquipment.getCode(), newEquipment.getClassCode());
+
         // Finish ok
         return replacement.getOldEquipment() + " was replaced by " + replacement.getNewEquipment();
     }
@@ -323,4 +331,26 @@ public class EquipmentReplacementService {
         // Return result
         return relations;
     }
+
+    private void introduceCernExtensions(InforContext inforContext, String oldEquipmentCode, String newEquipmentCode, String newEquipmentClass) {
+        if (Arrays.stream(applicationData.getCryoEqpReplacementClasses()).noneMatch( cl -> cl.equals(newEquipmentClass))) {
+            return;
+        }
+
+        Equipment newEquipment = new Equipment();
+        newEquipment.setCode(newEquipmentCode);
+        newEquipment.setStateCode("GOOD");
+        newEquipment.setStatusCode("I");
+
+        Equipment oldEquipment = new Equipment();
+        oldEquipment.setCode(oldEquipmentCode);
+        oldEquipment.setStateCode("DEF");
+        oldEquipment.setStatusCode("IREP");
+        try {
+            inforClient.getEquipmentFacadeService().updateEquipmentBatch(inforContext, Arrays.asList(oldEquipment, newEquipment));
+        } catch (InforException inforException) {
+
+        }
+    }
+
 }

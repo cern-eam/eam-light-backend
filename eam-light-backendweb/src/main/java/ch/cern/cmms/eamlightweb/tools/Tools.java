@@ -35,9 +35,9 @@ public class Tools {
 		for (Field field : fields) {
 			// Name of the field non capital
 			String fieldName = field.getName().toLowerCase();
-			// If the field is the userdefinedfields, execute the process for
+			// If the field is the userdefinedscreens, execute the process for
 			// this
-			if (fieldName.equals("userdefinedfields")) {
+			if (fieldName.equals("userdefinedscreens")) {
 				try {
 					// Set the field accessible
 					field.setAccessible(true);

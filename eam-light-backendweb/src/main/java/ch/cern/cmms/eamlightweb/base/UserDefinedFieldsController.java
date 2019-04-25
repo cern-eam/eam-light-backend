@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *
  */
 @RequestScoped
-@Path("/userdefinedfields")
+@Path("/userdefinedscreens")
 @Interceptors({ RESTLoggingInterceptor.class })
 public class UserDefinedFieldsController extends Autocomplete {
 

@@ -138,6 +138,8 @@ public class ApplicationData {
 
     public String[] getDismacUserGroups() { return eamlightValues.get("DISMAC_USER_GROUPS").replaceAll("\\s+", "").trim().split(","); }
 
+    public String[] getCryoEqpReplacementClasses() { return eamlightValues.get("CRYP_EQP_RPL_CLASSES").replaceAll("\\s+", "").trim().split(","); }
+
     public String getEDMSDoclightURL() {
         return eamlightValues.get("EDMS_DOCLIGHT_URL");
     }
