@@ -43,8 +43,9 @@ public class GridUtils {
 		try {
 			GridRequest gridRequest = new GridRequest();
 
-			if (input.getJPAType() != null)
+			if (input.getJPAType() != null) {
 				gridRequest.setJPAType(input.getJPAType());
+			}
 
 			if (input.getInforParams() != null) {
 				gridRequest.setParams(input.getInforParams());

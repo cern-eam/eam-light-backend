@@ -29,7 +29,7 @@ public class AutocompleteLocation extends Autocomplete {
 		SimpleGridInput in = new SimpleGridInput("3660", "LVOBJL_LOC", "3715");
 		//TODO
 		//in.getInforParams().put("loantodept", applicationData.getLoadToDept());
-		in.getInforParams().put("control.org", authenticationTools.getInforContext());
+		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
 		in.setGridType("LIST");
 		in.setFields(Arrays.asList("247", "249")); // 247=equipmentcode, 249=equipmentdesc
 		in.getInforParams().put("cctrspcvalidation", "D");
