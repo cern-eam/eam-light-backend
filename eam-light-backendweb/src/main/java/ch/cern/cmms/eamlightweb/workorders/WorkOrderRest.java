@@ -22,8 +22,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import ch.cern.cmms.eamlightejb.UserTools;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrderStatus;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrderType;
 import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
@@ -124,19 +122,17 @@ public class WorkOrderRest extends WSHubController {
 			@PathParam("systemFunction") String systemFunction, @PathParam("userFunction") String userFunction,
 			@Context UriInfo info) {
 		try {
+			WorkOrder workOrder = inforClient.getWorkOrderService().readWorkOrderDefault(authenticationTools.getInforContext(), "");
+
 			// Default values from request
 			Map<String, List<String>> queryParams = info.getQueryParameters();
 			Map<String, String> parameters = new HashMap<>();
 			queryParams.forEach((k, v) -> parameters.put(k, v != null ? v.get(0) : null));
 			// Check if there is screen parameter
 			userFunction = parameters.get("screen") != null ? parameters.get("screen") : userFunction;
-			WorkOrder workOrder = new WorkOrder();
+
 			// User defined fields
 			workOrder.setUserDefinedFields(new UserDefinedFields());
-			// Default dates
-			workOrder.setScheduledStartDate(new Date());
-			workOrder.setScheduledEndDate(new Date());
-			workOrder.setReportedDate(new Date());
 			// Reported by
 			//TODO workOrder.setReportedBy(userData.getEamAccount().getCernId());
 
@@ -168,23 +164,6 @@ public class WorkOrderRest extends WSHubController {
 				tools.populateCustomFields(workOrder.getCustomFields(), parameters);
 			}
 
-			// If there are not default values for type and status, set the default
-			// ones
-			if (Tools.isEmpty(workOrder.getStatusCode())) {
-				// Statuses
-				List<WorkOrderStatus> statuses = wosEJB.getWorkOrderStatuses(authenticationTools.getInforContext(), workOrder.getStatusCode(), workOrder.getTypeCode(),
-						true);
-				workOrder.setStatusCode(statuses.stream().filter(elem -> elem.isDefaultValue()).findFirst()
-						.orElse(new WorkOrderStatus()).getCode());
-			}
-
-			if (Tools.isEmpty(workOrder.getTypeCode())) {
-				// Types
-				List<WorkOrderType> types = wosEJB.getWorkOrderTypes(authenticationTools.getInforContext(),
-						workOrder.getStatusCode(), workOrder.getTypeCode(), true, false);
-				workOrder.setTypeCode(types.stream().filter(elem -> elem.isDefaultValue()).findFirst()
-						.orElse(new WorkOrderType()).getCode());
-			}
 			return ok(workOrder);
 		} catch (InforException e) {
 			return badRequest(e);

@@ -97,44 +97,6 @@ public class WorkOrdersEJB {
 		return new ArrayList<>();
 	}
 
-	public List<WorkOrderType> getWorkOrderTypes(InforContext inforContext, String status, String oldType, boolean newWorkOrder,
-			boolean isPMWorkOrder) throws InforException {
-		String group = userTools.getUserGroup(inforContext);
-		List<WorkOrderType> types = new ArrayList<>();
-		if (newWorkOrder) {
-			types = em.createNamedQuery(WorkOrderType.GET_TYPES_FOR_NEW_WO, WorkOrderType.class)
-					.setParameter("group", group).getResultList();
-		} else {
-			if (!isPMWorkOrder)
-				types = em.createNamedQuery(WorkOrderType.GET_TYPES_FOR_EXISTING_WO, WorkOrderType.class)
-						.setParameter("status", status).setParameter("userGroup", group)
-						.setParameter("oldType", oldType).getResultList();
-			else
-				types = em.createNamedQuery(WorkOrderType.GET_TYPES_FOR_EXISTING_WO_PPM, WorkOrderType.class)
-						.setParameter("status", status).setParameter("userGroup", group)
-						.setParameter("oldType", oldType).getResultList();
-		}
-		return types;
-	}
-
-	public List<WorkOrderStatus> getWorkOrderStatuses(InforContext inforContext, String status, String jobType,
-			boolean newWorkOrder) throws InforException {
-		String user = inforContext.getCredentials().getUsername();
-		String group = userTools.getUserGroup(inforContext);
-		List<WorkOrderStatus> statuses;
-		if (newWorkOrder) {
-			// Check type
-			jobType = jobType == null || "".equals(jobType) ? "CD" : jobType;
-			statuses = em.createNamedQuery(WorkOrderStatus.GET_STATUSES_FOR_NEW_WO, WorkOrderStatus.class)
-					.setParameter("group", group).setParameter("user", user).setParameter("jobType", jobType)
-					.getResultList();
-		} else {
-			statuses = em.createNamedQuery(WorkOrderStatus.GET_STATUSES_FOR_EXISTING_WO, WorkOrderStatus.class)
-					.setParameter("status", status).setParameter("group", group).setParameter("user", user)
-					.getResultList();
-		}
-		return statuses;
-	}
 
 	//
 	// GET WORK ORDERS ASSOCIATED TO AND OBJECT (ASSET,POSITION,SYSTEM)

@@ -17,11 +17,9 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.JOINER;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 /**
@@ -52,16 +50,19 @@ public class AutocompletePUPart extends Autocomplete {
 		// Trim the code
 		code = code.trim().replaceAll("%", "");
 		try {
-			input.getWhereParams().put("partcode", new WhereParameter(code.toUpperCase(), JOINER.OR));
-			if (code.length() > 3)
-				input.getWhereParams().put("partdescription", new WhereParameter(OPERATOR.CONTAINS, code, JOINER.OR));
+			input.getGridFilters().add(new GridRequestFilter("partcode", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR));
 
-			input.getWhereParams().put("udfchar01", new WhereParameter(code.toUpperCase(), JOINER.OR)); // SCEM
-																										// Code
-			input.getWhereParams().put("udfchar03", new WhereParameter(code.toUpperCase(), JOINER.OR)); // CDD
+			if (code.length() > 3)
+				input.getGridFilters().add(new GridRequestFilter("partdescription", code, "CONTAINS", GridRequestFilter.JOINER.OR));
+
+
+			input.getGridFilters().add(new GridRequestFilter("udfchar01", code, "BEGINS", GridRequestFilter.JOINER.OR));
+
+			// Code
+			input.getGridFilters().add(new GridRequestFilter("udfchar03", code, "BEGINS", GridRequestFilter.JOINER.OR));// CDD
 																										// Drawing
 																										// Reference
-			input.getWhereParams().put("udfchar11", new WhereParameter(code.toUpperCase())); // EDMS:
+			input.getGridFilters().add(new GridRequestFilter("udfchar11", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR));// EDMS:
 																								// "Item
 																								// ID"
 																								// (References

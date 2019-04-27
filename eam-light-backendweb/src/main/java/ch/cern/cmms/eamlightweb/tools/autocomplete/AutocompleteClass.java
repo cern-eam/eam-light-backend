@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -37,7 +38,7 @@ public class AutocompleteClass extends Autocomplete {
 			// Input
 			SimpleGridInput in = prepareInput();
 			in.getInforParams().put("rentity", entity);
-			in.getWhereParams().put("class", new WhereParameter(code.toUpperCase()));
+			in.getGridFilters().add(new GridRequestFilter("class", code.toUpperCase(), "BEGINS"));
 			in.getSortParams().put("class", true); // true=ASC, false=DESC
 			// Result
 			List<Pair> resultList = getGridResults(in);

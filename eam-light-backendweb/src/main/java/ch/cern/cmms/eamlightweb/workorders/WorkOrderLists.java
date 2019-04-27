@@ -17,13 +17,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightejb.UserTools;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrderStatus;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrderType;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -31,8 +29,8 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class WorkOrderLists extends DropdownValues {
 
-	@EJB
-	private WorkOrdersEJB wosEJB;
+	@Inject
+	private UserTools userTools;
 	@Inject
 	private AuthenticationTools authenticationTools;
 
@@ -71,8 +69,22 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readStatusCodes(@QueryParam("wostatus") String wostatus, @QueryParam("wotype") String wotype,
 			@QueryParam("newwo") Boolean newwo) throws InforException {
-		List<WorkOrderStatus> statuses = wosEJB.getWorkOrderStatuses(authenticationTools.getInforContext(), wostatus, wotype, newwo);
-		return ok(statuses.stream().map(status -> new Pair(status.getCode(), status.getDesc())).collect(Collectors.toList()));
+		// Map of parameters to send to the query
+		Map<String, String> parameters = new HashMap<>();
+		// Get the default data spy
+		GridDataspy dataspy = getDefaultDataSpy("2403", "LOV");
+		// Definition of parameters
+		if (newwo) {
+			parameters.put("param.poldstat", "-");
+			parameters.put("param.pexcclause", "C");
+		} else {
+			parameters.put("param.poldstat", wostatus);
+			parameters.put("param.pexcclause", "A");
+		}
+		parameters.put("param.pfunrentity", "EVNT");
+
+		// Load the dropdown
+		return ok(loadDropdown("2403", "LVWRSTDRP", dataspy.getCode(), "LOV", Arrays.asList("118", "629"), parameters, null, true));
 	}
 
 	@GET
@@ -81,9 +93,11 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readTypeCodes(@QueryParam("wostatus") String wostatus, @QueryParam("wotype") String wotype,
 			@QueryParam("newwo") Boolean newwo, @QueryParam("ppmwo") Boolean ppmwo) throws InforException {
-		List<WorkOrderType> types = wosEJB.getWorkOrderTypes(authenticationTools.getInforContext(), wostatus, wotype,
-				newwo, ppmwo);
-		return ok(types.stream().map(type -> new Pair(type.getCode(), type.getDesc())).collect(Collectors.toList()));
+		GridDataspy dataspy = getDefaultDataSpy("2251", "LOV");
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("parameter.pagemode", null);
+		parameters.put("parameter.usergroup", userTools.getUserGroup(authenticationTools.getInforContext()));
+		return ok(loadDropdown("2251", "LVGROUPWOTYPE", dataspy.getCode(), "LOV", Arrays.asList("101", "103"), parameters, null, true));
 	}
 
 	@GET

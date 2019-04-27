@@ -46,8 +46,11 @@ public class GridUtils {
 			if (input.getJPAType() != null)
 				gridRequest.setJPAType(input.getJPAType());
 
-			if (input.getInforParams() != null)
+			if (input.getInforParams() != null) {
 				gridRequest.setParams(input.getInforParams());
+				gridRequest.setGridRequestParameterNames(input.getInforParams().keySet().toArray(new String[0]));
+				gridRequest.setGridRequestParameterValues(input.getInforParams().values().toArray(new String[0]));
+			}
 
 			if (input.getDepartmentSecurityGridColumn() != null && !input.getDepartmentSecurityGridColumn().isEmpty()) {
 				gridRequest.setDepartmentSecurityGridColumn(input.getDepartmentSecurityGridColumn());
@@ -77,81 +80,9 @@ public class GridUtils {
 				gridRequest.setGridRequestSorts(sorts);
 			}
 
-			// Set up filters
-			List<GridRequestFilter> gridFilters = new ArrayList<GridRequestFilter>();
-
-			for (String k : input.getWhereParams().keySet()) {
-				GridRequestFilter f = new GridRequestFilter();
-				f.setFieldName(k);
-
-				// Add parenthesis
-				if (input.getWhereParams().get(k).getLeftParenthesis()) {
-					f.setLeftParenthesis("true");
-				}
-				if (input.getWhereParams().get(k).getRightParenthesis()) {
-					f.setRightParenthesis("true");
-				}
-
-				switch (input.getWhereParams().get(k).getOperator()) {
-				case STARTS_WITH:
-				default:
-					f.setOperator("BEGINS");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case ENDS_WITH:
-					f.setOperator("ENDS");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case CONTAINS:
-					f.setOperator("CONTAINS");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case EQUALS:
-					f.setOperator("=");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case IS_EMPTY:
-					f.setOperator("IS EMPTY");
-					break;
-				case IS_NOT_EMPTY:
-					f.setOperator("NOT EMPTY");
-					break;
-				case IN:
-					f.setOperator("IN");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case LESS_THAN:
-					f.setOperator("<");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case GREATER_THAN:
-					f.setOperator(">");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case LESS_THAN_EQUALS:
-					f.setOperator("<=");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				case GREATER_THAN_EQUALS:
-					f.setOperator(">=");
-					f.setFieldValue(input.getWhereParams().get(k).getValue().toString());
-					break;
-				}
-				gridFilters.add(f);
-
-				if (input.getWhereParams().get(k).getJoiner() != null)
-					f.setJoiner(input.getWhereParams().get(k).getJoiner().toString());
-
-				if (input.getWhereParams().get(k).getForceCaseInsensitive()) {
-					f.setForceCaseInsensitive(true);
-				}
-
-				if (input.getWhereParams().get(k).getUpperCase()) {
-					f.setUpperCase(true);
-				}
+			if (input.getGridFilters() != null) {
+				gridRequest.setGridRequestFilters(input.getGridFilters().toArray(new GridRequestFilter[input.getGridFilters().size()]));
 			}
-
-			gridRequest.setGridRequestFilters(gridFilters.toArray(new GridRequestFilter[gridFilters.size()]));
 
 			setIfUseNative(gridRequest, input.getUseNative());
 

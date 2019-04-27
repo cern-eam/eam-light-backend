@@ -6,9 +6,9 @@ import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -74,9 +74,8 @@ public class UserDefinedFieldsController extends Autocomplete {
 			SimpleGridInput in = prepareAutoCompleteInput();
 			// Rentity
 			in.getInforParams().put("rentity", rentity);
-			in.getWhereParams().put("userdefinedfieldvalue",
-					new WhereParameter(WhereParameter.OPERATOR.STARTS_WITH, code.toUpperCase(), WhereParameter.JOINER.OR));
-			in.getWhereParams().put("description", new WhereParameter(WhereParameter.OPERATOR.STARTS_WITH, code.toUpperCase()));
+			in.getGridFilters().add(new GridRequestFilter("userdefinedfieldvalue", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR));
+			in.getGridFilters().add(new GridRequestFilter("description", code.toUpperCase(), "BEGINS"));
 			return ok(getGridResults(in));
 		} catch (InforException e) {
 			return badRequest(e);

@@ -9,13 +9,10 @@
 		<class>ch.cern.cmms.eamlightejb.workorders.EquipmentHistory</class>
 		<class>ch.cern.cmms.eamlightejb.workorders.Type</class>
 		<class>ch.cern.cmms.eamlightejb.workorders.Person</class>
-		<class>ch.cern.cmms.eamlightejb.workorders.WorkOrderType</class>
-		<class>ch.cern.cmms.eamlightejb.workorders.WorkOrderStatus</class>
 		<class>ch.cern.eam.wshub.core.services.material.entities.PartAssociation</class>
 		<class>ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder</class>
 		<class>ch.cern.cmms.eamlightejb.parts.PartStock</class>
 		<class>ch.cern.cmms.eamlightejb.index.IndexResult</class>
-		<class>ch.cern.cmms.eamlightejb.equipment.EquipmentStatus</class>
 		<class>ch.cern.cmms.eamlightejb.meter.MeterReadingEntity</class>
 		<class>ch.cern.cmms.eamlightejb.workorders.WorkOrderEquipment</class>
 		<class>ch.cern.cmms.eamlightejb.equipment.EquipmentChildren</class>

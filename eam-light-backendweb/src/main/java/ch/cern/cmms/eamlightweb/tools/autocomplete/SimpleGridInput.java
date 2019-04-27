@@ -1,6 +1,9 @@
 package ch.cern.cmms.eamlightweb.tools.autocomplete;
 
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +15,7 @@ public class SimpleGridInput {
 	private Boolean countTotal = false;
 	private String gridType = "LOV";
 	private Map<String, Object> inforParams = new LinkedHashMap<String, Object>();
-	private Map<String, WhereParameter> whereParams = new LinkedHashMap<String, WhereParameter>();
+	private List<GridRequestFilter> gridFilters = new LinkedList<>();
 	private Map<String, Boolean> sortParams = new LinkedHashMap<String, Boolean>();
 	private String rowCount = "10";
 	private String dataspyID;
@@ -64,12 +67,12 @@ public class SimpleGridInput {
 		this.inforParams = inforParams;
 	}
 
-	public Map<String, WhereParameter> getWhereParams() {
-		return whereParams;
+	public List<GridRequestFilter> getGridFilters() {
+		return gridFilters;
 	}
 
-	public void setWhereParams(Map<String, WhereParameter> whereParams) {
-		this.whereParams = whereParams;
+	public void setGridFilters(List<GridRequestFilter> gridFilters) {
+		this.gridFilters = gridFilters;
 	}
 
 	public Map<String, Boolean> getSortParams() {
@@ -167,7 +170,7 @@ public class SimpleGridInput {
 				+ (countTotal != null ? "countTotal=" + countTotal + ", " : "")
 				+ (gridType != null ? "gridType=" + gridType + ", " : "")
 				+ (inforParams != null ? "inforParams=" + inforParams + ", " : "")
-				+ (whereParams != null ? "whereParams=" + whereParams + ", " : "")
+				+ (gridFilters != null ? "whereParams=" + gridFilters + ", " : "")
 				+ (sortParams != null ? "sortParams=" + sortParams + ", " : "")
 				+ (rowCount != null ? "rowCount=" + rowCount + ", " : "")
 				+ (dataspyID != null ? "dataspyID=" + dataspyID + ", " : "")

@@ -17,10 +17,9 @@ import javax.ws.rs.QueryParam;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -56,7 +55,7 @@ public class AutocompleteWOEquipment extends Autocomplete {
 			SimpleGridInput in = prepareInput();
 			in.setFields(Arrays.asList("247", "249")); // 247=equipmentcode,
 														// 249=equipmentdesc
-			in.getWhereParams().put("equipmentcode", new WhereParameter(code.toUpperCase()));
+			in.getGridFilters().add(new GridRequestFilter("equipmentcode", code.toUpperCase(), "BEGINS"));
 			// Result
 			List<Pair> resultList = getGridResults(in);
 			return ok(resultList);
@@ -75,7 +74,7 @@ public class AutocompleteWOEquipment extends Autocomplete {
 		try {
 			// Input
 			SimpleGridInput input = prepareInput();
-			input.getWhereParams().put("equipmentcode", new WhereParameter(OPERATOR.EQUALS, code.trim()));
+			input.getGridFilters().add(new GridRequestFilter("equipmentcode", code.trim(), "EQUALS"));
 			// 247=equipmentcode, 249=equipmentdesc, 9439=departmentCode,
 			// 254=departmentDesc, 250=eqLocationCode, 252=eqLocationDesc,
 			// 397=equipcostcode

@@ -1,9 +1,6 @@
 package ch.cern.cmms.eamlightweb.tools.autocomplete;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -12,9 +9,8 @@ import ch.cern.cmms.eamlightejb.tools.LoggingService;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import org.jboss.logging.Logger.Level;
 
 import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
@@ -32,8 +28,15 @@ public abstract class DropdownValues extends WSHubController {
 	@Inject
 	protected GridUtils gridUtils;
 
+
 	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, String gridType,
 									  List<String> fields, Map<String, String> inforParams) throws InforException {
+
+	 	return loadDropdown(gridId, gridName,  gridDataSpy, gridType, fields, inforParams, null, false);
+	}
+
+	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, String gridType,
+									  List<String> fields, Map<String, String> inforParams, List<GridRequestFilter> gridFilters, Boolean useNative) throws InforException {
 		// List of response
 		List<Pair> response = new LinkedList<>();
 		// Creates simple grid input
@@ -44,10 +47,17 @@ public abstract class DropdownValues extends WSHubController {
 		input.setFields(fields);
 		// Rows to print
 		input.setRowCount("1000");
+		// Use native
+		input.setUseNative(useNative);
+		// Parameter map
+			input.setGridFilters(gridFilters);
+
 		// Add infor params
-		inforParams.forEach((k, v) -> {
-			input.getInforParams().put(k, v);
-		});
+		if (inforParams != null) {
+			inforParams.forEach((k, v) -> {
+				input.getInforParams().put(k, v);
+			});
+		}
 		GridRequestResult res = gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
 
 		/* Get GridController results */
@@ -58,11 +68,10 @@ public abstract class DropdownValues extends WSHubController {
 		// Convert the stream of rows to the List
 		Arrays.stream(res.getRows())
 				.map(row -> Arrays.stream(row.getCell()).filter(cell -> input.getFields().contains(cell.getCol()))
-						.sorted((cell1, cell2) -> input.getFields().indexOf(cell1.getCol())
-								- input.getFields().indexOf(cell2.getCol()))
-						.map(cell -> cell.getContent()).collect(Collectors.joining("#")))
+						.sorted(Comparator.comparing(cell -> input.getFields().indexOf(cell.getCol())))
+						.map(cell -> cell.getContent()).collect(Collectors.toList()))
 				.collect(Collectors.toList()).forEach(element -> response
-						.add(new Pair(element.split("#")[0], element.split("#")[0] + " - " + element.split("#")[1])));
+						.add(new Pair(element.get(0), element.get(1))));
 		return response;
 	}
 

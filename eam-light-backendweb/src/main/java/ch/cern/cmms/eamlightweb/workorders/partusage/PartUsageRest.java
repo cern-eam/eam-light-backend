@@ -25,12 +25,11 @@ import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightejb.workorders.WorkOrderPartUsage;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionType;
@@ -69,7 +68,6 @@ public class PartUsageRest extends WSHubController {
 			input.setRowCount("1000");
 			input.getInforParams().put("storefield", applicationData.getStoreField());
 			input.getInforParams().put("userfunction", applicationData.getUserFunction());
-			input.getWhereParams().put("storecode", new WhereParameter("")); // All
 			input.getSortParams().put("storecode", true); // true=ASC,
 			input.setFields(Arrays.asList("682", "133")); // 682=storecode,
 															// 133=des_text
@@ -109,8 +107,10 @@ public class PartUsageRest extends WSHubController {
 			SimpleGridInput input;
 			if (transaction.startsWith("I")) {// ISSUE
 				input = new SimpleGridInput("183", "LVISSUEBIN", "188");
-				if (bin != null && !bin.isEmpty())
-					input.getWhereParams().put("bincode", new WhereParameter(bin));
+				if (bin != null && !bin.isEmpty()) {
+					input.getGridFilters().add(new GridRequestFilter("bincode", bin, "BEGINS"));
+				}
+
 			} else // RETURN
 				input = new SimpleGridInput("191", "LVRETURNBIN", "196");
 			input.setRowCount("1000");
@@ -165,7 +165,8 @@ public class PartUsageRest extends WSHubController {
 		input.getInforParams().put("partcode", part);
 		input.getInforParams().put("partorg", applicationData.getControlOrg());
 		input.getInforParams().put("userfunction", "SSPART");
-		input.getWhereParams().put("storecode", new WhereParameter(OPERATOR.EQUALS, store));
+		input.getGridFilters().add(new GridRequestFilter("storecode", store, "EQUALS" ));
+
 		if (transaction.startsWith("I")) // ISSUE
 			input.setFields(Arrays.asList("661")); // 661=defaultbin
 		else

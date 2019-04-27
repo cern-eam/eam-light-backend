@@ -15,8 +15,8 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -45,7 +45,7 @@ public class AutocompleteEquipmentPrimarySystem extends Autocomplete {
 	public Response complete(@PathParam("code") String code) {
 		try {
 			SimpleGridInput in = prepareInput();
-			in.getWhereParams().put("equipmentcode", new WhereParameter(code.toUpperCase()));
+			in.getGridFilters().add(new GridRequestFilter("equipmentcode", code.toUpperCase(), "BEGINS"));
 			in.getSortParams().put("equipmentcode", true); // true=ASC, false=DESC
 			return ok(getGridResults(in));
 		} catch (InforException e) {
