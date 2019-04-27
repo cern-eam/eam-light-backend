@@ -16,12 +16,10 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.JOINER;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -49,9 +47,8 @@ public class AutocompleteWOCostCode extends Autocomplete {
 		try {
 			// Input
 			SimpleGridInput in = prepareInput();
-			in.getWhereParams().put("costcode",
-					new WhereParameter(OPERATOR.STARTS_WITH, code.toUpperCase(), JOINER.OR));
-			in.getWhereParams().put("des_text", new WhereParameter(OPERATOR.STARTS_WITH, code.toUpperCase()));
+			in.getGridFilters().add(new GridRequestFilter("costcode", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
+			in.getGridFilters().add(new GridRequestFilter("des_text", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
 			// Result
 			List<Pair> resultList = getGridResults(in);
 			return ok(resultList);

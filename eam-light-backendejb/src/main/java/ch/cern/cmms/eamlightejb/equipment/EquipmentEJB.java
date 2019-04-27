@@ -35,40 +35,6 @@ public class EquipmentEJB {
 
 	}
 
-	/**
-	 * Loads the statuses for the equipment objects
-	 * 
-	 * @param poldstat
-	 *            Current status of the equipment
-	 * @param puser
-	 *            User executing the action
-	 * @param porggroup
-	 *            group of the user
-	 * @param planguage
-	 *            Language
-	 * @param pfunrentity
-	 *            Entity to be loaded
-	 * @param newEquipment
-	 *            Indicator to know if it is a new equipment or an existing one
-	 * @return List of the possible statuses for a given equipment
-	 */
-	public List<EquipmentStatus> getEquipmentStatuses(InforContext inforContext, String poldstat, String planguage,
-													  String pfunrentity, boolean newEquipment) throws InforException {
-		String puser = inforContext.getCredentials().getUsername();
-		String porggroup = userTools.getUserGroup(inforContext);
-		List<EquipmentStatus> result;
-		if (newEquipment)
-			result = em.createNamedQuery(EquipmentStatus.GET_STATUSES_FOR_EQUIPMENT_NEW, EquipmentStatus.class)
-					.setParameter("poldstat", poldstat).setParameter("puser", puser)
-					.setParameter("porggroup", porggroup).setParameter("planguage", planguage)
-					.setParameter("pfunrentity", pfunrentity).getResultList();
-		else
-			result = em.createNamedQuery(EquipmentStatus.GET_STATUSES_FOR_EQUIPMENT_EXT, EquipmentStatus.class)
-					.setParameter("poldstat", poldstat).setParameter("puser", puser)
-					.setParameter("porggroup", porggroup).setParameter("planguage", planguage)
-					.setParameter("pfunrentity", pfunrentity).getResultList();
-		return result;
-	}
 
 	public List<EquipmentChildren> getEquipmentChildren(String equipment) {
 		return em.createNamedQuery(EquipmentChildren.GET_EQUIPMENT_CHILDREN, EquipmentChildren.class)

@@ -13,10 +13,8 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.JOINER;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -44,8 +42,9 @@ public class AutocompleteBOOEmployee extends Autocomplete {
 	@Consumes("application/json")
 	public Response complete(@PathParam("code") String code) {
 		SimpleGridInput in = prepareInput();
-		in.getWhereParams().put("personcode", new WhereParameter(OPERATOR.STARTS_WITH, code.toUpperCase(), JOINER.OR));
-		in.getWhereParams().put("description", new WhereParameter(OPERATOR.CONTAINS, code.toUpperCase()));
+		in.getGridFilters().add(new GridRequestFilter("personcode", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
+		in.getGridFilters().add(new GridRequestFilter("description", code.toUpperCase(), "CONTAINS" ));
+
 		in.getSortParams().put("description", true);
 		try {
 			return ok(getGridResults(in));

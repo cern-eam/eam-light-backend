@@ -13,9 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.JOINER;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -47,15 +46,15 @@ public class AutocompleteEmployee extends Autocomplete {
 		try {
 			// Input
 			SimpleGridInput in = prepareInput();
-			in.getWhereParams().put("personcode",
-					new WhereParameter(OPERATOR.STARTS_WITH, code.toUpperCase(), JOINER.OR));
+			in.getGridFilters().add(new GridRequestFilter("personcode", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR));
+
 			try {
 				Integer.valueOf(code.toUpperCase());
-				in.getWhereParams().put("udfnum02", new WhereParameter(OPERATOR.EQUALS, code.toUpperCase(), JOINER.OR));
+				in.getGridFilters().add(new GridRequestFilter("udfnum02", code.toUpperCase(), "EQUALS", GridRequestFilter.JOINER.OR));
 			} catch (Exception e) {
 			}
-			in.getWhereParams().put("description",
-					new WhereParameter(OPERATOR.CONTAINS, code.toUpperCase().replace(" ", "%")));
+
+			in.getGridFilters().add(new GridRequestFilter("description", code.toUpperCase(), "CONTAINS"));
 			//Sort
 			in.getSortParams().put("description", true); // true=ASC, false=DESC
 			// Result

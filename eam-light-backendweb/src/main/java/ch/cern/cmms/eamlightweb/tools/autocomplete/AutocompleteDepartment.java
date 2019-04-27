@@ -12,8 +12,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -41,7 +41,7 @@ public class AutocompleteDepartment extends Autocomplete {
 		try {
 			// Input
 			SimpleGridInput in = prepareInput();
-			in.getWhereParams().put("department", new WhereParameter(OPERATOR.CONTAINS, code.toUpperCase()));
+			in.getGridFilters().add(new GridRequestFilter("department", code.toUpperCase(), "CONTAINS"));
 			in.getSortParams().put("department", true); // true=ASC, false=DESC
 			// Result
 			return  ok(getGridResults(in));

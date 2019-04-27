@@ -22,11 +22,9 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.JOINER;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.WhereParameter.OPERATOR;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -64,11 +62,11 @@ public class AutocompletePUAsset extends Autocomplete {
 			return ok(resultList);
 		}
 		try {
-			input.getWhereParams().put("equipmentno", new WhereParameter(code.toUpperCase(), JOINER.AND));
+			input.getGridFilters().add(new GridRequestFilter("equipmentno", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.AND));
 			if (issuereturn.startsWith("I")) // ISSUE
-				input.getWhereParams().put("store", new WhereParameter(OPERATOR.EQUALS, store));
+				input.getGridFilters().add(new GridRequestFilter("store", store, "EQUALS"));
 			else { // RETURN
-				input.getWhereParams().put("store", new WhereParameter(OPERATOR.IS_EMPTY));
+				input.getGridFilters().add(new GridRequestFilter("store", "", "IS_EMPTY"));
 			}
 			input.setQueryTimeout(5500);
 			// Result
@@ -92,12 +90,13 @@ public class AutocompletePUAsset extends Autocomplete {
 			// Response map
 			Map<String, String> respMap = new HashMap<>();
 			SimpleGridInput input = prepareInputForPartForAsset();
-			input.getWhereParams().put("equipmentno",
-					new WhereParameter(OPERATOR.EQUALS, assetCode.toUpperCase(), JOINER.AND));
+			input.getGridFilters().add(new GridRequestFilter("equipmentno", assetCode.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.AND));
+
 			if (issuereturn.startsWith("I")) { // ISSUE
-				input.getWhereParams().put("store", new WhereParameter(OPERATOR.EQUALS, store.toUpperCase()));
+				input.getGridFilters().add(new GridRequestFilter("store", store.toUpperCase(), "EQUALS"));
+
 			} else { // RETURN
-				input.getWhereParams().put("store", new WhereParameter(OPERATOR.IS_EMPTY));
+				input.getGridFilters().add(new GridRequestFilter("store", store.toUpperCase(), "IS_EMPTY"));
 			}
 			input.setFields(Arrays.asList("247", "383", "401", "399", "400")); // 247=equipmentno,
 																				// 383=equipmentdesc,
@@ -117,7 +116,7 @@ public class AutocompletePUAsset extends Autocomplete {
 
 				// get the part description
 				input = prepareInputForPart(store, workOrder);
-				input.getWhereParams().put("partcode", new WhereParameter(OPERATOR.EQUALS, dscs.get(2).toUpperCase()));
+				input.getGridFilters().add(new GridRequestFilter("partcode", dscs.get(2).toUpperCase(), "EQUALS"));
 				input.setFields(Arrays.asList("140", "103", "141")); // 140=partcode,
 																		// 103=partdescription,
 																		// 141=partorganization
