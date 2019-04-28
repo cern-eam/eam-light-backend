@@ -35,17 +35,17 @@ public class EquipmentLists extends DropdownValues {
 	@Path("/statuscodes")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp) throws InforException {
+	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp, @QueryParam("oldStatusCode") String oldStatusCode) throws InforException {
 		GridDataspy dataspy = getDefaultDataSpy("813", "LOV");
 		List<GridRequestFilter> gridFilters = new LinkedList<>();
 		gridFilters.add(new GridRequestFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, "true", null));
-		gridFilters.add(new GridRequestFilter("usergroupcode", "*", "=", GridRequestFilter.JOINER.AND, null, "true"));
+		gridFilters.add(new GridRequestFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, "true"));
 		gridFilters.add(new GridRequestFilter("entity", "OBJ", "=", GridRequestFilter.JOINER.AND));
 
 		if (neweqp) {
 			gridFilters.add(new GridRequestFilter("fromstatus", "-", "="));
 		} else {
-			gridFilters.add(new GridRequestFilter("fromstatus", "I", "="));
+			gridFilters.add(new GridRequestFilter("fromstatus", oldStatusCode, "="));
 		}
 		return ok(loadDropdown("813", "BSAUTH_HDR", dataspy.getCode(), "LOV", Arrays.asList("3580", "3581"), null, gridFilters, true));
 	}
