@@ -31,14 +31,28 @@ public abstract class DropdownValues extends WSHubController {
 
 	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, String gridType,
 									  List<String> fields, Map<String, String> inforParams) throws InforException {
-
 	 	return loadDropdown(gridId, gridName,  gridDataSpy, gridType, fields, inforParams, null, false);
 	}
 
 	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, String gridType,
 									  List<String> fields, Map<String, String> inforParams, List<GridRequestFilter> gridFilters, Boolean useNative) throws InforException {
-		// List of response
-		List<Pair> response = new LinkedList<>();
+		GridRequestResult result = loadGridRequestResult(gridId, gridName, gridDataSpy, gridType, fields, inforParams, gridFilters, useNative);
+		return convertToPairs(fields, result);
+	}
+
+	protected GridDataspy getDefaultDataSpy(String gridId, String type) {
+		try {
+			return inforClient.getGridsService().getDefaultDataspy(authenticationTools.getInforContext(), gridId, type);
+		} catch (InforException e) {
+			logging.log(Level.ERROR, e.getMessage());
+		}
+		return null;
+	}
+
+
+	protected GridRequestResult loadGridRequestResult(String gridId, String gridName, String gridDataSpy, String gridType,
+													  List<String> fields, Map<String, String> inforParams, List<GridRequestFilter> gridFilters, Boolean useNative) throws InforException
+	{
 		// Creates simple grid input
 		SimpleGridInput input = new SimpleGridInput(gridId, gridName, gridDataSpy);
 		// GridController Type
@@ -50,7 +64,7 @@ public abstract class DropdownValues extends WSHubController {
 		// Use native
 		input.setUseNative(useNative);
 		// Parameter map
-			input.setGridFilters(gridFilters);
+		input.setGridFilters(gridFilters);
 
 		// Add infor params
 		if (inforParams != null) {
@@ -58,30 +72,16 @@ public abstract class DropdownValues extends WSHubController {
 				input.getInforParams().put(k, v);
 			});
 		}
-		GridRequestResult res = gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
-
-		/* Get GridController results */
-		// For each row
-		// Filter cells with the ids from the fields list
-		// Sort cells using its index in the fields list
-		// Join the cells using '#' as the delimiter
-		// Convert the stream of rows to the List
-		Arrays.stream(res.getRows())
-				.map(row -> Arrays.stream(row.getCell()).filter(cell -> input.getFields().contains(cell.getCol()))
-						.sorted(Comparator.comparing(cell -> input.getFields().indexOf(cell.getCol())))
-						.map(cell -> cell.getContent()).collect(Collectors.toList()))
-				.collect(Collectors.toList()).forEach(element -> response
-						.add(new Pair(element.get(0), element.get(1))));
-		return response;
+		return gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
 	}
 
-	protected GridDataspy getDefaultDataSpy(String gridId, String type) {
-		try {
-			return inforClient.getGridsService().getDefaultDataspy(authenticationTools.getInforContext(), gridId, type);
-		} catch (InforException e) {
-			logging.log(Level.ERROR, e.getMessage());
-		}
-		return null;
+	protected List<Pair> convertToPairs(List<String> fields, GridRequestResult res) {
+		return Arrays.stream(res.getRows())
+				.map(row -> Arrays.stream(row.getCell()).filter(cell -> fields.contains(cell.getCol()))
+						.sorted(Comparator.comparing(cell -> fields.indexOf(cell.getCol())))
+						.map(cell -> cell.getContent()).collect(Collectors.toList()))
+				.map(list -> new Pair(list.get(0), list.get(1)))
+				.collect(Collectors.toList());
 	}
 
 }

@@ -15,11 +15,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightejb.UserTools;
+import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
 import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/eqplists")
@@ -41,13 +43,19 @@ public class EquipmentLists extends DropdownValues {
 		gridFilters.add(new GridRequestFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, "true", null));
 		gridFilters.add(new GridRequestFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, "true"));
 		gridFilters.add(new GridRequestFilter("entity", "OBJ", "=", GridRequestFilter.JOINER.AND));
-
 		if (neweqp) {
 			gridFilters.add(new GridRequestFilter("fromstatus", "-", "="));
 		} else {
 			gridFilters.add(new GridRequestFilter("fromstatus", oldStatusCode, "="));
 		}
-		return ok(loadDropdown("813", "BSAUTH_HDR", dataspy.getCode(), "LOV", Arrays.asList("3580", "3581"), null, gridFilters, true));
+		GridRequestResult gridRequestResult = loadGridRequestResult("813", "BSAUTH_HDR", dataspy.getCode(), "LOV", Arrays.asList("3580", "3581"), null, gridFilters, true);
+		List<Pair> result = convertToPairs(Arrays.asList("3580", "3581"), gridRequestResult);
+		// Extract current status
+		if (gridRequestResult.getRows().length > 0) {
+			//TODO: do not assume the order from the grid ws response
+			result.add(new Pair(gridRequestResult.getRows()[0].getCell()[2].getContent(), gridRequestResult.getRows()[0].getCell()[3].getContent()));
+		}
+		return ok(result);
 	}
 
 	@GET
