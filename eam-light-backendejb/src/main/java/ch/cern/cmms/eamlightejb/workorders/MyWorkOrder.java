@@ -26,7 +26,7 @@ import javax.persistence.NamedNativeQuery;
 				+ " EVT_CREATED, EVT_COMPLETED from r5events where EVT_CODE like :codeParam AND EVT_RTYPE in('JOB','PPM')", resultClass = MyWorkOrder.class),
 		@NamedNativeQuery(name = MyWorkOrder.GET_OBJWOS, query = "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_STATUS, a.EVT_JOBTYPE, a.EVT_OBJECT, a.EVT_DESC,"
 				+ " a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY FROM"
-				+ " R5EVENTS a, R5UCOdES b  WHERE (a.EVT_OBJECT = :objectCode) and a.EVT_RTYPE in('JOB','PPM') AND a.EVT_JOBTYPE != 'EDH' "
+				+ " R5EVENTS a, R5UCOdES b  WHERE (a.EVT_OBJECT = :objectCode) and a.EVT_RTYPE in('JOB','PPM') AND a.EVT_JOBTYPE != 'EDH' AND a.EVT_RSTATUS != 'A' "
 				+ "AND a.EVT_STATUS=b.UCO_CODE AND b.UCO_RENTITY='EVST' order by EVT_CREATED DESC", resultClass = MyWorkOrder.class)
 		})
 public class MyWorkOrder implements Serializable {
