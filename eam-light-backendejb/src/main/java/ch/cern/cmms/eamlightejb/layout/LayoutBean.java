@@ -21,7 +21,7 @@ public class LayoutBean {
 		List<ElementInfo> elements = entityManager.createNamedQuery(ElementInfo.GET_TAB_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).setParameter("entity", entity).setParameter("tabName", tabName)
-				.setParameter("lang", "EN").getResultList();
+				.getResultList();
 		return initElementsMap(elements);
 	}
 
@@ -31,7 +31,7 @@ public class LayoutBean {
 		List<ElementInfo> elements = entityManager.createNamedQuery(ElementInfo.GET_TAB_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).setParameter("entity", entity).setParameter("tabName", tabName)
-				.setParameter("lang", language).getResultList();
+				.getResultList();
 		return initElementsMap(elements);
 	}
 
@@ -58,14 +58,14 @@ public class LayoutBean {
 		List<ElementInfo> elements = entityManager
 				.createNamedQuery(ElementInfo.GET_RECORD_VIEW_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
-				.setParameter("userGroup", userGroup).setParameter("entity", entity).setParameter("lang", language)
+				.setParameter("userGroup", userGroup).setParameter("entity", entity)
 				.getResultList();
 		return initElementsMap(elements);
 	}
 
 	public Map<String, ElementInfo> getCustomFieldElements(String classCode, String entity, String language) {
 		List<ElementInfo> elements = entityManager.createNamedQuery(ElementInfo.GET_CUSTOMFIELDS, ElementInfo.class)
-				.setParameter("classCode", classCode).setParameter("entity", entity).setParameter("lang", language)
+				.setParameter("classCode", classCode).setParameter("entity", entity)
 				.getResultList();
 		return initElementsMap(elements);
 	}

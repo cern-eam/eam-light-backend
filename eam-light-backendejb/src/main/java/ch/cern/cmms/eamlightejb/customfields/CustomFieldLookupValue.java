@@ -38,7 +38,7 @@ import java.io.Serializable;
 				+ " (:lookupType = 'C' AND prv_rentity = :entity AND prv_class = :class) "
 				+ ") order by PRV_VALUE", resultClass = CustomFieldLookupValue.class),
 		@NamedNativeQuery(name = CustomFieldLookupValue.CODEDESC_LOOKUP_VALUES, query = "SELECT PVD_VALUE CODE,"
-				+ "(NVL((SELECT TRA_TEXT FROM U5TRANSLATIONS WHERE TRA_LANGUAGE = :lang and TRA_PAGENAME = :property and UPPER(TRA_ELEMENTID) = UPPER(PVD_VALUE)),NVL(PVD_DESC, PVD_VALUE)))  DESCRIPTION "
+				+ "NVL(PVD_DESC, PVD_VALUE)  DESCRIPTION "
 				+ "from r5propertyvalues, r5pvdescriptions " + "where prv_property = :property "
 				+ "and prv_code is null and pvd_property(+)=prv_property  "
 				+ "and pvd_value(+)=prv_value AND COALESCE(prv_notused, '-') <> '+' AND "

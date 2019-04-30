@@ -34,7 +34,7 @@ public class CustomFieldsBean {
 		List<CustomFieldLookupValue> types = em
 				.createNamedQuery(CustomFieldLookupValue.CODEDESC_LOOKUP_VALUES, CustomFieldLookupValue.class)
 				.setParameter("property", property).setParameter("lookupType", lookupType)
-				.setParameter("entity", entity).setParameter("class", classCode).setParameter("lang", "EN")
+				.setParameter("entity", entity).setParameter("class", classCode)
 				.getResultList();
 		return types;
 	}
@@ -44,7 +44,7 @@ public class CustomFieldsBean {
 		List<CustomFieldLookupValue> types = em
 				.createNamedQuery(CustomFieldLookupValue.CODEDESC_LOOKUP_VALUES, CustomFieldLookupValue.class)
 				.setParameter("property", property).setParameter("lookupType", lookupType)
-				.setParameter("entity", entity).setParameter("class", classCode).setParameter("lang", language)
+				.setParameter("entity", entity).setParameter("class", classCode)
 				.getResultList();
 		return types;
 	}
