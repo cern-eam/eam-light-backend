@@ -40,7 +40,7 @@ public class LayoutBean {
 		List<ElementInfo> elements = entityManager
 				.createNamedQuery(ElementInfo.GET_RECORD_VIEW_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
-				.setParameter("userGroup", userGroup).setParameter("entity", entity).setParameter("lang", "EN")
+				.setParameter("userGroup", userGroup).setParameter("entity", entity)
 				.getResultList();
 		return initElementsMap(elements);
 	}
