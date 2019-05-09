@@ -7,8 +7,8 @@ The docker image needs to be parametrized with the following environment variabl
 
 | Variable        | Required?  | Default value |
 | ------------- | -----:|---------:|
-| INFOR_WS_URL           | **Yes** |  |
-| INFOR_TENANT         | **Yes** |  |
+| EAMLIGHT_INFOR_WS_URL           | **Yes** |  |
+| EAMLIGHT_INFOR_TENANT         | **Yes** |  |
 | DB_CONNECTION_URL   | **Yes** |  |
 | DB_DRIVER_CLASS   | **Yes** |  |
 | DB_USERNAME   | **Yes** |  |
@@ -20,14 +20,12 @@ The docker image needs to be parametrized with the following environment variabl
 | DB_VALID_CONNECTION_CHECKER   | No |  |
 | DB_STALE_CONNECTION_CHECKER   | No |  |
 | DB_EXCEPTION_SORTER   | No |  |
-| INFOR_ORGANIZATION         | No |  |
 
 You can for instance store your environment variables in a dedicated .env file:
 
 ```
-INFOR_WS_URL=<url>
-INFOR_TENANT=<tenant>
-INFOR_ORGANIZATION=<organization-code>
+EAMLIGHT_INFOR_WS_URL=<url>
+EAMLIGHT_INFOR_TENANT=<tenant>
 DB_CONNECTION_URL=<db-url>
 DB_DRIVER_CLASS=oracle.jdbc.OracleDriver
 DB_USERNAME=<db-username>
