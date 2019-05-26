@@ -44,6 +44,7 @@ public class AutocompletePUPart extends Autocomplete {
 		input.getInforParams().put("control.org", applicationData.getControlOrg());
 		input.getInforParams().put("multiequipwo", applicationData.getMultiEquipmentWO());
 		input.getInforParams().put("store_code", store);
+		input.getInforParams().put("parameter.excludeparentpart", "false");
 		input.getInforParams().put("relatedworkordernum", workorder);
 		input.setFields(Arrays.asList("140", "103")); // 140=partcode,
 														// 103=partdescription
@@ -51,10 +52,8 @@ public class AutocompletePUPart extends Autocomplete {
 		code = code.trim().replaceAll("%", "");
 		try {
 			input.getGridFilters().add(new GridRequestFilter("partcode", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR));
-
 			if (code.length() > 3)
 				input.getGridFilters().add(new GridRequestFilter("partdescription", code, "CONTAINS", GridRequestFilter.JOINER.OR));
-
 
 			input.getGridFilters().add(new GridRequestFilter("udfchar01", code, "BEGINS", GridRequestFilter.JOINER.OR));
 
@@ -62,12 +61,12 @@ public class AutocompletePUPart extends Autocomplete {
 			input.getGridFilters().add(new GridRequestFilter("udfchar03", code, "BEGINS", GridRequestFilter.JOINER.OR));// CDD
 																										// Drawing
 																										// Reference
-			input.getGridFilters().add(new GridRequestFilter("udfchar11", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR));// EDMS:
+			input.getGridFilters().add(new GridRequestFilter("udfchar11", code.toUpperCase(), "BEGINS"));// EDMS:
 																								// "Item
 																								// ID"
 																								// (References
 																								// t_master_dat.PART_ID)
-
+			input.setUseNative(true);
 			input.setQueryTimeout(5500);
 
 			return ok(getGridResults(input));

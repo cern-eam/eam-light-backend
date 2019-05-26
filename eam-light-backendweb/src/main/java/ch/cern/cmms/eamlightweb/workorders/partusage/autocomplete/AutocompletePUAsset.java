@@ -62,7 +62,7 @@ public class AutocompletePUAsset extends Autocomplete {
 			return ok(resultList);
 		}
 		try {
-			input.getGridFilters().add(new GridRequestFilter("equipmentno", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.AND));
+			input.getGridFilters().add(new GridRequestFilter("equipmentno", code.toUpperCase(), "CONTAINS", GridRequestFilter.JOINER.AND));
 			if (issuereturn.startsWith("I")) // ISSUE
 				input.getGridFilters().add(new GridRequestFilter("store", store, "EQUALS"));
 			else { // RETURN
