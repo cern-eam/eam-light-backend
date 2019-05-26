@@ -345,7 +345,7 @@ public class EquipmentReplacementService {
         Equipment oldEquipment = new Equipment();
         oldEquipment.setCode(oldEquipmentCode);
         oldEquipment.setStateCode("DEF");
-        oldEquipment.setStatusCode("IREP");
+        oldEquipment.setStatusCode("IRP");
         try {
             inforClient.getEquipmentFacadeService().updateEquipmentBatch(inforContext, Arrays.asList(oldEquipment, newEquipment));
         } catch (InforException inforException) {
