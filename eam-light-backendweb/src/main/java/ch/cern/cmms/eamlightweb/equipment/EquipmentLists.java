@@ -19,6 +19,7 @@ import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
 import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
+import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
@@ -28,8 +29,8 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class EquipmentLists extends DropdownValues {
 
-	@EJB
-	private WorkOrdersEJB wosEJB;
+	@Inject
+	private MyWorkOrders myWorkOrders;
 	@Inject
 	private UserTools userTools;
 
@@ -79,7 +80,7 @@ public class EquipmentLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readEqpWorkOrders(@PathParam("eqpcode") String eqpcode) {
 		try {
-			return ok(wosEJB.getObjectWorkOrders(eqpcode));
+			return ok(myWorkOrders.getObjectWorkOrders(eqpcode));
 		} catch(Exception e) {
 			return serverError(e);
 		}
