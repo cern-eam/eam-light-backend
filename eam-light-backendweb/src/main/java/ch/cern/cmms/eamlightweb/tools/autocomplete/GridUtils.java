@@ -82,7 +82,7 @@ public class GridUtils {
 			}
 
 			if (input.getGridFilters() != null) {
-				gridRequest.setGridRequestFilters(input.getGridFilters().toArray(new GridRequestFilter[input.getGridFilters().size()]));
+				gridRequest.setGridRequestFilters(input.getGridFilters());
 			}
 
 			setIfUseNative(gridRequest, input.getUseNative());

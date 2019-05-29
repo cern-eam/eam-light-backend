@@ -33,6 +33,7 @@ import ch.cern.cmms.eamlightejb.equipment.PartAssociated;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.layout.ElementInfo;
 import ch.cern.cmms.eamlightejb.layout.LayoutBean;
@@ -71,6 +72,8 @@ public class EquipmentRest extends WSHubController {
 	private Tools tools;
 	@EJB
 	private UserTools userTools;
+	@Inject
+	private MyWorkOrders myWorkOrders;
 
 	@GET
 	@Path("/")
@@ -162,7 +165,7 @@ public class EquipmentRest extends WSHubController {
 	@Produces("application/json")
 	public Response getEquipmentWorkOrders(@QueryParam("c") String equipmentCode) {
 		try {
-			return ok(wosEJB.getObjectWorkOrders(equipmentCode));
+			return ok(myWorkOrders.getObjectWorkOrders(equipmentCode));
 		} catch(Exception e) {
 			return serverError(e);
 		}

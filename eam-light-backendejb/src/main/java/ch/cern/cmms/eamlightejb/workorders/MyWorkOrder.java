@@ -9,60 +9,34 @@ import javax.persistence.Id;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 
-@Entity
-@NamedNativeQueries({
-	
-		@NamedNativeQuery(name = MyWorkOrder.GET_MY_OPEN_WOS, query = "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_OBJECT, a.EVT_DESC, a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY, a.EVT_STATUS, a.EVT_JOBTYPE  "
-				+ "FROM R5EVENTS a, R5UCOdES b, R5PERSONNEL c, R5OBJECTS d  "
-				+ "WHERE a.EVT_STATUS=b.UCO_CODE AND b.UCO_RENTITY='EVST' " + "AND a.EVT_PERSON = c.PER_CODE "
-				+ "AND a.EVT_RSTATUS NOT IN('C','A') AND c.PER_USER = :user "
-				+ "AND d.OBJ_CODE = a.EVT_OBJECT AND a.EVT_RTYPE in('JOB','PPM') AND rownum < 5001 order by EVT_TARGET", resultClass = MyWorkOrder.class),
-		@NamedNativeQuery(name = MyWorkOrder.GET_MY_TEAMS_WOS, query = "SELECT * FROM (  "
-				+ "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_OBJECT, a.EVT_DESC, a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY, a.EVT_STATUS, a.EVT_JOBTYPE, ROWNUM RNUM  "
-				+ "FROM R5EVENTS a, R5UCODES b, R5USERS c     "
-				+ "WHERE a.EVT_STATUS=b.UCO_CODE AND b.UCO_RENTITY='EVST'    "
-				+ "AND a.EVT_MRC in (:departments) AND a.EVT_RSTATUS NOT IN('C','A') AND c.USR_CODE = :user AND a.EVT_RTYPE in('JOB','PPM')) WHERE rnum < 5001 order by EVT_TARGET", resultClass = MyWorkOrder.class),
-		@NamedNativeQuery(name = MyWorkOrder.GET_WOS, query = "select EVT_CODE, EVT_DESC, EVT_OBJECT, EVT_MRC, EVT_RTYPE, null as UCO_DESC, EVT_TARGET, EVT_SCHEDEND,"
-				+ " EVT_CREATED, EVT_COMPLETED from r5events where EVT_CODE like :codeParam AND EVT_RTYPE in('JOB','PPM')", resultClass = MyWorkOrder.class),
-		@NamedNativeQuery(name = MyWorkOrder.GET_OBJWOS, query = "SELECT a.EVT_CODE, b.UCO_DESC, a.EVT_STATUS, a.EVT_JOBTYPE, a.EVT_OBJECT, a.EVT_DESC,"
-				+ " a.EVT_MRC, a.EVT_RTYPE, a.EVT_TARGET, a.EVT_SCHEDEND, a.EVT_CREATED, a.EVT_COMPLETED, a.EVT_PRIORITY FROM"
-				+ " R5EVENTS a, R5UCOdES b  WHERE (a.EVT_OBJECT = :objectCode) and a.EVT_RTYPE in('JOB','PPM') AND a.EVT_JOBTYPE != 'EDH' AND a.EVT_RSTATUS != 'A' "
-				+ "AND a.EVT_STATUS=b.UCO_CODE AND b.UCO_RENTITY='EVST' order by EVT_CREATED DESC", resultClass = MyWorkOrder.class)
-		})
 public class MyWorkOrder implements Serializable {
 
-	public static final String GET_MY_OPEN_WOS = "WorkOrder.GET_MY_OPEN_WOS";
-	public static final String GET_MY_TEAMS_WOS = "WorkOrder.GET_MY_TEAMS_WOS";
-	public static final String GET_WOS = "WorkOrder.GET_WOS";
-	public static final String GET_OBJWOS = "WorkOrder.GET_OBJWOS";
 
-	@Id
-	@Column(name = "EVT_CODE")
 	private String number;
-	@Column(name = "EVT_DESC")
 	private String desc;
-	@Column(name = "UCO_DESC")
 	private String status;
-	@Column(name="EVT_STATUS")
 	private String statusCode;
-	@Column(name="EVT_JOBTYPE")
 	private String jobType;
-	@Column(name = "EVT_OBJECT")
 	private String object;
-	@Column(name = "EVT_MRC")
 	private String mrc;
-	@Column(name = "EVT_RTYPE")
 	private String type;
-	@Column(name = "EVT_PRIORITY")
 	private String priority;
-	@Column(name = "EVT_SCHEDEND")
 	private Date schedulingEndDate;
-	@Column(name = "EVT_TARGET")
 	private Date schedulingStartDate;
-	@Column(name = "EVT_CREATED")
 	private Date createdDate;
-	@Column(name = "EVT_COMPLETED")
 	private Date completedDate;
+
+	public MyWorkOrder() {}
+
+	public MyWorkOrder(String number, String desc, String object, String status, String department, Date schedulingStartDate, Date schedulingEndDate) {
+		this.number = number;
+		this.desc = desc;
+		this.object = object;
+		this.status = status;
+		this.mrc = department;
+		this.schedulingStartDate = schedulingStartDate;
+		this.schedulingEndDate = schedulingEndDate;
+	}
 
 	public String getNumber() {
 		return number;
@@ -203,5 +177,24 @@ public class MyWorkOrder implements Serializable {
 		}
 
 		return "ALL";
+	}
+
+	@Override
+	public String toString() {
+		return "MyWorkOrder{" +
+				"completedDate=" + completedDate +
+				", createdDate=" + createdDate +
+				", desc='" + desc + '\'' +
+				", jobType='" + jobType + '\'' +
+				", mrc='" + mrc + '\'' +
+				", number='" + number + '\'' +
+				", object='" + object + '\'' +
+				", priority='" + priority + '\'' +
+				", schedulingEndDate=" + schedulingEndDate +
+				", schedulingStartDate=" + schedulingStartDate +
+				", status='" + status + '\'' +
+				", statusCode='" + statusCode + '\'' +
+				", type='" + type + '\'' +
+				'}';
 	}
 }
