@@ -6,10 +6,9 @@ import java.util.Optional;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
+import ch.cern.eam.wshub.core.client.InforClient;
 import org.jboss.logging.Logger.Level;
 
 import ch.cern.cmms.eamlightejb.tools.LoggingService;
@@ -21,9 +20,9 @@ import ch.cern.cmms.eamlightejb.tools.LoggingService;
 @LocalBean
 public class PartsEJB {
 
-	@PersistenceContext
-	private EntityManager em;
-	
+	@Inject
+	private InforClient inforClient;
+
     @Inject
     private LoggingService logger;
 
@@ -31,7 +30,7 @@ public class PartsEJB {
 	// PartStock
 	//
 	public List<PartStock> getPartStock(String code, String user) {
-		return em.createNamedQuery(PartStock.STOCK_PARTSTOCK, PartStock.class).setParameter("part_code", code)
+		return inforClient.getTools().getEntityManager().createNamedQuery(PartStock.STOCK_PARTSTOCK, PartStock.class).setParameter("part_code", code)
 				.setParameter("eamUser", user).getResultList();
 	}
 	
@@ -51,7 +50,7 @@ public class PartsEJB {
 		
 		String newPartCode = null; 
         try {
-        	newPartCode = (String) em.createNativeQuery(GET_NEXT_PART_CODE)
+        	newPartCode = (String) inforClient.getTools().getEntityManager().createNativeQuery(GET_NEXT_PART_CODE)
                     .setParameter("prefixcode", prefixcode)
                     .getSingleResult();
         } catch (NoResultException exception) {

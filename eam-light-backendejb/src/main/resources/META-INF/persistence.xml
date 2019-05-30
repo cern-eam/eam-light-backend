@@ -31,5 +31,8 @@
 		<class>ch.cern.cmms.eamlightejb.layout.TabInfo</class>
 		<class>ch.cern.cmms.eamlightejb.tools.entities.Property</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="jboss.entity.manager.factory.jndi.name" value="java:jboss/eamLightEntityManagerFactory" />
+		</properties>
 	</persistence-unit>
 </persistence>

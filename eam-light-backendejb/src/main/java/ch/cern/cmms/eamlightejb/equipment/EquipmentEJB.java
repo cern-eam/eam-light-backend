@@ -8,25 +8,17 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import ch.cern.cmms.eamlightejb.UserTools;
+import javax.inject.Inject;
 import ch.cern.cmms.eamlightejb.equipment.tools.GraphNode;
-import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.client.InforClient;
 
-/**
- * Session Bean implementation class EquipmentEJB
- */
+
 @Stateless
 @LocalBean
 public class EquipmentEJB {
 
-	@PersistenceContext
-	private EntityManager em;
-    @EJB
-	private UserTools userTools;
+	@Inject
+	private InforClient inforClient;
 
 	/**
 	 * Default constructor.
@@ -35,15 +27,14 @@ public class EquipmentEJB {
 
 	}
 
-
 	public List<EquipmentChildren> getEquipmentChildren(String equipment) {
-		return em.createNamedQuery(EquipmentChildren.GET_EQUIPMENT_CHILDREN, EquipmentChildren.class)
+		return inforClient.getTools().getEntityManager().createNamedQuery(EquipmentChildren.GET_EQUIPMENT_CHILDREN, EquipmentChildren.class)
 				.setParameter("equipment", equipment).getResultList();
 	}
 
 	public List<GraphNode> getEquipmentStructureTree(String equipment) {
 		// fetch nodes info
-		List<EquipmentTreeNode> result = em.createNamedQuery(EquipmentTreeNode.GET_TREE, EquipmentTreeNode.class)
+		List<EquipmentTreeNode> result = inforClient.getTools().getEntityManager().createNamedQuery(EquipmentTreeNode.GET_TREE, EquipmentTreeNode.class)
 				.setParameter("equipment", equipment) 
 				.getResultList();
 		
@@ -101,7 +92,7 @@ public class EquipmentEJB {
 		if(rootNodes != null && rootNodes.size()>0) {
 			// if it is not a Location, then we fetch its parents
 			if(!rootNodes.get(0).getType().equals("L")) {
-				List<EquipmentChildren> parents = em.createNamedQuery(EquipmentChildren.GET_EQUIPMENT_PARENTS, EquipmentChildren.class)
+				List<EquipmentChildren> parents = inforClient.getTools().getEntityManager().createNamedQuery(EquipmentChildren.GET_EQUIPMENT_PARENTS, EquipmentChildren.class)
 						.setParameter("equipment", equipment).getResultList();
 			
 				rootNodes.get(0).setParents(parents);
