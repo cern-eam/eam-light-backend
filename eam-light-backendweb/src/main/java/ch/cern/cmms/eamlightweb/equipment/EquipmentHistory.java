@@ -1,4 +1,4 @@
-package ch.cern.cmms.eamlightejb.workorders;
+package ch.cern.cmms.eamlightweb.equipment;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
 
@@ -12,33 +12,16 @@ import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-@Entity
-@NamedNativeQueries({
-		@NamedNativeQuery(name = EquipmentHistory.GET_OBJHISTORY, query = "SELECT EVT_CODE, EVT_OBJECT, DESCRIPTION, " +
-				"RELATED_OBJECT, EVT_COMPLETED, EVT_ENTEREDBY, EVT_TYPE, EVT_JOBTYPE FROM CERN_VW_WO_HISTORY " +
-				"WHERE evt_object =  :objectCode ", resultClass = EquipmentHistory.class)})
 public class  EquipmentHistory  implements Serializable {
 
-	public static final String GET_OBJHISTORY = "EquipmentHistory.GET_OBJHISTORY";
-
-	@Id
-	@Column(name = "EVT_CODE")
 	private String number;
-	@Column(name = "DESCRIPTION")
 	private String desc;
-	@Column(name = "EVT_OBJECT")
 	private String object;
-	@Column(name = "RELATED_OBJECT")
 	private String relatedObject;
-	@Column(name = "EVT_COMPLETED")
 	private Date completedDate;
-	@Column(name = "EVT_ENTEREDBY")
 	private String enteredBy;
-	@Column(name = "EVT_TYPE")
 	private String type;
-	@Column(name = "EVT_JOBTYPE")
 	private String jobType;
-
 
 	public String getNumber() {
 		return number;
@@ -71,7 +54,6 @@ public class  EquipmentHistory  implements Serializable {
 	public void setRelatedObject(String relatedObject) {
 		this.relatedObject = relatedObject;
 	}
-
 
 	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getCompletedDate() {

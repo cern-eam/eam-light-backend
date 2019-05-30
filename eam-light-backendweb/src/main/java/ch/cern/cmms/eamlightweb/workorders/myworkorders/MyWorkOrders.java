@@ -1,18 +1,15 @@
 package ch.cern.cmms.eamlightweb.workorders.myworkorders;
 
-import ch.cern.cmms.eamlightejb.workorders.MyWorkOrder;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequestScoped
 public class MyWorkOrders {
@@ -62,7 +59,7 @@ public class MyWorkOrders {
         map.put("279", "number"); // wo number
         map.put("757", "desc"); // description
         map.put("5", "object");   // equipment code
-        map.put("16", "statusCode");  // status
+        map.put("16", "status");  // status
         map.put("9", "mrc");   // department
         map.put("19", "schedulingStartDate");  // scheduled start date
         map.put("426", "schedulingEndDate"); // scheduled end date

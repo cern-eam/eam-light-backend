@@ -22,7 +22,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import ch.cern.cmms.eamlightejb.UserTools;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
@@ -48,8 +47,6 @@ public class WorkOrderRest extends WSHubController {
 	private ApplicationData applicationData;
 	@EJB
 	private LayoutBean layoutBean;
-	@EJB
-	private WorkOrdersEJB wosEJB;
 	@Inject
 	private Tools tools;
 	@EJB

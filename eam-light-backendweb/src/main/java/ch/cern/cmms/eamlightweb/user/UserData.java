@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.cmms.eamlightejb.layout.ScreenInfo;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
 import org.jboss.logging.Logger;
