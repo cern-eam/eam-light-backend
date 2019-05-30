@@ -14,9 +14,6 @@ import java.util.Map;
 @RequestScoped
 public class Tools {
 
-	@Resource
-	private DataSource datasource;
-
 	public static boolean isEmpty(String value) {
 		return value == null || value.trim().equals("");
 	}

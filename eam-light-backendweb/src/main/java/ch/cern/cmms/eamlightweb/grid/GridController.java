@@ -22,8 +22,6 @@ import java.util.Arrays;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class GridController extends WSHubController {
 
-	@Resource
-	private DataSource datasource;
 	@Inject
 	private InforClient inforClient;
 	@Inject

@@ -1,13 +1,14 @@
 package ch.cern.cmms.eamlightejb.index;
 
+import ch.cern.eam.wshub.core.client.InforClient;
+
 import java.util.List;
 import java.util.StringJoiner;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 /**
  * Session Bean implementation class IndexEJB
@@ -16,8 +17,8 @@ import javax.persistence.PersistenceContext;
 @LocalBean
 public class IndexEJB {
 
-	@PersistenceContext
-	private EntityManager em;
+	@Inject
+	private InforClient inforClient;
 
 	/**
 	 * Default constructor.
@@ -35,7 +36,7 @@ public class IndexEJB {
 		String query = indexQueryBuilder(woScreenAccess, assetScreenAccess, positionScreenAccess, systemScreenAccess,
 				partScreenAccess);
 		@SuppressWarnings("unchecked")
-		List<IndexResult> results = em.createNativeQuery(query, IndexResult.class).setParameter("hint", hint + "%")
+		List<IndexResult> results = inforClient.getTools().getEntityManager().createNativeQuery(query, IndexResult.class).setParameter("hint", hint + "%")
 				.setParameter("activeUser", userCode).getResultList();
 		// Reyurn results
 		return results;
@@ -66,7 +67,7 @@ public class IndexEJB {
 		String query = indexQueryBuilderSingle(woScreenAccess, assetScreenAccess, positionScreenAccess,
 				systemScreenAccess, partScreenAccess);
 		try {
-			IndexResult result = (IndexResult) em.createNativeQuery(query, IndexResult.class).setParameter("hint", hint)
+			IndexResult result = (IndexResult) inforClient.getTools().getEntityManager().createNativeQuery(query, IndexResult.class).setParameter("hint", hint)
 					.setParameter("activeUser", userCode).getSingleResult();
 			// Reyurn results
 			return result;

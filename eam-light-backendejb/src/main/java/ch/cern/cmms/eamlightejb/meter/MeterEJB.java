@@ -1,9 +1,12 @@
 package ch.cern.cmms.eamlightejb.meter;
 
+import ch.cern.eam.wshub.core.client.InforClient;
+
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -12,8 +15,8 @@ import javax.persistence.PersistenceContext;
 @LocalBean
 public class MeterEJB {
 
-	@PersistenceContext
-	private EntityManager em;
+	@Inject
+	private InforClient inforClient;
 	
 	/**
 	 * Default constructor.
@@ -22,14 +25,14 @@ public class MeterEJB {
 	}
 	
 	public List<MeterReadingEntity> getMeterReadings(String woCode) {
-		return em.createNamedQuery(MeterReadingEntity.GET_METER_READINGS, MeterReadingEntity.class)
+		return inforClient.getTools().getEntityManager().createNamedQuery(MeterReadingEntity.GET_METER_READINGS, MeterReadingEntity.class)
 			   .setParameter("workOrderCode", woCode)
 			   .getResultList();
 	}
 	
 	public List<MeterReadingEntity> getMeterReadingsByMeterCode(String meterCode){
 		try {
-			return em.createNamedQuery(MeterReadingEntity.GET_METER_READING_BY_METER_ID, MeterReadingEntity.class)
+			return inforClient.getTools().getEntityManager().createNamedQuery(MeterReadingEntity.GET_METER_READING_BY_METER_ID, MeterReadingEntity.class)
 				   .setParameter("meterCode", meterCode)
 				   .getResultList();
 		} catch(javax.persistence.NoResultException e) {
@@ -39,7 +42,7 @@ public class MeterEJB {
 	
 	public List<MeterReadingEntity> getMeterReadingsByMeterCode(String meterCode, int maxResults){
 		try {
-			return em.createNamedQuery(MeterReadingEntity.GET_METER_READING_BY_METER_ID, MeterReadingEntity.class)
+			return inforClient.getTools().getEntityManager().createNamedQuery(MeterReadingEntity.GET_METER_READING_BY_METER_ID, MeterReadingEntity.class)
 				   .setParameter("meterCode", meterCode)
 				   .setMaxResults(maxResults)
 				   .getResultList();
@@ -49,7 +52,7 @@ public class MeterEJB {
 	}
 	
 	public List<MeterReadingEntity> getMeterReadingsByEquipmentCode(String eqCode) {
-		return em.createNamedQuery(MeterReadingEntity.GET_METER_READINGS_BY_EQ_ID, MeterReadingEntity.class)
+		return inforClient.getTools().getEntityManager().createNamedQuery(MeterReadingEntity.GET_METER_READINGS_BY_EQ_ID, MeterReadingEntity.class)
 			   .setParameter("eqCode", eqCode)
 			   .getResultList();
 	}
@@ -65,7 +68,7 @@ public class MeterEJB {
 		// Check if last value is smaller for normal meter (not up/down meter) having a 'Maximum Value' defined
 		try {
 			String query = "select met_last from R5METERS left join r5objusagedefs on oud_meter = met_code where oud_updownmeter='-' and oud_object = :eqCode and oud_uom = :uom and met_max is not null";
-			Number lastReading = (Number) em.createNativeQuery(query)
+			Number lastReading = (Number) inforClient.getTools().getEntityManager().createNativeQuery(query)
 				   .setParameter("eqCode", eqCode)
 				   .setParameter("uom", uom)
 				   .getSingleResult();

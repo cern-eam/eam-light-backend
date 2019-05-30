@@ -1,7 +1,10 @@
 package ch.cern.cmms.eamlightejb.layout;
 
+import ch.cern.eam.wshub.core.client.InforClient;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.HashMap;
@@ -12,13 +15,13 @@ import java.util.Map;
 @LocalBean
 public class LayoutBean {
 
-	@PersistenceContext
-	private EntityManager entityManager;
+	@Inject
+	private InforClient inforClient;
 
 	public Map<String, ElementInfo> getTabElements(String masterPageName, String pageName, String tabName,
 			String entity, String userGroup) {
 
-		List<ElementInfo> elements = entityManager.createNamedQuery(ElementInfo.GET_TAB_FIELDS, ElementInfo.class)
+		List<ElementInfo> elements = inforClient.getTools().getEntityManager().createNamedQuery(ElementInfo.GET_TAB_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).setParameter("entity", entity).setParameter("tabName", tabName)
 				.getResultList();
@@ -28,7 +31,7 @@ public class LayoutBean {
 	public Map<String, ElementInfo> getTabElements(String masterPageName, String pageName, String tabName,
 			String entity, String userGroup, String language) {
 
-		List<ElementInfo> elements = entityManager.createNamedQuery(ElementInfo.GET_TAB_FIELDS, ElementInfo.class)
+		List<ElementInfo> elements = inforClient.getTools().getEntityManager().createNamedQuery(ElementInfo.GET_TAB_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).setParameter("entity", entity).setParameter("tabName", tabName)
 				.getResultList();
@@ -37,7 +40,7 @@ public class LayoutBean {
 
 	public Map<String, ElementInfo> getRecordViewElements(String masterPageName, String pageName, String entity,
 			String userGroup) {
-		List<ElementInfo> elements = entityManager
+		List<ElementInfo> elements = inforClient.getTools().getEntityManager()
 				.createNamedQuery(ElementInfo.GET_RECORD_VIEW_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).setParameter("entity", entity)
@@ -47,7 +50,7 @@ public class LayoutBean {
 
 	public Map<String, ElementInfo> getUserDefinedScreenElements(String masterPageName, String pageName,
 			String userGroup) {
-		List<ElementInfo> elements = entityManager.createNamedQuery(ElementInfo.GET_UDS_FIELDS, ElementInfo.class)
+		List<ElementInfo> elements = inforClient.getTools().getEntityManager().createNamedQuery(ElementInfo.GET_UDS_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).getResultList();
 		return initElementsMap(elements);
@@ -55,7 +58,7 @@ public class LayoutBean {
 
 	public Map<String, ElementInfo> getRecordViewElements(String masterPageName, String pageName, String entity,
 			String userGroup, String language) {
-		List<ElementInfo> elements = entityManager
+		List<ElementInfo> elements = inforClient.getTools().getEntityManager()
 				.createNamedQuery(ElementInfo.GET_RECORD_VIEW_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).setParameter("entity", entity)
@@ -64,7 +67,7 @@ public class LayoutBean {
 	}
 
 	public Map<String, ElementInfo> getCustomFieldElements(String classCode, String entity, String language) {
-		List<ElementInfo> elements = entityManager.createNamedQuery(ElementInfo.GET_CUSTOMFIELDS, ElementInfo.class)
+		List<ElementInfo> elements = inforClient.getTools().getEntityManager().createNamedQuery(ElementInfo.GET_CUSTOMFIELDS, ElementInfo.class)
 				.setParameter("classCode", classCode).setParameter("entity", entity)
 				.getResultList();
 		return initElementsMap(elements);
@@ -86,7 +89,7 @@ public class LayoutBean {
 
 	public Map<String, ScreenInfo> getUserScreens(List<String> functionCodes, String userCode) {
 		// Fetch screen
-		List<ScreenInfo> screenList = entityManager.createNamedQuery(ScreenInfo.FETCH_USER_SCREENS, ScreenInfo.class)
+		List<ScreenInfo> screenList = inforClient.getTools().getEntityManager().createNamedQuery(ScreenInfo.FETCH_USER_SCREENS, ScreenInfo.class)
 				.setParameter("functions", functionCodes).setParameter("user", userCode).getResultList();
 		// Convert list to map
 		Map<String, ScreenInfo> screenMap = new HashMap<>();
@@ -115,7 +118,7 @@ public class LayoutBean {
 		if (tabnames == null || tabnames.isEmpty())
 			return new HashMap<>();
 		// Gets the result in a list first
-		List<TabInfo> tabs = entityManager.createNamedQuery(TabInfo.FETCH_TAB_INFO, TabInfo.class)
+		List<TabInfo> tabs = inforClient.getTools().getEntityManager().createNamedQuery(TabInfo.FETCH_TAB_INFO, TabInfo.class)
 				.setParameter("tabnames", tabnames).setParameter("function", userFunction)
 				.setParameter("usergroup", usergroup).getResultList();
 		//
@@ -133,7 +136,7 @@ public class LayoutBean {
 
 	public ScreenInfo getUserDefaultScreen(String functionCode, String userCode) {
 		try {
-			ScreenInfo screenInfo = entityManager
+			ScreenInfo screenInfo = inforClient.getTools().getEntityManager()
 					.createNamedQuery(ScreenInfo.FETCH_USER_DEFAULT_SCREEN, ScreenInfo.class)
 					.setParameter("function", functionCode).setParameter("user", userCode).setFirstResult(0)
 					.setMaxResults(1).getSingleResult();
