@@ -1,7 +1,5 @@
 package ch.cern.cmms.eamlightweb.equipment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,22 +27,17 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
-import ch.cern.cmms.eamlightejb.equipment.PartAssociated;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.layout.ElementInfo;
 import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
+import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/equipment")
@@ -58,8 +51,6 @@ public class EquipmentRest extends WSHubController {
 	private ApplicationData applicationData;
 	@EJB
 	private LayoutBean layoutBean;
-	@Inject
-	private WorkOrdersEJB wosEJB;
 	@Inject
 	private EquipmentEJB equipmentEJB;
 	@Inject
@@ -154,7 +145,21 @@ public class EquipmentRest extends WSHubController {
 	@Produces("application/json")
 	public Response getEquipmentHistory(@QueryParam("c") String equipmentCode) {
 		try {
-			return ok(wosEJB.getObjectHistory(equipmentCode));
+			Map<String, String> map= new HashMap<>();
+			map.put("116660", "number");
+			map.put("116663", "desc");
+			map.put("116656", "object");
+			map.put("116664", "relatedObject");
+			map.put("116658", "completedDate");
+			map.put("116659", "enteredBy");
+			map.put("116657", "type");
+			map.put("116662", "jobType");
+
+			GridRequest gridRequest = new GridRequest(null, "EUMLWH", "145524");
+			gridRequest.getGridRequestFilters().add(new GridRequestFilter("woobject", equipmentCode, "EQUALS", GridRequestFilter.JOINER.AND));
+			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
+					  map,
+					  inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch(Exception e) {
 			return serverError(e);
 		}
@@ -235,91 +240,26 @@ public class EquipmentRest extends WSHubController {
 	public Response getPartsAssociated(@PathParam("parentScreen") String parentScreen,
 			@PathParam("equipment") String equipment) {
 		try {
-			List<PartAssociated> partsAssociated = new ArrayList<>();
-			// Creates simple grid input
-			SimpleGridInput input = new SimpleGridInput("402", "BSPARA", "414");
-			// GridController Type
-			input.setGridType("LIST");
-			// Fields to be retrieved
-			// 1019 papartcode
-			// 1022 description
-			// 1020 quantity
-			// 2207 partuom
-			input.setFields(Arrays.asList("1019", "1022", "1020", "2207"));
-			// Rows to print
-			input.setRowCount("1000");
+			GridRequest gridRequest = new GridRequest("402", "BSPARA", "414");
+			Map<String, String> map = new HashMap<>();
+			map.put("1019", "partCode");
+			map.put("1022", "partDesc");
+			map.put("1020", "quantity");
+			map.put("2207", "uom");
 
-			Map<String, String> inforParams = new HashMap<>();
-			inforParams.put("organization", authenticationTools.getInforContext().getOrganizationCode());
-			inforParams.put("userfunction", parentScreen);
-			inforParams.put("entity", "OBJ");
-			inforParams.put("valuecode", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode());
-			// Add infor params
-			inforParams.forEach((k, v) -> {
-				input.getInforParams().put(k, v);
-			});
-			// Execute grid
-			GridRequestResult res = gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
-			// Process result
-			Arrays.stream(res.getRows()).forEach(row -> partsAssociated.add(processRow(row, input.getFields())));
-			// Final response
-			return ok(partsAssociated);
+			gridRequest.setGridRequestParameterNames(new String[] {"param.entity", "param.valuecode"});
+			gridRequest.setGridRequestParameterValues(new String[] {"OBJ", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode()});
+
+			List<PartAssociated> parts = inforClient.getTools().getGridTools().converGridResultToObject(PartAssociated.class,
+											map,
+											inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+
+			return ok(parts);
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
 			return serverError(e);
 		}
-	}
-
-	/**
-	 * Process result row to create a new Part Association and add it to the result
-	 * list
-	 * 
-	 * @param row
-	 *            Rows to be processed
-	 * @param fields
-	 *            List of the fields to be included in the object
-	 * @return Indicator of row processed
-	 */
-	private PartAssociated processRow(GridRequestRow row, List<String> fields) {
-		// Create new Part Associated
-		PartAssociated part = new PartAssociated();
-		Arrays.stream(row.getCell()).filter(cell -> fields.contains(cell.getCol()))
-				.forEach(cell -> addPropertyToPartAssociations(part, cell));
-		return part;
-	}
-
-	/**
-	 * Add a property to the Part object
-	 * 
-	 * @param part
-	 *            Part object to add the property
-	 * @param cell
-	 *            cell containing the property to be added
-	 * @return Indicator of property added
-	 */
-	private boolean addPropertyToPartAssociations(PartAssociated part, GridRequestCell cell) {
-		// 1019 papartcode
-		// 1022 description
-		// 1020 quantity
-		// 2207 partuom
-		// Check property
-		switch (cell.getCol()) {
-		case "1019":/* papartcode */
-			part.setPartCode(cell.getContent());
-			break;
-		case "1022":/* description */
-			part.setPartDesc(cell.getContent());
-			break;
-		case "1020":/* quantity */
-			part.setQuantity(cell.getContent());
-			break;
-		case "2207":/* partuom */
-			part.setUom(cell.getContent());
-			break;
-		}
-		// Property added
-		return true;
 	}
 
 }

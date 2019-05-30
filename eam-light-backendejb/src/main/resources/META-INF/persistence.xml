@@ -5,13 +5,11 @@
 	<persistence-unit name="asbmgr">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>java:/datasources/asbmgrDS</jta-data-source>
-		<class>ch.cern.cmms.eamlightejb.workorders.EquipmentHistory</class>
 		<class>ch.cern.eam.wshub.core.services.material.entities.PartAssociation</class>
 		<class>ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder</class>
 		<class>ch.cern.cmms.eamlightejb.parts.PartStock</class>
 		<class>ch.cern.cmms.eamlightejb.index.IndexResult</class>
 		<class>ch.cern.cmms.eamlightejb.meter.MeterReadingEntity</class>
-		<class>ch.cern.cmms.eamlightejb.workorders.WorkOrderEquipment</class>
 		<class>ch.cern.cmms.eamlightejb.equipment.EquipmentChildren</class>
 		<class>ch.cern.cmms.eamlightejb.equipment.EquipmentTreeNode</class>
 		<class>ch.cern.eam.wshub.core.services.entities.InstallParameters</class>
@@ -28,7 +26,6 @@
 		<class>ch.cern.eam.wshub.core.services.equipment.entities.Equipment</class>
 		<class>ch.cern.eam.wshub.core.services.documents.entities.InforDocEntity</class>
 		<class>ch.cern.eam.wshub.core.services.documents.entities.InforDocument</class>
-		<class>ch.cern.cmms.eamlightejb.customfields.CustomFieldLookupValue</class>
 		<class>ch.cern.cmms.eamlightejb.layout.ElementInfo</class>
 		<class>ch.cern.cmms.eamlightejb.layout.ScreenInfo</class>
 		<class>ch.cern.cmms.eamlightejb.layout.TabInfo</class>

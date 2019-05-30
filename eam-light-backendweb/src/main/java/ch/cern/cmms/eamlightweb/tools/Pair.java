@@ -5,6 +5,8 @@ public class Pair {
 	private String code;
 	private String desc;
 
+	public Pair() {}
+
 	public Pair(String code, String desc) {
 		super();
 		this.code = code;
@@ -20,6 +22,9 @@ public class Pair {
 	}
 
 	public String getDesc() {
+		if (desc == null) {
+			return code;
+		}
 		return desc;
 	}
 

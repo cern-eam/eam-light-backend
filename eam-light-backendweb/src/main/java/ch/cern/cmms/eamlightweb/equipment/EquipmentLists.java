@@ -18,7 +18,6 @@ import ch.cern.cmms.eamlightejb.UserTools;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrdersEJB;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;

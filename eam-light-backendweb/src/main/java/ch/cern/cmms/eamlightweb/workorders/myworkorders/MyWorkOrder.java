@@ -1,4 +1,4 @@
-package ch.cern.cmms.eamlightejb.workorders;
+package ch.cern.cmms.eamlightweb.workorders.myworkorders;
 
 import java.io.Serializable;
 import java.util.Date;
