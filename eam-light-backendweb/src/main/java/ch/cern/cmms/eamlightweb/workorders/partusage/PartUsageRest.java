@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrder;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
@@ -29,13 +30,10 @@ import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightejb.workorders.WorkOrderPartUsage;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionType;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
@@ -294,40 +292,29 @@ public class PartUsageRest extends WSHubController {
 	@Consumes("application/json")
 
 	public Response loadPartUsageList(@PathParam("workorder") String workorder) {
-		// 110 partorganization // 128 dbactivity // 315 workordernum // 317
-		// matlist_lineno // 318 partcode // 319 storecode // 357 partuom
-		// 519 equipmentorganization // 521 assetidorganization // 988
-		// plannedqty // 989 source // 990 reservedqty // 991 allocatedqty
-		// 994 partdescription // 6996 stock // 8775 preventreorders // 9575
-		// manufactpart // 9576 manufacturer // 9587 usedqty
-		// 15666 parentpart // 15669 conditioncode // 16027 trackbycondition //
-		// 16460 longdescription // 17473 activity
-		// 17474 job // 17484 activity_display // 17485 job_display
 		try {
 			// Init the list
 			List<WorkOrderPartUsage> partUsageList = new ArrayList<>();
 			// Just execute if there is work order
 			if (workorder != null) {
+				Map<String, String> map = new HashMap<>();
+				map.put("318", "partCode");
+				map.put("357", "partUom");
+				map.put("994", "partDesc");
+				map.put("17484", "activity");
+				map.put("319", "storeCode");
+				map.put("9587", "quantity");
+
 				// Creates simple grid input
-				SimpleGridInput input = new SimpleGridInput("226", "WSJOBS_PAR", "237");
-				// GridController Type
-				input.setGridType("LIST");
-				// Fields to be retrieved
-				input.setFields(Arrays.asList("128", "318", "357", "994", "17473", "357", "9587", "17484", "319"));
-				// Rows to print
-				input.setRowCount("1000");
-				Map<String, String> inforParams = new HashMap<>();
-				inforParams.put("workordernum", workorder);
-				inforParams.put("headeractivity", "0");
-				inforParams.put("headerjob", "0");
-				// Add infor params
-				inforParams.forEach((k, v) -> {
-					input.getInforParams().put(k, v);
-				});
-				// Execute grid
-				GridRequestResult res = gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
-				// Process result
-				Arrays.stream(res.getRows()).forEach(row -> processRow(row, input.getFields(), partUsageList));
+				GridRequest gridRequest = new GridRequest("226", "WSJOBS_PAR", "237");
+				gridRequest.setGridRequestParameterNames(new String[] {"param.workordernum", "param.headeractivity", "param.headerjob"});
+				gridRequest.setGridRequestParameterValues(new String[] {workorder, "0", "0"});
+
+				partUsageList = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderPartUsage.class,
+															map,
+															inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+
+				partUsageList.stream().forEach(partUsage -> setPartUsageTransType(partUsage));
 			}
 			return ok(partUsageList);
 		} catch (InforException e) {
@@ -337,55 +324,17 @@ public class PartUsageRest extends WSHubController {
 		}
 	}
 
-
-	private boolean processRow(GridRequestRow row, List<String> fields, List<WorkOrderPartUsage> partUsageList) {
-		// Create new Work Order part usage
-		WorkOrderPartUsage partUsage = new WorkOrderPartUsage();
-		Arrays.stream(row.getCell()).filter(cell -> fields.contains(cell.getCol()))
-				.forEach(cell -> addPropertyToPartUsage(partUsage, cell));
-		// Add element to the list
-		partUsageList.add(partUsage);
-		// Row processed
-		return true;
-	}
-
-	private boolean addPropertyToPartUsage(WorkOrderPartUsage partUsage, GridRequestCell cell) {
-		// Check property
-		switch (cell.getCol()) {
-		case "318":/* Part code */
-			partUsage.setPartCode(cell.getContent());
-			break;
-		case "357":/* Part partuom */
-			partUsage.setPartUom(cell.getContent());
-			break;
-		case "994":/* Part description */
-			partUsage.setPartDesc(cell.getContent());
-			break;
-		case "17484":/* Activity display */
-			partUsage.setActivity(cell.getContent());
-			break;
-		case "319": /* Store code */
-			partUsage.setStoreCode(cell.getContent());
-			break;
-		case "9587":/* Used quantity */
-			partUsage.setQuantity(cell.getContent());
-			// Set also the transaction type
-			try {
-				if (Integer.valueOf(partUsage.getQuantity()) < 0) {
-					// Set return
-					partUsage.setTransType("Return");
-					partUsage.setQuantity("" + (-1 * Integer.valueOf(partUsage.getQuantity())));
-				} else {/* Issue */
-					partUsage.setTransType("Issue");
-				}
-			} catch (Exception e) {/* Error parsing */
-				// Set issue
-				partUsage.setTransType("Issue");
+	private void setPartUsageTransType(WorkOrderPartUsage workOrderPartUsage) {
+		try {
+			if (Integer.valueOf(workOrderPartUsage.getQuantity()) < 0) {
+				workOrderPartUsage.setTransType("Return");
+				workOrderPartUsage.setQuantity("" + (-1 * Integer.valueOf(workOrderPartUsage.getQuantity())));
+			} else {
+				workOrderPartUsage.setTransType("Issue");
 			}
-			break;
+		} catch (Exception e) {
+			workOrderPartUsage.setTransType("Issue");
 		}
-		// Property added
-		return true;
 	}
 
 }

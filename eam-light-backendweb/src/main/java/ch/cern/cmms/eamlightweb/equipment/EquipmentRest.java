@@ -54,8 +54,6 @@ public class EquipmentRest extends WSHubController {
 	@Inject
 	private EquipmentEJB equipmentEJB;
 	@Inject
-	private GridUtils gridUtils;
-	@Inject
 	private EquipmentReplacementService equipmentReplacementService;
 	@Inject
     private AuthenticationTools authenticationTools;
@@ -156,7 +154,7 @@ public class EquipmentRest extends WSHubController {
 			map.put("116662", "jobType");
 
 			GridRequest gridRequest = new GridRequest(null, "EUMLWH", "145524");
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("woobject", equipmentCode, "EQUALS", GridRequestFilter.JOINER.AND));
+			gridRequest.getGridRequestFilters().add(new GridRequestFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND));
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
 					  map,
 					  inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
