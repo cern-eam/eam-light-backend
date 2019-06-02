@@ -307,8 +307,9 @@ public class PartUsageRest extends WSHubController {
 
 				// Creates simple grid input
 				GridRequest gridRequest = new GridRequest("226", "WSJOBS_PAR", "237");
-				gridRequest.setGridRequestParameterNames(new String[] {"param.workordernum", "param.headeractivity", "param.headerjob"});
-				gridRequest.setGridRequestParameterValues(new String[] {workorder, "0", "0"});
+				gridRequest.getParams().put("param.workordernum", workorder);
+				gridRequest.getParams().put("param.headeractivity", "0");
+				gridRequest.getParams().put("param.headerjob", "0");
 
 				partUsageList = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderPartUsage.class,
 															map,

@@ -50,8 +50,8 @@ public class PartListsController extends DropdownValues {
 			map.put("15932", "type");
 
 			GridRequest gridRequest = new GridRequest("817", "SSPART_EPA", "800");
-			gridRequest.setGridRequestParameterNames(new String[] {"partcode", "partorg"});
-			gridRequest.setGridRequestParameterValues(new String[] {part, authenticationTools.getInforContext().getOrganizationCode()});
+			gridRequest.getParams().put("partcode", part);
+			gridRequest.getParams().put("partorg", authenticationTools.getInforContext().getOrganizationCode());
 
 			List<PartAssociation> partAssociations = inforClient.getTools().getGridTools().converGridResultToObject(PartAssociation.class,
 									map,

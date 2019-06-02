@@ -42,8 +42,7 @@ public class WorkOrderMisc extends WSHubController {
 			map.put("448", "equipmentTypeDesc");
 
 			GridRequest gridRequest = new GridRequest("1631", "WSJOBS_MEC", "1618");
-			gridRequest.setGridRequestParameterNames(new String[] {"param.workordernum"});
-			gridRequest.setGridRequestParameterValues(new String[] {workorder});
+			gridRequest.getParams().put("param.workordernum", workorder);
 
 			List<WorkOrderEquipment> childrenWOs = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderEquipment.class,
 					map,
@@ -68,8 +67,7 @@ public class WorkOrderMisc extends WSHubController {
 			map.put("12", "type");
 
 			GridRequest gridRequest = new GridRequest("176", "WSJOBS_CWO", "180");
-			gridRequest.setGridRequestParameterNames(new String[] {"param.jobnum"});
-			gridRequest.setGridRequestParameterValues(new String[] {workorder});
+			gridRequest.getParams().put("param.jobnum", workorder);
 
 			List<ChildWorkOrder> childrenWOs = inforClient.getTools().getGridTools().converGridResultToObject(ChildWorkOrder.class,
 														map,

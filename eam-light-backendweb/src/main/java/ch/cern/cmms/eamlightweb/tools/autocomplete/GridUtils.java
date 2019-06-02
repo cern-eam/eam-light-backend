@@ -49,8 +49,6 @@ public class GridUtils {
 
 			if (input.getInforParams() != null) {
 				gridRequest.setParams(input.getInforParams());
-				gridRequest.setGridRequestParameterNames(input.getInforParams().keySet().toArray(new String[0]));
-				gridRequest.setGridRequestParameterValues(input.getInforParams().values().toArray(new String[0]));
 			}
 
 			if (input.getDepartmentSecurityGridColumn() != null && !input.getDepartmentSecurityGridColumn().isEmpty()) {
