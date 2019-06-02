@@ -20,7 +20,6 @@
 		<class>ch.cern.eam.wshub.core.services.grids.entities.DataspyField</class>
 		<class>ch.cern.eam.wshub.core.services.grids.customfields.DataspyCustomField</class>
 		<class>ch.cern.eam.wshub.core.services.material.entities.Part</class>
-		<class>ch.cern.eam.wshub.core.services.workorders.entities.Activity</class>
 		<class>ch.cern.eam.wshub.core.services.workorders.entities.LaborBooking</class>
 		<class>ch.cern.eam.wshub.core.services.workorders.entities.Finding</class>
 		<class>ch.cern.eam.wshub.core.services.equipment.entities.Equipment</class>
