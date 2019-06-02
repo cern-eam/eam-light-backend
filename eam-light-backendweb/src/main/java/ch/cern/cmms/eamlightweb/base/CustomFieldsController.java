@@ -77,8 +77,7 @@ public class CustomFieldsController extends Autocomplete {
 
 	public List<Pair> getData(String paramName, String paramValue, GridRequest gridRequest, Map<String, String> map) throws InforException {
 		gridRequest.setGridType("LOV");
-		gridRequest.setGridRequestParameterNames(new String[] {paramName});
-		gridRequest.setGridRequestParameterValues(new String[] {paramValue});
+		gridRequest.getParams().put(paramName, paramValue);
 
 		List<Pair> customFieldLookupValues = inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 				map,

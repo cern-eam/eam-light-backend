@@ -245,8 +245,8 @@ public class EquipmentRest extends WSHubController {
 			map.put("1020", "quantity");
 			map.put("2207", "uom");
 
-			gridRequest.setGridRequestParameterNames(new String[] {"param.entity", "param.valuecode"});
-			gridRequest.setGridRequestParameterValues(new String[] {"OBJ", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode()});
+			gridRequest.getParams().put("param.entity", "OBJ");
+			gridRequest.getParams().put("param.valuecode", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode());
 
 			List<PartAssociated> parts = inforClient.getTools().getGridTools().converGridResultToObject(PartAssociated.class,
 											map,
