@@ -46,7 +46,7 @@ public class WorkOrderMisc extends WSHubController {
 
 			List<WorkOrderEquipment> childrenWOs = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderEquipment.class,
 					map,
-					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 			return ok(childrenWOs);
 		} catch(Exception e) {
 			return serverError(e);
@@ -71,7 +71,7 @@ public class WorkOrderMisc extends WSHubController {
 
 			List<ChildWorkOrder> childrenWOs = inforClient.getTools().getGridTools().converGridResultToObject(ChildWorkOrder.class,
 														map,
-														inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+														inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 			return ok(childrenWOs);
 		} catch (InforException e) {
 			return badRequest(e);

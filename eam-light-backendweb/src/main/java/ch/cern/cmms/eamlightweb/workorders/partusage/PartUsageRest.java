@@ -313,7 +313,7 @@ public class PartUsageRest extends WSHubController {
 
 				partUsageList = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderPartUsage.class,
 															map,
-															inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+															inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 				partUsageList.stream().forEach(partUsage -> setPartUsageTransType(partUsage));
 			}
