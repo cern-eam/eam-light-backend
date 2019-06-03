@@ -55,7 +55,7 @@ public class PartListsController extends DropdownValues {
 
 			List<PartAssociation> partAssociations = inforClient.getTools().getGridTools().converGridResultToObject(PartAssociation.class,
 									map,
-									inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+									inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 			return ok(partAssociations);
 		} catch (InforException e) {

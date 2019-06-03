@@ -28,7 +28,7 @@ public class MyWorkOrders {
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("evt_rstatus", "R", "="));
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),
-                inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+                inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
 
@@ -43,26 +43,27 @@ public class MyWorkOrders {
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("evt_rstatus", "R", "="));
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),
-                inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+                inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
-        GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
+        GridRequest gridRequest = new GridRequest("WSJOBS");
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipment", equipmentCode, "="));
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),
-                inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+                inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
     private Map<String, String> createMap() {
         Map<String, String> map = new HashMap<>();
-        map.put("279", "number"); // wo number
-        map.put("757", "desc"); // description
-        map.put("5", "object");   // equipment code
-        map.put("16", "status");  // status
-        map.put("9", "mrc");   // department
-        map.put("19", "schedulingStartDate");  // scheduled start date
-        map.put("426", "schedulingEndDate"); // scheduled end date
+        map.put("workordernum", "number"); // wo number
+        map.put("description", "desc"); // description
+        map.put("equipment", "object");   // equipment code
+        map.put("workorderstatus_display", "status");  // status
+        map.put("department", "mrc");   // department
+        map.put("schedstartdate", "schedulingStartDate");  // scheduled start date
+        map.put("schedenddate", "schedulingEndDate"); // scheduled end date
+        map.put("datecreated", "createdDate"); // scheduled end date
         return map;
     }
 

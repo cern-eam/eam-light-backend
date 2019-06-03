@@ -81,7 +81,7 @@ public class CustomFieldsController extends Autocomplete {
 
 		List<Pair> customFieldLookupValues = inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 				map,
-				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 		return customFieldLookupValues;
 	}

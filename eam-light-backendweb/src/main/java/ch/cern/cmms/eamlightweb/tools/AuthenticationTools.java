@@ -69,6 +69,13 @@ public class AuthenticationTools {
         return inforContext;
     }
 
+    public InforContext getR5InforContext() throws InforException {
+        InforContext inforContext = this.getInforContext();
+        inforContext.getCredentials().setUsername("R5");
+        inforContext.getCredentials().setPassword(applicationData.getPassphrase());
+        return inforContext;
+    }
+
     private boolean notEmpty(String string) {
         return string != null && !string.trim().equals("");
     }

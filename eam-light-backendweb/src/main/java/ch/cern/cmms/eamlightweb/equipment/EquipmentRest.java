@@ -27,7 +27,6 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
@@ -144,20 +143,20 @@ public class EquipmentRest extends WSHubController {
 	public Response getEquipmentHistory(@QueryParam("c") String equipmentCode) {
 		try {
 			Map<String, String> map= new HashMap<>();
-			map.put("116660", "number");
-			map.put("116663", "desc");
-			map.put("116656", "object");
-			map.put("116664", "relatedObject");
-			map.put("116658", "completedDate");
-			map.put("116659", "enteredBy");
-			map.put("116657", "type");
-			map.put("116662", "jobType");
+			map.put("wocode", "number");
+			map.put("wotypedescription", "desc");
+			map.put("woobject", "object");
+			map.put("relatedobject", "relatedObject");
+			map.put("wocompleted", "completedDate");
+			map.put("woenteredby", "enteredBy");
+			map.put("wotype", "type");
+			map.put("wojobtype", "jobType");
 
-			GridRequest gridRequest = new GridRequest(null, "EUMLWH", "145524");
+			GridRequest gridRequest = new GridRequest("EUMLWH");
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND));
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
 					  map,
-					  inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
+					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch(Exception e) {
 			return serverError(e);
 		}
@@ -250,7 +249,7 @@ public class EquipmentRest extends WSHubController {
 
 			List<PartAssociated> parts = inforClient.getTools().getGridTools().converGridResultToObject(PartAssociated.class,
 											map,
-											inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+											inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 			return ok(parts);
 		} catch (InforException e) {

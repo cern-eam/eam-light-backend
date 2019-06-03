@@ -1,5 +1,6 @@
 package ch.cern.cmms.eamlightweb.workorders;
 
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
@@ -22,6 +23,8 @@ public class ActivitiesRest extends WSHubController {
 	private InforClient inforClient;
 	@Inject
 	private AuthenticationTools authenticationTools;
+	@Inject
+	private ApplicationData applicationData;
 
 	@GET
 	@Path("/read")
@@ -29,7 +32,7 @@ public class ActivitiesRest extends WSHubController {
 	@Consumes("application/json")
 	public Response readActivities(@QueryParam("workorder") String number) {
 		try {
-			return ok(inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), number));
+			return ok(inforClient.getLaborBookingService().readActivities(authenticationTools.getR5InforContext(), number));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
