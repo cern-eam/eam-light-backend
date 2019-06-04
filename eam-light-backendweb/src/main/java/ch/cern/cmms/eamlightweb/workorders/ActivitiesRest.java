@@ -30,9 +30,9 @@ public class ActivitiesRest extends WSHubController {
 	@Path("/read")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readActivities(@QueryParam("workorder") String number) {
+	public Response readActivities(@QueryParam("workorder") String number, @DefaultValue("true") @QueryParam("includeChecklists") Boolean includeChecklists) {
 		try {
-			return ok(inforClient.getLaborBookingService().readActivities(authenticationTools.getR5InforContext(), number));
+			return ok(inforClient.getLaborBookingService().readActivities(authenticationTools.getR5InforContext(), number, includeChecklists));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -75,7 +75,7 @@ public class ActivitiesRest extends WSHubController {
 	}
 
 	private String getDefaultActivityId(String workOrder) throws InforException {
-		Activity[] activities = inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), workOrder);
+		Activity[] activities = inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), workOrder, false);
 		if (activities != null && activities.length > 0) {
 			return Integer.toString(Integer.parseInt(activities[activities.length - 1].getActivityCode()) + 5);
 		} else {

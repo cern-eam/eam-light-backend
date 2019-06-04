@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestSort;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.RequestScoped;
@@ -47,8 +48,9 @@ public class MyWorkOrders {
     }
 
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
-        GridRequest gridRequest = new GridRequest("WSJOBS");
+        GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipment", equipmentCode, "="));
+        gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("workordernum", "DESC")});
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
