@@ -268,7 +268,7 @@ public class PartUsageRest extends WSHubController {
 		transaction.setEquipmentCode(workOrder.getEquipmentCode());
 		// Activity
 		// Read activities
-		Activity[] activities = inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), workOrder.getNumber());
+		Activity[] activities = inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), workOrder.getNumber(), false);
 		if (activities != null && activities.length == 1) {
 			transaction.setActivityCode(activities[0].getActivityCode());
 		} else {

@@ -154,6 +154,7 @@ public class EquipmentRest extends WSHubController {
 
 			GridRequest gridRequest = new GridRequest("EUMLWH");
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND));
+			gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("wocompleted", "DESC")});
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
 					  map,
 					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
