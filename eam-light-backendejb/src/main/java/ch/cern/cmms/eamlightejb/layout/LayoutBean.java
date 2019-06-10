@@ -48,27 +48,12 @@ public class LayoutBean {
 		return initElementsMap(elements);
 	}
 
-	public Map<String, ElementInfo> getUserDefinedScreenElements(String masterPageName, String pageName,
-			String userGroup) {
-		List<ElementInfo> elements = inforClient.getTools().getEntityManager().createNamedQuery(ElementInfo.GET_UDS_FIELDS, ElementInfo.class)
-				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
-				.setParameter("userGroup", userGroup).getResultList();
-		return initElementsMap(elements);
-	}
-
 	public Map<String, ElementInfo> getRecordViewElements(String masterPageName, String pageName, String entity,
 			String userGroup, String language) {
 		List<ElementInfo> elements = inforClient.getTools().getEntityManager()
 				.createNamedQuery(ElementInfo.GET_RECORD_VIEW_FIELDS, ElementInfo.class)
 				.setParameter("masterPageName", masterPageName).setParameter("pageName", pageName)
 				.setParameter("userGroup", userGroup).setParameter("entity", entity)
-				.getResultList();
-		return initElementsMap(elements);
-	}
-
-	public Map<String, ElementInfo> getCustomFieldElements(String classCode, String entity, String language) {
-		List<ElementInfo> elements = inforClient.getTools().getEntityManager().createNamedQuery(ElementInfo.GET_CUSTOMFIELDS, ElementInfo.class)
-				.setParameter("classCode", classCode).setParameter("entity", entity)
 				.getResultList();
 		return initElementsMap(elements);
 	}

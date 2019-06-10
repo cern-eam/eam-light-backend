@@ -19,6 +19,4 @@ public class ScreenLayout {
 		this.tabs = tabs;
 	}
 
-	
-
 }
