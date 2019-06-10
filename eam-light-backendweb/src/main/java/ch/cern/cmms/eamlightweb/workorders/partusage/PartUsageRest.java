@@ -20,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightweb.equipment.EquipmentHistory;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrder;
@@ -38,7 +39,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 
-
 @Path("/partusage")
 @RequestScoped
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -49,8 +49,6 @@ public class PartUsageRest extends WSHubController {
 	@Inject
 	private GridUtils gridUtils;
 	@Inject
-	private ApplicationData applicationData;
-	@Inject
 	private AuthenticationTools authenticationTools;
 
 	@GET
@@ -59,41 +57,19 @@ public class PartUsageRest extends WSHubController {
 	@Consumes("application/json")
 	public Response loadStoreList() {
 		try {
-			// Init the list
-			List<Pair> stores = new ArrayList<>();
-			// Prepare the input
-			SimpleGridInput input = new SimpleGridInput("182", "LVIRSTOR", "187");
+			GridRequest input = new GridRequest("LVIRSTOR");
+			input.setUserFunctionName("SSISSU");
 			input.setRowCount("1000");
-			input.getInforParams().put("storefield", applicationData.getStoreField());
-			input.getInforParams().put("userfunction", applicationData.getUserFunction());
-			input.getSortParams().put("storecode", true); // true=ASC,
-			input.setFields(Arrays.asList("682", "133")); // 682=storecode,
-															// 133=des_text
-			// Search for the results
-			GridRequestResult res = gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
-			// Create the list of results
-			List<List<String>> gridRow = Arrays.stream(res.getRows())
-					.map(row -> Arrays.stream(row.getCell()).filter(cell -> input.getFields().contains(cell.getCol()))
-							.sorted((cell1, cell2) -> input.getFields().indexOf(cell1.getCol())
-									- input.getFields().indexOf(cell2.getCol()))
-							.map(cell -> cell.getContent()).collect(Collectors.toList()))
-					.collect(Collectors.toList());
-
-			if (!gridRow.isEmpty()) {
-				for (List<String> row : gridRow) {
-					stores.add(new Pair(row.get(0)// storecode
-							, row.get(1)// des_text
-					));
-				}
-			}
-			return ok(stores);
+			input.getParams().put("param.storefield", "IR");
+			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+					Pair.generateGridPairMap("682", "133"),
+					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), input)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
-
 
 	@GET
 	@Path("/bins")
@@ -102,45 +78,24 @@ public class PartUsageRest extends WSHubController {
 	public Response loadBinList(@QueryParam("transaction") String transaction, @QueryParam("bin") String bin,
 			@QueryParam("part") String part, @QueryParam("store") String store) {
 		try {
-			SimpleGridInput input;
-			if (transaction.startsWith("I")) {// ISSUE
-				input = new SimpleGridInput("183", "LVISSUEBIN", "188");
+			GridRequest gridRequest;
+			if (transaction.startsWith("I")) {
+				// ISSUE
+				gridRequest = new GridRequest("LVISSUEBIN");
 				if (bin != null && !bin.isEmpty()) {
-					input.getGridFilters().add(new GridRequestFilter("bincode", bin, "BEGINS"));
+					gridRequest.getGridRequestFilters().add(new GridRequestFilter("bincode", bin, "BEGINS"));
 				}
-
-			} else // RETURN
-				input = new SimpleGridInput("191", "LVRETURNBIN", "196");
-			input.setRowCount("1000");
-			input.getInforParams().put("part_code", part);
-			input.getInforParams().put("part_org", applicationData.getControlOrg());
-			input.getInforParams().put("store_code", store);
-			input.setFields(Arrays.asList("830", "824")); // 830=bincode,
-															// 824=bindescription
-			GridRequestResult res = gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
-
-			final String db = (bin == null || "".equals(bin)) ? loadDefaultBin(part, store, transaction) : ""; // default
-			// bin
-			List<List<String>> gridRow = Arrays.stream(res.getRows())
-					.map(row -> Arrays.stream(row.getCell()).filter(cell -> input.getFields().contains(cell.getCol()))
-							.sorted((cell1, cell2) -> input.getFields().indexOf(cell1.getCol())
-									- input.getFields().indexOf(cell2.getCol()))
-							.map(cell -> cell.getContent()).collect(Collectors.toList()))
-					.collect(Collectors.toList());
-
-			if (!gridRow.isEmpty()) {
-				List<Pair> orderedListWithDefault = Arrays
-						.stream(gridRow.stream().map(l -> l.stream().toArray(String[]::new)).toArray(String[][]::new))
-						.sorted((cell1,
-								cell2) -> (db.equals(cell1[0]) ? -1
-										: db.equals(cell2[0]) ? 1 : (cell1[0].compareTo(cell2[0]))))
-						.map(rowBin -> new Pair(rowBin[0], // bincode
-								rowBin[1] // bindescription
-						)).collect(Collectors.toList());
-				return ok(orderedListWithDefault);
 			} else {
-				return ok(new ArrayList<Pair>());
+				// RETURN
+				gridRequest = new GridRequest("LVRETURNBIN");
 			}
+			gridRequest.getParams().put("part_code", part);
+			gridRequest.getParams().put("part_org", authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.getParams().put("store_code", store);
+
+			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+					Pair.generateGridPairMap("830", "824"),
+					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -161,7 +116,7 @@ public class PartUsageRest extends WSHubController {
 		SimpleGridInput input = new SimpleGridInput("110", "SSPART_STO", "133");
 		input.setGridType("LIST");
 		input.getInforParams().put("partcode", part);
-		input.getInforParams().put("partorg", applicationData.getControlOrg());
+		input.getInforParams().put("partorg", authenticationTools.getInforContext().getOrganizationCode());
 		input.getInforParams().put("userfunction", "SSPART");
 		input.getGridFilters().add(new GridRequestFilter("storecode", store, "EQUALS" ));
 

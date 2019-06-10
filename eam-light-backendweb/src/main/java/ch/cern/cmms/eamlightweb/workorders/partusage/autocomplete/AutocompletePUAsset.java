@@ -19,11 +19,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -32,13 +35,13 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class AutocompletePUAsset extends Autocomplete {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2103801217084141204L;
-
 	@Inject
 	private ApplicationData applicationData;
+	@Inject
+	private InforClient inforClient;
+	@Inject
+	private AuthenticationTools authenticationTools;
 
 	@GET
 	@Path("/partusage/asset/{issuereturn}/{store}/{code}")
@@ -46,32 +49,19 @@ public class AutocompletePUAsset extends Autocomplete {
 	@Consumes("application/json")
 	public Response complete(@PathParam("issuereturn") String issuereturn, @PathParam("store") String store,
 			@PathParam("code") String code) {
-		// Response
-		String dataspyID = applicationData.getPartForAssetDataspyID();
-		SimpleGridInput input = new SimpleGridInput("84", "OSOBJA", dataspyID);
-		input.setGridType("LIST");
-		input.setFields(Arrays.asList("247", "383")); // 247=equipmentno,
-														// 383=equipmentdesc
-		// Trim the code
-		code = code.trim().replaceAll("%", "");
-		// Clean values in controller
-		List<Pair> resultList = new LinkedList<Pair>();
-		// Check that there is store selected
-		if (store == null || "".equals(store)) {
-			// Return empty list
-			return ok(resultList);
-		}
 		try {
-			input.getGridFilters().add(new GridRequestFilter("equipmentno", code.toUpperCase(), "CONTAINS", GridRequestFilter.JOINER.AND));
+			GridRequest gridRequest = new GridRequest("OSOBJA");
+			gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipmentno", code.toUpperCase(), "CONTAINS", GridRequestFilter.JOINER.AND));
+
 			if (issuereturn.startsWith("I")) // ISSUE
-				input.getGridFilters().add(new GridRequestFilter("store", store, "EQUALS"));
+				gridRequest.getGridRequestFilters().add(new GridRequestFilter("store", store, "="));
 			else { // RETURN
-				input.getGridFilters().add(new GridRequestFilter("store", "", "IS_EMPTY"));
+				gridRequest.getGridRequestFilters().add(new GridRequestFilter("store", "", "IS_EMPTY"));
 			}
-			input.setQueryTimeout(5500);
-			// Result
-			resultList = getGridResults(input);
-			return ok(resultList);
+
+			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+					Pair.generateGridPairMap("247", "383"),
+					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -98,7 +88,7 @@ public class AutocompletePUAsset extends Autocomplete {
 			} else { // RETURN
 				input.getGridFilters().add(new GridRequestFilter("store", store.toUpperCase(), "IS_EMPTY"));
 			}
-			input.setFields(Arrays.asList("247", "383", "401", "399", "400")); // 247=equipmentno,
+			input.setFields(Arrays.asList("247", "383", "401", "399", "400"));  // 247=equipmentno,
 																				// 383=equipmentdesc,
 																				// 401=part,
 																				// 399=bin,
@@ -140,8 +130,7 @@ public class AutocompletePUAsset extends Autocomplete {
 	 * @return Input to load asset list
 	 */
 	private SimpleGridInput prepareInputForPartForAsset() {
-		String dataspyID = applicationData.getPartForAssetDataspyID();
-		SimpleGridInput input = new SimpleGridInput("84", "OSOBJA", dataspyID);
+		SimpleGridInput input = new SimpleGridInput("84", "OSOBJA", "85");
 		input.setGridType("LIST");
 		input.setFields(Arrays.asList("247", "383", "386", "13058")); // 247=equipmentno,
 		// 383=equipmentdesc
@@ -155,10 +144,10 @@ public class AutocompletePUAsset extends Autocomplete {
 	 * 
 	 * @return Input to load the part list
 	 */
-	private SimpleGridInput prepareInputForPart(String store, String workOrder) {
+	private SimpleGridInput prepareInputForPart(String store, String workOrder) throws InforException {
 		SimpleGridInput input = new SimpleGridInput("221", "LVIRPART", "224");
-		input.getInforParams().put("control.org", applicationData.getControlOrg());
-		input.getInforParams().put("multiequipwo", applicationData.getMultiEquipmentWO());
+		input.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
+		input.getInforParams().put("multiequipwo", "false");
 		input.getInforParams().put("store_code", store);
 		input.getInforParams().put("relatedworkordernum", workOrder);
 		input.setFields(Arrays.asList("140", "103")); // 140=partcode,

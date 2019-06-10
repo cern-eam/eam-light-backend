@@ -30,19 +30,16 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class AutocompletePUPart extends Autocomplete {
 
-	@Inject
-	private ApplicationData applicationData;
-
 	@GET
 	@Path("/partusage/part/{workorder}/{store}/{code}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@PathParam("workorder") String workorder, @PathParam("store") String store,
-			@PathParam("code") String code) {
+			@PathParam("code") String code) throws InforException{
 		// Input
 		SimpleGridInput input = new SimpleGridInput("221", "LVIRPART", "224");
-		input.getInforParams().put("control.org", applicationData.getControlOrg());
-		input.getInforParams().put("multiequipwo", applicationData.getMultiEquipmentWO());
+		input.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
+		input.getInforParams().put("multiequipwo", "false");
 		input.getInforParams().put("store_code", store);
 		input.getInforParams().put("parameter.excludeparentpart", "false");
 		input.getInforParams().put("relatedworkordernum", workorder);
