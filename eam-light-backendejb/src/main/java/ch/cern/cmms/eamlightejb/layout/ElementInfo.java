@@ -30,19 +30,7 @@ import javax.persistence.*;
 				+ "from r5defaultpagelayout ,r5pagelayout,r5boilertexts  where "
 				+ "plo_elementid = PLD_ELEMENTID and pld_elementtype = 'F' AND "
 				+ "bot_function = :pageName and LOWER(PLD_ELEMENTID) = LOWER(substr(BOT_FLD1, 5)) and bot_fld1 like :tabName || '/_%' escape '/' and "
-				+ "PLD_PAGENAME = :masterPageName || '_' || :tabName AND PLO_PAGENAME = :pageName  || '_' || :tabName AND PLO_USERGROUP = :userGroup ORDER BY PLD_ELEMENTID", resultClass = ElementInfo.class),
-		@NamedNativeQuery(name = ElementInfo.GET_CUSTOMFIELDS, query = "SELECT PRO_CODE AS PLD_ELEMENTID, APR_CLASS AS PLD_PAGENAME, ('EAMID_' || PRO_CODE) AS XPATH, "
-				+ "120 AS PLD_MAXLENGTH,'mixed' AS PLD_CASE,'O' AS PLO_ATTRIBUTE, 'R5' AS PLO_USERGROUP,  "
-				+ "DECODE(PRO_TYPE,'CODE','text','CHAR','text','NUM','number','DATE','date','RENT','text','DATI','datetime') AS PLD_FIELDTYPE, "
-				+ "NULL AS PLO_DEFAULTVALUE, "
-				+ "BOT_TEXT, "
-				+ "null as UDF_LOOKUPTYPE, null as UDF_LOOKUPRENTITY, null as UDF_UOM "
-				+ "FROM R5PROPERTIES, R5ADDPROPERTIES WHERE APR_RENTITY = :entity AND APR_CLASS = :classCode AND APR_PROPERTY = PRO_CODE", resultClass = ElementInfo.class),
-		@NamedNativeQuery(name = ElementInfo.GET_UDS_FIELDS, query = "select distinct usf_screenname as PLD_PAGENAME, plo_elementid as PLD_elementid, BOT_FLD1 as XPATH, NVL(USF_MAXLENGTH,450) as PLD_MAXLENGTH, "
-				+ "'mixed' as PLD_CASE, PLO_ATTRIBUTE, PLO_USERGROUP, USF_FIELDTYPE as PLD_FIELDTYPE, PLO_DEFAULTVALUE, BOT_TEXT, 'NONE' as UDF_LOOKUPTYPE, usf_screenname as UDF_LOOKUPRENTITY, null as UDF_UOM "
-				+ "from R5UDFSCREENFIELDS join r5pagelayout on LOWER(plo_elementid) = LOWER('wspf_10_' || usf_fieldname) join R5BOILERTEXTS on LOWER(plo_elementid) = LOWER(BOT_FLD1) "
-				+ "and bot_function = :pageName where usf_screenname = :masterPageName AND PLO_PAGENAME = :masterPageName AND PLO_USERGROUP = :userGroup  "
-				+ "ORDER BY PLO_ELEMENTID", resultClass = ElementInfo.class) })
+				+ "PLD_PAGENAME = :masterPageName || '_' || :tabName AND PLO_PAGENAME = :pageName  || '_' || :tabName AND PLO_USERGROUP = :userGroup ORDER BY PLD_ELEMENTID", resultClass = ElementInfo.class) })
 public class ElementInfo {
 
 	public static final String GET_RECORD_VIEW_FIELDS = "ElementInfo.GET_RECORD_VIEW_FIELDS";
