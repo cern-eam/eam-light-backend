@@ -1,5 +1,8 @@
 package ch.cern.cmms.eamlightweb.tools;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Pair {
 
 	private String code;
@@ -35,6 +38,13 @@ public class Pair {
 	@Override
 	public String toString() {
 		return "Pair [" + (code != null ? "code=" + code + ", " : "") + (desc != null ? "desc=" + desc : "") + "]";
+	}
+
+	public static Map<String, String> generateGridPairMap(String code, String desc) {
+		Map<String, String> map = new HashMap<>();
+		map.put(code, "code");
+		map.put(desc, "desc");
+		return map;
 	}
 
 }

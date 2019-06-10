@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightejb.data;
 
 import ch.cern.cmms.eamlightejb.tools.ApplicationDataReader;
+import ch.cern.cmms.eamlightejb.tools.Tools;
 
 import java.util.Map;
 
@@ -30,48 +31,23 @@ public class ApplicationData {
     // Getters for individual properties
     //
     public String getTenant() {
-        return getVariableValue("EAMLIGHT_INFOR_TENANT");
+        return Tools.getVariableValue("EAMLIGHT_INFOR_TENANT");
     }
 
-    public String getDefaultOrganization() { return getVariableValue("EAMLIGHT_INFOR_ORGANIZATION"); }
+    public String getDefaultOrganization() { return Tools.getVariableValue("EAMLIGHT_INFOR_ORGANIZATION"); }
 
     public String getInforWSURL() {
-        return getVariableValue("EAMLIGHT_INFOR_WS_URL");
+        return Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL");
     }
 
-    public String getAuthenticationMode() { return getVariableValue("EAMLIGHT_AUTHENTICATION_MODE"); }
+    public String getAuthenticationMode() { return Tools.getVariableValue("EAMLIGHT_AUTHENTICATION_MODE"); }
 
-    public String getDefaultUser() { return getVariableValue("EAMLIGHT_DEFAULT_USER"); }
+    public String getDefaultUser() { return Tools.getVariableValue("EAMLIGHT_DEFAULT_USER"); }
 
     @XmlTransient
-    public String getPassphrase() { return getVariableValue("EAMLIGHT_PASSPHRASE"); }
+    public String getPassphrase() { return Tools.getVariableValue("EAMLIGHT_PASSPHRASE"); }
 
     public String getEdmsDocListLink() { return edmsValues.get("DOCLIST_LINK"); }
-
-    /************************
-     * KIOSK PROPERTIES
-     *
-     ************************/
-
-    public String getUserFunction() {
-        return kioskValues.get("USER_FUNCTION");
-    }
-
-    public String getStoreField() {
-        return kioskValues.get("STORE_FIELD");
-    }
-
-    public String getControlOrg() {
-        return kioskValues.get("ORGANIZATION_CODE");
-    }
-
-    public String getMultiEquipmentWO() {
-        return kioskValues.get("MULTI_EQUIPMENT_WO").toLowerCase();
-    }
-
-    public String getPartForAssetDataspyID() {
-        return kioskValues.get("PART_FOR_ASSET_DATASPYID");
-    }
 
 
     /************************
@@ -138,17 +114,10 @@ public class ApplicationData {
 
     public String[] getDismacUserGroups() { return eamlightValues.get("DISMAC_USER_GROUPS").replaceAll("\\s+", "").trim().split(","); }
 
+    public String[] getCryoEqpReplacementClasses() { return eamlightValues.get("CRYP_EQP_RPL_CLASSES").replaceAll("\\s+", "").trim().split(","); }
+
     public String getEDMSDoclightURL() {
         return eamlightValues.get("EDMS_DOCLIGHT_URL");
-    }
-
-    private String getVariableValue(String variableName) {
-        String valueFromEnv = System.getenv().get(variableName);
-        if (valueFromEnv != null && !valueFromEnv.isEmpty()) {
-            return valueFromEnv;
-        } else {
-            return null;
-        }
     }
 
 }
