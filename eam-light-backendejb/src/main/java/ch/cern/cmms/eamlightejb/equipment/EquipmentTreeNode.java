@@ -42,7 +42,9 @@ import javax.persistence.Transient;
 						" AND  c.OBJ_NOTUSED = '-' "+
 						" START WITH a.stc_parent = :equipment or a.stc_child = :equipment "+
 						" CONNECT BY NOCYCLE PRIOR a.stc_child = a.stc_parent "+
-						" ) order by treelevel, sequence",
+						" ) " +
+						"WHERE rownum < 100 " +
+						"order by treelevel, sequence",
 				resultClass = EquipmentTreeNode.class)})
 public class EquipmentTreeNode  implements Serializable{
 
