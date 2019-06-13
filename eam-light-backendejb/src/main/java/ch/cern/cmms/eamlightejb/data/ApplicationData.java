@@ -1,123 +1,77 @@
 package ch.cern.cmms.eamlightejb.data;
 
-import ch.cern.cmms.eamlightejb.tools.ApplicationDataReader;
 import ch.cern.cmms.eamlightejb.tools.Tools;
+import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.entities.Credentials;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.xml.bind.annotation.XmlTransient;
 
-@Dependent
+import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
+import static java.util.stream.Collectors.toMap;
+
+@ApplicationScoped
 public class ApplicationData {
 
     private Map<String, String> eamlightValues;
-    private Map<String, String> kioskValues;
-    private Map<String, String> edmsValues;
-
     @Inject
-    private ApplicationDataReader configReader;
+    private InforClient inforClient;
 
     @PostConstruct
     private void init() {
-        eamlightValues = configReader.getProperties("EAMLIGHT");
-        kioskValues = configReader.getProperties("KIOSK");
-        edmsValues = configReader.getProperties("EDMS");
+        try {
+            GridRequest gridRequest = new GridRequest("BSINST");
+            gridRequest.getGridRequestFilters().add(new GridRequestFilter("installcode", "EL_", "BEGINS"));
+            Credentials credentials = new Credentials();
+            credentials.setUsername(getAdminUser());
+            credentials.setPassword(getAdminPassword());
+            GridRequestResult result = inforClient.getGridsService().executeQuery(inforClient.getTools().getInforContext(credentials), gridRequest);
+            eamlightValues = Arrays.stream(result.getRows()).collect(toMap(row -> getCellContent("installcode", row), row -> getCellContent("value", row)));
+        } catch (Exception e) {
+            inforClient.getTools().log(Level.SEVERE, "Couldn't fetch application data: " + e.getMessage());
+            eamlightValues = new HashMap<>();
+        }
     }
 
     //
-    // Getters for individual properties
+    // BASIC SETTINGS
     //
-    public String getTenant() {
-        return Tools.getVariableValue("EAMLIGHT_INFOR_TENANT");
-    }
+    public String getTenant() {return Tools.getVariableValue("EAMLIGHT_INFOR_TENANT"); }
 
     public String getDefaultOrganization() { return Tools.getVariableValue("EAMLIGHT_INFOR_ORGANIZATION"); }
 
-    public String getInforWSURL() {
-        return Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL");
-    }
+    public String getInforWSURL() {return Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"); }
 
     public String getAuthenticationMode() { return Tools.getVariableValue("EAMLIGHT_AUTHENTICATION_MODE"); }
 
     public String getDefaultUser() { return Tools.getVariableValue("EAMLIGHT_DEFAULT_USER"); }
 
-    @XmlTransient
-    public String getPassphrase() { return Tools.getVariableValue("EAMLIGHT_PASSPHRASE"); }
+    //
+    // ADMIN CREDENTIALS
+    //
+    public String getAdminPassword() { return Tools.getVariableValue("EAMLIGHT_PASSPHRASE"); }
 
-    public String getEdmsDocListLink() { return edmsValues.get("DOCLIST_LINK"); }
+    public String getAdminUser() { return "R5"; }
 
-
-    /************************
-     * LINKS TO EXTENDED
-     *
-     ************************/
-
-    public String getExtendedWOLink() {
-        return eamlightValues.get("EXT_WOLINK");
+    //
+    // VALUES
+    //
+    public Map<String, String> getValues() {
+        return eamlightValues;
     }
 
-    public String getExtendedAssetLink() {
-        return eamlightValues.get("EXT_ASSETLINK");
-    }
+    public String getValue(String key) { return eamlightValues.get(key); }
 
-    public String getExtendedPositionLink() {
-        return eamlightValues.get("EXT_POSITIONLINK");
-    }
-
-    public String getExtendedSystemLink() {
-        return eamlightValues.get("EXT_SYSTEMLINK");
-    }
-
-    public String getExtendedPartLink() {
-        return eamlightValues.get("EXT_PARTLINK");
-    }
-
-    /************************
-     * LINKS TO EAM INTEGRATIONS
-     *
-     ************************/
-
-    public String getLinkToEAMIntegration() {
-        return eamlightValues.get("EXT_EAMINTEG");
-    }
-
-    public String getEamlightOldURL() {
-        return eamlightValues.get("EAMLIGHT_OLD_URL");
-    }
-
-    public String getServiceNowURL() {
-        return eamlightValues.get("SERVICE_NOW_URL");
-    }
-
-    public String getPrintingLinkToAIS() {
-        return eamlightValues.get("AISBI_PRINT");
-    }
-
-    public String getPrintingChecklistLinkToAIS() {
-        return eamlightValues.get("AISBI_PRINT_CHECKLIST");
-    }
-
-    public String getGISProcedureLinkWO() {
-        return eamlightValues.get("GIS_PROCEDURE_LINK_WO");
-    }
-
-    public String getGISProcedureLinkEQP() {
-        return eamlightValues.get("GIS_PROCEDURE_LINK_EQP");
-    }
-
-    public String getDismacURL() {
-        return eamlightValues.get("DISMAC_URL");
-    }
-
-    public String[] getDismacUserGroups() { return eamlightValues.get("DISMAC_USER_GROUPS").replaceAll("\\s+", "").trim().split(","); }
-
-    public String[] getCryoEqpReplacementClasses() { return eamlightValues.get("CRYP_EQP_RPL_CLASSES").replaceAll("\\s+", "").trim().split(","); }
-
-    public String getEDMSDoclightURL() {
-        return eamlightValues.get("EDMS_DOCLIGHT_URL");
+    public String[] getCryoEqpReplacementClasses() {
+        return eamlightValues.get("EL_EQRPG").replaceAll("\\s+", "").trim().split(",");
     }
 
 }

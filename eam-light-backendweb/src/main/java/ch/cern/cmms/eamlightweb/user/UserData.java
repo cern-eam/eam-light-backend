@@ -70,7 +70,7 @@ public class UserData {
 		//
 		credentials = new Credentials();
 		credentials.setUsername(getEamAccount().getUserCode());
-		credentials.setPassword(applicationData.getPassphrase());
+		credentials.setPassword(applicationData.getAdminPassword());
 
 	}
 
@@ -82,7 +82,6 @@ public class UserData {
 	private String systemScreen;
 	private String workOrderScreen;
 	private String partScreen;
-
 
 
 	public EAMUser getEamAccount() {
