@@ -15,12 +15,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightejb.UserTools;
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.cmms.eamlightejb.layout.ScreenLayout;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/application")
@@ -28,14 +28,14 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class ApplicationController extends WSHubController {
 
-	@Inject
-	private ApplicationData applicationData;
 	@EJB
 	private LayoutBean layoutBean;
 	@EJB
 	private UserTools userTools;
 	@Inject
 	private AuthenticationTools authenticationTools;
+	@Inject
+	private ApplicationData applicationData;
 
 	@GET
 	@Path("/applicationdata")
@@ -43,7 +43,7 @@ public class ApplicationController extends WSHubController {
 	@Consumes("application/json")
 	public Response readApplicationData() {
 		try {
-			return ok(applicationData);
+			return ok(applicationData.getValues());
 		} catch(Exception e) {
 			return serverError(e);
 		}

@@ -33,11 +33,11 @@ public class AuthenticationTools {
             if (user == null) {
                 user = System.getProperty("DEFAULT_USER").toUpperCase();
             }
-            password = applicationData.getPassphrase();
+            password = applicationData.getAdminPassword();
             organization = applicationData.getDefaultOrganization();
         } else if ("SSO".equalsIgnoreCase(authenticationMode)) {
             user = request.getHeader("ADFS_LOGIN").toUpperCase();
-            password = applicationData.getPassphrase();
+            password = applicationData.getAdminPassword();
             organization = applicationData.getDefaultOrganization();
         } else {
             user = request.getHeader("INFOR_USER");
@@ -71,8 +71,8 @@ public class AuthenticationTools {
 
     public InforContext getR5InforContext() throws InforException {
         InforContext inforContext = this.getInforContext();
-        inforContext.getCredentials().setUsername("R5");
-        inforContext.getCredentials().setPassword(applicationData.getPassphrase());
+        inforContext.getCredentials().setUsername(applicationData.getAdminUser());
+        inforContext.getCredentials().setPassword(applicationData.getAdminPassword());
         return inforContext;
     }
 
