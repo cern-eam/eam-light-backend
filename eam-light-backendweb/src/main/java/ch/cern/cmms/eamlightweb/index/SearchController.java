@@ -1,20 +1,15 @@
-/**
- * 
- */
 package ch.cern.cmms.eamlightweb.index;
 
-
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.user.UserData;
-import ch.cern.cmms.eamlightejb.index.IndexEJB;
+import ch.cern.eam.wshub.core.client.InforClient;
 
 /**
  * Controller to handle the events related with the home screen of the
@@ -26,11 +21,10 @@ import ch.cern.cmms.eamlightejb.index.IndexEJB;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class SearchController extends WSHubController {
 
-	@EJB
-	private IndexEJB indexEJB;
-
 	@Inject
-	private UserData userData;
+	private IndexGrids indexGrids;
+	@Inject
+	private AuthenticationTools authenticationTools;
 
 	@GET
 	@Path("/")
@@ -41,15 +35,8 @@ public class SearchController extends WSHubController {
 			searchKeyWord = searchKeyWord.trim();
 		}
 
-		Boolean woScreenAccess = isUserScreenAvailable(userData.getWorkOrderScreen(null));
-		Boolean assetScreenAccess = isUserScreenAvailable(userData.getAssetScreen(null));
-		Boolean positionScreenAccess = isUserScreenAvailable(userData.getPositionScreen(null));
-		Boolean systemScreenAccess = isUserScreenAvailable(userData.getSystemScreen(null));
-		Boolean partScreenAccess = isUserScreenAvailable(userData.getPartScreen(null));
 		try {
-			return ok(
-					indexEJB.getIndexResults(searchKeyWord, userData.getEamAccount().getUserCode(), woScreenAccess,
-							assetScreenAccess, positionScreenAccess, systemScreenAccess, partScreenAccess));
+			return ok(indexGrids.search(authenticationTools.getInforContext(), searchKeyWord));
 		} catch(Exception e) {
 			return serverError(e);
 		}
@@ -63,21 +50,11 @@ public class SearchController extends WSHubController {
 			searchKeyword = searchKeyword.trim();
 		}
 
-		Boolean woScreenAccess = isUserScreenAvailable(userData.getWorkOrderScreen(null));
-		Boolean assetScreenAccess = isUserScreenAvailable(userData.getAssetScreen(null));
-		Boolean positionScreenAccess = isUserScreenAvailable(userData.getPositionScreen(null));
-		Boolean systemScreenAccess = isUserScreenAvailable(userData.getSystemScreen(null));
-		Boolean partScreenAccess = isUserScreenAvailable(userData.getPartScreen(null));
 		try {
-			return ok(
-					indexEJB.getIndexSingleResult(searchKeyword, userData.getEamAccount().getUserCode(), woScreenAccess,
-							assetScreenAccess, positionScreenAccess, systemScreenAccess, partScreenAccess));
+			return ok(indexGrids.searchSingleResult(authenticationTools.getInforContext(), searchKeyword));
 		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
 
-	private Boolean isUserScreenAvailable(String screen) {
-		return screen == null ? false : true;
-	}
 }
