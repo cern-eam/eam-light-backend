@@ -1,7 +1,4 @@
-/**
- * 
- */
-package ch.cern.cmms.eamlightejb.index;
+package ch.cern.cmms.eamlightweb.index;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,21 +8,13 @@ import javax.persistence.Id;
  * Result of index when the search is executed
  *
  */
-@Entity
 public class IndexResult {
 
-	@Id
-	@Column(name = "CODE")
 	private String code;
-	@Column(name = "ENTTYPE")
 	private String type;
-	@Column(name = "DESCRIPTION")
 	private String description;
-	@Column(name = "MRC")
 	private String mrc;
-	@Column(name = "SERIAL")
 	private String serial;
-	@Column(name = "ALIAS")
 	private String alias;
 
 	public String getCode() {
@@ -98,38 +87,22 @@ public class IndexResult {
 		}
 	}
 
-
-	/**
-	 * @return the serial
-	 */
 	public String getSerial() {
 		return serial;
 	}
 
-	/**
-	 * @param serial the serial to set
-	 */
 	public void setSerial(String serial) {
 		this.serial = serial;
 	}
 
-	/**
-	 * @return the alias
-	 */
 	public String getAlias() {
 		return alias;
 	}
 
-	/**
-	 * @param alias the alias to set
-	 */
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "IndexResult [" + (code != null ? "code=" + code + ", " : "")
