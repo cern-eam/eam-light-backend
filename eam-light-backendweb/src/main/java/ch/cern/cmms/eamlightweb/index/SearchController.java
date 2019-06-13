@@ -6,6 +6,7 @@ import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightejb.index.IndexEJB;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
@@ -25,6 +26,10 @@ public class SearchController extends WSHubController {
 	private IndexGrids indexGrids;
 	@Inject
 	private AuthenticationTools authenticationTools;
+	@Inject
+	private IndexEJB indexEJB;
+	@Inject
+	private InforClient inforClient;
 
 	@GET
 	@Path("/")
@@ -36,7 +41,11 @@ public class SearchController extends WSHubController {
 		}
 
 		try {
-			return ok(indexGrids.search(authenticationTools.getInforContext(), searchKeyWord));
+			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+				return ok(indexEJB.getIndexResults(searchKeyWord, authenticationTools.getInforContext().getCredentials().getUsername()));
+			} else {
+				return ok(indexGrids.search(authenticationTools.getInforContext(), searchKeyWord));
+			}
 		} catch(Exception e) {
 			return serverError(e);
 		}
@@ -51,7 +60,11 @@ public class SearchController extends WSHubController {
 		}
 
 		try {
-			return ok(indexGrids.searchSingleResult(authenticationTools.getInforContext(), searchKeyword));
+			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+				return ok(indexEJB.getIndexSingleResult(searchKeyword, authenticationTools.getInforContext().getCredentials().getUsername()));
+			} else {
+				return ok(indexGrids.searchSingleResult(authenticationTools.getInforContext(), searchKeyword));
+			}
 		} catch(Exception e) {
 			return serverError(e);
 		}
