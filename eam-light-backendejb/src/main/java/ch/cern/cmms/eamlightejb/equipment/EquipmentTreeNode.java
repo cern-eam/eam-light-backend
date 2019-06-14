@@ -15,15 +15,15 @@ import javax.persistence.Transient;
  */
 @Entity
 @NamedNativeQueries({
-		@NamedNativeQuery(name = EquipmentTreeNode.GET_TREE_ASBMGR, 
-				query = "select id as id, name as name, null as parent from ASBMGR.C_NODES "+ 
+		@NamedNativeQuery(name = EquipmentTreeNode.GET_TREE_ASBMGR,
+				query = "select id as id, name as name, null as parent from ASBMGR.C_NODES "+
 						" where id = :equipment "+
 						" union "+
-						" select id2 as id, childnode.name as name, id1 as parent from ASBMGR.C_NOD_STR "+ 
-						" left join ASBMGR.C_NODES childnode on childnode.id = id2 "+ 
-						" where id1 = :equipment ", 
+						" select id2 as id, childnode.name as name, id1 as parent from ASBMGR.C_NOD_STR "+
+						" left join ASBMGR.C_NODES childnode on childnode.id = id2 "+
+						" where id1 = :equipment ",
 				resultClass = EquipmentTreeNode.class),
-		@NamedNativeQuery(name = EquipmentTreeNode.GET_TREE, 
+		@NamedNativeQuery(name = EquipmentTreeNode.GET_TREE,
 				query = " select * from ( "+
 						" select obj_code as id, null as parent, obj_desc as name, obj_obrtype as type, 0 as treelevel, 0 as sequence "+
 						" from r5objects where obj_code = :equipment "+
@@ -42,7 +42,9 @@ import javax.persistence.Transient;
 						" AND  c.OBJ_NOTUSED = '-' "+
 						" START WITH a.stc_parent = :equipment or a.stc_child = :equipment "+
 						" CONNECT BY NOCYCLE PRIOR a.stc_child = a.stc_parent "+
-						" ) order by treelevel, sequence",
+						" ) " +
+						"WHERE rownum < 10000 " +
+						"order by treelevel, sequence",
 				resultClass = EquipmentTreeNode.class)})
 public class EquipmentTreeNode  implements Serializable{
 
