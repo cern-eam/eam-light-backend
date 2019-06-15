@@ -1,9 +1,6 @@
 package ch.cern.cmms.eamlightejb.equipment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -33,6 +30,10 @@ public class EquipmentEJB {
 	}
 
 	public List<GraphNode> getEquipmentStructureTree(String equipment) {
+		if (!inforClient.getTools().isDatabaseConnectionConfigured()) {
+			return new LinkedList<GraphNode>();
+		}
+
 		// fetch nodes info
 		List<EquipmentTreeNode> result = inforClient.getTools().getEntityManager().createNamedQuery(EquipmentTreeNode.GET_TREE, EquipmentTreeNode.class)
 				.setParameter("equipment", equipment) 

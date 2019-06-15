@@ -37,7 +37,6 @@ public class InforClientProducer {
             inforInterceptor = CDI.current().select(InforInterceptor.class).get();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
         }
 
         inforClient = new InforClient.Builder(Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"), Tools.getVariableValue("EAMLIGHT_INFOR_TENANT"))

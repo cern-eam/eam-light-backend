@@ -50,7 +50,7 @@ public class IndexGrids {
             gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipmentno", keyword, operator, GridRequestFilter.JOINER.OR));
             gridRequest.getGridRequestFilters().add(new GridRequestFilter("alias", keyword, operator, GridRequestFilter.JOINER.OR));
             gridRequest.getGridRequestFilters().add(new GridRequestFilter("serialnumber", keyword, operator, GridRequestFilter.JOINER.OR));
-            gridRequest.getGridRequestFilters().add(new GridRequestFilter("udfchar45", keyword, operator, GridRequestFilter.JOINER.OR));
+            //gridRequest.getGridRequestFilters().add(new GridRequestFilter("udfchar45", keyword, operator, GridRequestFilter.JOINER.OR));
             List<IndexResult> result = inforClient.getTools().getGridTools().converGridResultToObject(IndexResult.class,
                     map,
                     inforClient.getGridsService().executeQuery(inforContext, gridRequest));

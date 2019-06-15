@@ -37,8 +37,7 @@ public class BookingLabourRest extends WSHubController {
 	@Consumes("application/json")
 	public Response readBookingLabours(@PathParam("workorder") String workorder) {
 		try {
-			List<LaborBooking> labors = Arrays
-					.asList(inforClient.getLaborBookingService().readLaborBookings(authenticationTools.getInforContext(), workorder));
+			List<LaborBooking> labors = inforClient.getLaborBookingService().readLaborBookings(authenticationTools.getR5InforContext(), workorder);
 			Collections.sort(labors);
 			return ok(labors);
 		} catch (InforException e) {

@@ -1,7 +1,9 @@
 package ch.cern.cmms.eamlightweb.user;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -11,7 +13,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightejb.tools.LoggingService;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
@@ -19,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.cmms.eamlightejb.layout.ScreenInfo;
-import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
 import org.jboss.logging.Logger;
 
@@ -30,8 +30,6 @@ public class UserData {
 
 	@EJB
 	private LayoutBean layoutBean;
-	@Inject
-	private ApplicationData applicationData;
 	@Inject
 	private AuthenticationTools authenticationTools;
 	@Inject
@@ -63,18 +61,14 @@ public class UserData {
 		functionCodes.add("OSOBJP");
 		functionCodes.add("OSOBJS");
 		functionCodes.add("SSPART");
-		screens = layoutBean.getUserScreens(functionCodes, getEamAccount().getUserCode());
 
-		//
-		// CREDENTIALS
-		//
-		credentials = new Credentials();
-		credentials.setUsername(getEamAccount().getUserCode());
-		credentials.setPassword(applicationData.getAdminPassword());
-
+		if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+			screens = layoutBean.getUserScreens(functionCodes, getEamAccount().getUserCode());
+		} else {
+			screens = getScreensMap(functionCodes);
+		}
 	}
 
-	private Credentials credentials;
 	private EAMUser eamAccount;
 	private Map<String, ScreenInfo> screens;
 	private String assetScreen;
@@ -82,7 +76,6 @@ public class UserData {
 	private String systemScreen;
 	private String workOrderScreen;
 	private String partScreen;
-
 
 	public EAMUser getEamAccount() {
 		return eamAccount;
@@ -142,6 +135,10 @@ public class UserData {
 	 */
 	@XmlTransient
 	private String getScreenCode(String functionCode, String requestScreen) {
+		if (!inforClient.getTools().isDatabaseConnectionConfigured()) {
+			return functionCode;
+		}
+
 		String screenCode = null;
 
 		// 1. Checking screen code provided in URL
@@ -227,6 +224,10 @@ public class UserData {
 				+ (systemScreen != null ? "systemScreen=" + systemScreen + ", " : "")
 				+ (workOrderScreen != null ? "workOrderScreen=" + workOrderScreen + ", " : "")
 				+ (partScreen != null ? "partScreen=" + partScreen : "") + "]";
+	}
+
+	private Map<String, ScreenInfo> getScreensMap(List<String> functions) {
+		return functions.stream().collect(Collectors.toMap(function -> function, function -> new ScreenInfo(function, function, function)));
 	}
 
 }

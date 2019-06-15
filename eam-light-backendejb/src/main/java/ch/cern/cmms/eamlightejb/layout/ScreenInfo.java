@@ -55,6 +55,20 @@ public class ScreenInfo {
 	@Column(name="GRD_GRIDID")
 	private String gridId;
 
+	public ScreenInfo() {
+
+	}
+
+	public ScreenInfo(String screenCode, String parentScreen, String screenDesc) {
+		this.screenCode = screenCode;
+		this.parentScreen = parentScreen;
+		this.screenCode = screenCode;
+		readAllowed = true;
+		creationAllowed = true;
+		deleteAllowed = true;
+		updateAllowed = true;
+	}
+
 	public String getScreenCode() {
 		return screenCode;
 	}
