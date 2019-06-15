@@ -62,7 +62,7 @@ public class ScreenInfo {
 	public ScreenInfo(String screenCode, String parentScreen, String screenDesc) {
 		this.screenCode = screenCode;
 		this.parentScreen = parentScreen;
-		this.screenCode = screenCode;
+		this.screenDesc = screenDesc;
 		readAllowed = true;
 		creationAllowed = true;
 		deleteAllowed = true;

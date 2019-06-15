@@ -31,7 +31,9 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.layout.ElementInfo;
 import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
+import ch.cern.eam.wshub.core.services.material.entities.PartStock;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/parts")
@@ -58,7 +60,24 @@ public class PartController extends WSHubController {
 	@Consumes("application/json")
 	public Response readPartStock(@PathParam("part") String partCode) {
 		try {
-			return ok(partsEJB.getPartStock(partCode, authenticationTools.getInforContext().getCredentials().getUsername()));
+			GridRequest gridRequest = new GridRequest("SSPART_BIS");
+			gridRequest.setGridType("LOV");
+			gridRequest.setUserFunctionName("SSPART");
+			gridRequest.getParams().put("partorg", authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.getParams().put("partcode", partCode);
+
+			Map<String, String> map = new HashMap<>();
+			map.put("bisstore", "storeCode");
+			map.put("storedesc", "storeDesc");
+			map.put("bisbin", "bin");
+			map.put("bislot", "lot");
+			map.put("bisqty", "qtyOnHand");
+			map.put("repairquantity", "repairQuantity");
+			map.put("bisassetid", "assetCode");
+
+			return ok(inforClient.getTools().getGridTools().converGridResultToObject(PartStock.class,
+					map,
+					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch(Exception e) {
 			return serverError(e);
 		}

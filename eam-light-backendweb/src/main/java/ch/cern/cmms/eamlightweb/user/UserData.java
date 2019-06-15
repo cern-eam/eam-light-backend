@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightweb.user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,24 +54,27 @@ public class UserData {
 			loggingService.log(Logger.Level.FATAL, "Couldn't read eam user " + e.getMessage());
 		}
 		//
+		//
+		//
+		screenList = new HashMap<>();
+		screenList.put("WSJOBS", "Work Orders");
+		screenList.put("OSOBJA", "Assets");
+		screenList.put("OSOBJP", "Positions");
+		screenList.put("OSOBJS", "Systems");
+		screenList.put("SSPART", "Parts");
+		//
 		// USER SCREENS
 		//
-		ArrayList<String> functionCodes = new ArrayList<String>();
-		functionCodes.add("WSJOBS");
-		functionCodes.add("OSOBJA");
-		functionCodes.add("OSOBJP");
-		functionCodes.add("OSOBJS");
-		functionCodes.add("SSPART");
-
 		if (inforClient.getTools().isDatabaseConnectionConfigured()) {
-			screens = layoutBean.getUserScreens(functionCodes, getEamAccount().getUserCode());
+			screens = layoutBean.getUserScreens(new ArrayList<>(screenList.keySet()), getEamAccount().getUserCode());
 		} else {
-			screens = getScreensMap(functionCodes);
+			screens = getScreensMap();
 		}
 	}
 
 	private EAMUser eamAccount;
 	private Map<String, ScreenInfo> screens;
+	private Map<String, String> screenList;
 	private String assetScreen;
 	private String positionScreen;
 	private String systemScreen;
@@ -202,14 +206,10 @@ public class UserData {
 		}
 		UserData userData = new UserData();
 		userData.eamAccount = eamAccount;
-		userData.assetScreen = getAssetScreen(
-				"asset".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
-		userData.positionScreen = getPositionScreen(
-				"position".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
-		userData.systemScreen = getSystemScreen(
-				"system".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
-		userData.workOrderScreen = getWorkOrderScreen(
-				"workorder".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
+		userData.assetScreen = getAssetScreen("asset".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
+		userData.positionScreen = getPositionScreen("position".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
+		userData.systemScreen = getSystemScreen("system".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
+		userData.workOrderScreen = getWorkOrderScreen("workorder".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
 		userData.partScreen = getPartScreen("part".equals(currentScreen) && !"".equals(screenCode) ? screenCode : null);
 		userData.screens = screens;
 		return userData;
@@ -226,8 +226,8 @@ public class UserData {
 				+ (partScreen != null ? "partScreen=" + partScreen : "") + "]";
 	}
 
-	private Map<String, ScreenInfo> getScreensMap(List<String> functions) {
-		return functions.stream().collect(Collectors.toMap(function -> function, function -> new ScreenInfo(function, function, function)));
+	private Map<String, ScreenInfo> getScreensMap() {
+		return screenList.keySet().stream().collect(Collectors.toMap(function -> function, function -> new ScreenInfo(function, function, screenList.get(function))));
 	}
 
 }
