@@ -37,7 +37,7 @@ public class AutocompleteClass extends Autocomplete {
 		try {
 			// Input
 			SimpleGridInput in = prepareInput();
-			in.getInforParams().put("rentity", entity);
+			in.getInforParams().put("parameter.rentity", entity);
 			in.getGridFilters().add(new GridRequestFilter("class", code.toUpperCase(), "BEGINS"));
 			in.getSortParams().put("class", true); // true=ASC, false=DESC
 			// Result

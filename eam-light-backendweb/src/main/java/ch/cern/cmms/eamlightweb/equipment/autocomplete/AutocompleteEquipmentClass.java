@@ -26,7 +26,7 @@ public class AutocompleteEquipmentClass extends Autocomplete {
 		SimpleGridInput in = new SimpleGridInput("44", "LVCLAS", "44");
 		in.setGridType("LOV");
 		in.setFields(Arrays.asList("681", "120")); // 681=class , 629=des_text
-		in.getInforParams().put("rentity", "OBJ");
+		in.getInforParams().put("parameter.rentity", "OBJ");
 		return in;
 	}
 
