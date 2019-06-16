@@ -10,6 +10,7 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import org.jboss.logging.Logger.Level;
 
@@ -82,6 +83,12 @@ public abstract class DropdownValues extends WSHubController {
 						.map(cell -> cell.getContent()).collect(Collectors.toList()))
 				.map(list -> new Pair(list.get(0), list.get(1)))
 				.collect(Collectors.toList());
+	}
+
+	protected List<Pair> loadDropdown(GridRequest gridRequest, String code, String desc) throws InforException {
+		return inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+				Pair.generateGridPairMap(code, desc),
+				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 	}
 
 }

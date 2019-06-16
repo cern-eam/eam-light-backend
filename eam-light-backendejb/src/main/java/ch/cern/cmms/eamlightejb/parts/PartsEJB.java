@@ -26,14 +26,7 @@ public class PartsEJB {
     @Inject
     private LoggingService logger;
 
-	//
-	// PartStock
-	//
-	public List<PartStock> getPartStock(String code, String user) {
-		return inforClient.getTools().getEntityManager().createNamedQuery(PartStock.STOCK_PARTSTOCK, PartStock.class).setParameter("part_code", code)
-				.setParameter("eamUser", user).getResultList();
-	}
-	
+
 	//
 	// Used to generate new code for parts
 	//

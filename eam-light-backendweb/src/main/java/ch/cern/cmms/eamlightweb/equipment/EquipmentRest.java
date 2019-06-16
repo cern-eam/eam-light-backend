@@ -22,12 +22,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import ch.cern.cmms.eamlightejb.UserTools;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.layout.ElementInfo;
@@ -195,11 +195,12 @@ public class EquipmentRest extends WSHubController {
 			equipment.setTypeCode(eqpType);
 
 			// Default values from screen
-			Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
-					entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
+						entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+				EquipmentTools.assignDefaultValues(equipment, screenFields, applicationData);
+			}
 
-			// Assign default values
-			EquipmentTools.assignDefaultValues(equipment, screenFields, applicationData);
 			// Populate Object
 			tools.pupulateBusinessObject(equipment, parameters);
 

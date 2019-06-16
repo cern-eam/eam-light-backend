@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
@@ -17,12 +14,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightejb.UserTools;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/wolists")
@@ -40,22 +38,16 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readProblemCodes(@QueryParam("woclass") String woclass, @QueryParam("objclass") String objclass) {
 		try {
-			// Map of parameters to send to the query
-			Map<String, String> parameters = new HashMap<>();
-			// Get the default data spy
-			GridDataspy dataspy = getDefaultDataSpy("29", "LOV");
-			// Definition of parameters
-			parameters.clear();
+			GridRequest gridRequest = new GridRequest("LVRECO");
+			gridRequest.setGridType("LOV");
 			//
-			parameters.put("woclass", woclass);
-			parameters.put("objclass", objclass);
-			parameters.put("objclassorg", null);
-			parameters.put("clgroup", null);
-			parameters.put("userfunction", "WSJOBS");
-			parameters.put("equipmentorg", null);
-			parameters.put("equipment", null);
-			// Load the dropdown
-			return ok(loadDropdown("29", "LVRECO", dataspy.getCode(), "LOV", Arrays.asList("101", "103"), parameters));
+			gridRequest.getParams().put("param.objclass", objclass);
+			gridRequest.getParams().put("param.objclassorg", null);
+			gridRequest.getParams().put("param.clgroup", null);
+			gridRequest.getParams().put("parameter.equipmentorg", null);
+			gridRequest.getParams().put("parameter.equipment", null);
+
+			return ok(loadDropdown(gridRequest, "101", "103"));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -69,22 +61,18 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readStatusCodes(@QueryParam("wostatus") String wostatus, @QueryParam("wotype") String wotype,
 			@QueryParam("newwo") Boolean newwo) throws InforException {
-		// Map of parameters to send to the query
-		Map<String, String> parameters = new HashMap<>();
-		// Get the default data spy
-		GridDataspy dataspy = getDefaultDataSpy("2403", "LOV");
+		GridRequest gridRequest = new GridRequest("LVWRSTDRP");
+		gridRequest.setGridType("LOV");
 		// Definition of parameters
 		if (newwo) {
-			parameters.put("param.poldstat", "-");
-			parameters.put("param.pexcclause", "C");
+			gridRequest.getParams().put("param.poldstat", "-");
+			gridRequest.getParams().put("param.pexcclause", "C");
 		} else {
-			parameters.put("param.poldstat", wostatus);
-			parameters.put("param.pexcclause", "A");
+			gridRequest.getParams().put("param.poldstat", wostatus);
+			gridRequest.getParams().put("param.pexcclause", "A");
 		}
-		parameters.put("param.pfunrentity", "EVNT");
-
-		// Load the dropdown
-		return ok(loadDropdown("2403", "LVWRSTDRP", dataspy.getCode(), "LOV", Arrays.asList("118", "629"), parameters, null, true));
+		gridRequest.getParams().put("param.pfunrentity", "EVNT");
+		return ok(loadDropdown(gridRequest, "118", "629"));
 	}
 
 	@GET
@@ -93,12 +81,12 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readTypeCodes(@QueryParam("wostatus") String wostatus, @QueryParam("wotype") String wotype,
 			@QueryParam("newwo") Boolean newwo, @QueryParam("ppmwo") Boolean ppmwo) throws InforException {
-		GridDataspy dataspy = getDefaultDataSpy("2251", "LOV");
-		Map<String, String> parameters = new HashMap<>();
-		parameters.put("parameter.pagemode", null);
-		parameters.put("parameter.usergroup", userTools.getUserGroup(authenticationTools.getInforContext()));
-		return ok(loadDropdown("2251", "LVGROUPWOTYPE", dataspy.getCode(), "LOV", Arrays.asList("101", "103"), parameters, null, true));
-	}
+		GridRequest gridRequest = new GridRequest("LVGROUPWOTYPE");
+		gridRequest.setGridType("LOV");
+		gridRequest.getParams().put("parameter.pagemode", null);
+		gridRequest.getParams().put("parameter.usergroup", userTools.getUserGroup(authenticationTools.getInforContext()));
+		return ok(loadDropdown(gridRequest, "101", "103"));
+		}
 
 	@GET
 	@Path("/prioritycodes")
@@ -128,21 +116,16 @@ public class WorkOrderLists extends DropdownValues {
 	public Response readFailureCodes(@QueryParam("objclass") String objclass,
 			@QueryParam("problemcode") String problemCode) {
 		try {
-			// Map of parameters to send to the query
-			Map<String, String> parameters = new HashMap<>();
-			// Get the default data spy
-			GridDataspy dataspy = getDefaultDataSpy("101", "LOV");
-			// Definition of parameters
-			parameters.clear();
-			parameters.put("objclass", objclass);
-			parameters.put("problemcode", problemCode);
-			parameters.put("objclassorg", null);
-			parameters.put("clgroup", null);
-			parameters.put("userfunction", "WSJOBS");
-			parameters.put("equipmentorg", null);
-			parameters.put("equipment", null);
-			// Load the dropdown
-			return ok(loadDropdown("101", "LVFAILURE", dataspy.getCode(), "LOV", Arrays.asList(new String[] { "101", "103" }), parameters));
+			GridRequest gridRequest = new GridRequest("LVFAILURE");
+			gridRequest.setGridType("LOV");
+			gridRequest.getParams().put("param.objclass", objclass);
+			gridRequest.getParams().put("param.problemcod", problemCode);
+			gridRequest.getParams().put("param.objclassorg", null);
+			gridRequest.getParams().put("param.clgroup", null);
+			gridRequest.getParams().put("userfunction", "WSJOBS");
+			gridRequest.getParams().put("parameter.equipmentorg", null);
+			gridRequest.getParams().put("parameter.equipment", null);
+			return ok(loadDropdown(gridRequest, "101", "103"));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -160,24 +143,18 @@ public class WorkOrderLists extends DropdownValues {
 	public Response readCauseCodes(@QueryParam("objclass") String objclass,
 			@QueryParam("failurecode") String failurecode, @QueryParam("problemcode") String problemcode) {
 		try {
-			// Map of parameters to send to the query
-			Map<String, String> parameters = new HashMap<>();
-			// Get the default data spy
-			GridDataspy dataspy = getDefaultDataSpy("102", "LOV");
-			// Definition of parameters
-			parameters.clear();
+			GridRequest gridRequest = new GridRequest("LVCAUSE");
+			gridRequest.setGridType("LOV");
 			// objclassorg, clgroup, failurecode, problemcode, objclass
-			parameters.put("objclass", objclass);
-			parameters.put("failurecode", failurecode);
-			parameters.put("problemcode", problemcode);
-			parameters.put("objclassorg", null);
-			parameters.put("clgroup", null);
-			parameters.put("userfunction", "WSJOBS");
-			parameters.put("equipmentorg", null);
-			parameters.put("equipment", null);
-			// Load the dropdown
-			return ok(loadDropdown("102", "LVCAUSE", dataspy.getCode(), "LOV",
-					Arrays.asList(new String[] { "101", "103" }), parameters));
+			gridRequest.getParams().put("param.objclass", objclass);
+			gridRequest.getParams().put("param.failurecode", failurecode);
+			gridRequest.getParams().put("param.problemcode", problemcode);
+			gridRequest.getParams().put("param.objclassorg", null);
+			gridRequest.getParams().put("param.clgroup", null);
+			gridRequest.getParams().put("parameter.equipmentorg", null);
+			gridRequest.getParams().put("parameter.equipment", null);
+
+			return ok(loadDropdown(gridRequest, "101", "103"));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -193,23 +170,19 @@ public class WorkOrderLists extends DropdownValues {
 			@QueryParam("failurecode") String failurecode, @QueryParam("problemcode") String problemcode,
 			@QueryParam("causecode") String causecode) {
 		try {
-			// Map of parameters to send to the query
-			Map<String, String> parameters = new HashMap<>();
-			// Get the default data spy
-			GridDataspy dataspy = getDefaultDataSpy("103", "LOV");
-			// Definition of parameters
-			parameters.clear();
-			parameters.put("objclass", objclass);
-			parameters.put("failurecode", failurecode);
-			parameters.put("problemcode", problemcode);
-			parameters.put("causecode", causecode);
-			parameters.put("objclassorg", null);
-			parameters.put("clgroup", null);
-			parameters.put("userfunction", "WSJOBS");
-			parameters.put("equipmentorg", null);
-			parameters.put("equipment", null);
-			// Load the dropdown
-			return ok(loadDropdown("103", "LVACTION", dataspy.getCode(), "LOV", Arrays.asList(new String[] { "101", "103" }), parameters));
+			GridRequest gridRequest = new GridRequest("LVACTION");
+			gridRequest.setGridType("LOV");
+
+			gridRequest.getParams().put("param.objclass", objclass);
+			gridRequest.getParams().put("param.failurecode", failurecode);
+			gridRequest.getParams().put("param.problemcode", problemcode);
+			gridRequest.getParams().put("param.causecode", causecode);
+			gridRequest.getParams().put("param.objclassorg", null);
+			gridRequest.getParams().put("param.clgroup", null);
+			gridRequest.getParams().put("parameter.equipmentorg", null);
+			gridRequest.getParams().put("parameter.equipment", null);
+
+			return ok(loadDropdown(gridRequest, "101", "103"));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

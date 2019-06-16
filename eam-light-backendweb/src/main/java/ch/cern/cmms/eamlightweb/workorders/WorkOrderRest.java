@@ -1,6 +1,5 @@
 package ch.cern.cmms.eamlightweb.workorders;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +19,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import ch.cern.cmms.eamlightejb.UserTools;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.layout.ElementInfo;
 import ch.cern.cmms.eamlightejb.layout.LayoutBean;
@@ -130,13 +128,12 @@ public class WorkOrderRest extends WSHubController {
 
 			// User defined fields
 			workOrder.setUserDefinedFields(new UserDefinedFields());
-			// Reported by
-			//TODO workOrder.setReportedBy(userData.getEamAccount().getCernId());
 
 			// Default values from screen
-			Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
-					entity, userTools.getUserGroup(authenticationTools.getInforContext()));
-			WorkOrderTools.assignDefaultValues(workOrder, screenFields, applicationData);
+			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction, entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+				WorkOrderTools.assignDefaultValues(workOrder, screenFields, applicationData);
+			}
 
 			tools.pupulateBusinessObject(workOrder, parameters);
 

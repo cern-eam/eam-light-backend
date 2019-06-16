@@ -5,7 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
+import javax.sound.sampled.Line;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,6 +15,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
@@ -24,16 +27,19 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class PartListsController extends DropdownValues {
 
+	@Inject
+	private AuthenticationTools authenticationTools;
+
 	@GET
 	@Path("/trackMethods")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readTrackingMethodCodes() {
-		List<Pair> methods = new LinkedList<Pair>();
-		methods.add(new Pair("NOST", "Non stocke, non suivi, depenses prevues"));
-		methods.add(new Pair("TRPQ", "Stocke, qte suivie"));
-		methods.add(new Pair("TRQ", "Stocke, quantite suivie, montant non suivi"));
-		return ok(methods);
+	public Response readTrackingMethodCodes() throws InforException {
+		GridRequest gridRequest = new GridRequest("LVTRACK");
+		gridRequest.setGridType("LOV");
+		return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+				Pair.generateGridPairMap("101", "103"),
+				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 	}
 
 	@GET
