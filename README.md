@@ -35,7 +35,7 @@ The docker container exposes the following ports:
 
 Once you have your own environment variables set up, you can start a new docker container:
 ```
-docker run -p 8081:8081 -p 9090:9090 --env-file .env cerneam/eam-light-backend:latest
+docker run -p 8081:8081 -p 9090:9090 --env-file .env cerneam/eam-light-backend
 ``` 
 
 Once the docker container is started, the EAM Light REST backend is available at the endpoint `/apis/rest`
