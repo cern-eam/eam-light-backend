@@ -172,11 +172,11 @@ public class PartController extends WSHubController {
 			part.setUserDefinedFields(new UserDefinedFields());
 
 			// Default values from screen
-			Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
-					entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction, entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+				assignDefaultValues(part, screenFields);
+			}
 
-			// Assign default values
-			assignDefaultValues(part, screenFields);
 			// Populate Object
 			tools.pupulateBusinessObject(part, parameters);
 

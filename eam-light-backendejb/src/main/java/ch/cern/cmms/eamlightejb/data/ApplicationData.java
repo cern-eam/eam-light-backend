@@ -68,9 +68,9 @@ public class ApplicationData {
     //
     // ADMIN CREDENTIALS
     //
-    public String getAdminPassword() { return Tools.getVariableValue("EAMLIGHT_PASSPHRASE"); }
+    public String getAdminPassword() { return Tools.getVariableValue("EAMLIGHT_ADMIN_PASSWORD"); }
 
-    public String getAdminUser() { return "R5"; }
+    public String getAdminUser() { return Tools.getVariableValue("EAMLIGHT_ADMIN_USER"); }
 
     //
     // VALUES

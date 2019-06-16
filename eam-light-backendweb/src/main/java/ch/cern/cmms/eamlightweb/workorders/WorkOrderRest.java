@@ -128,13 +128,12 @@ public class WorkOrderRest extends WSHubController {
 
 			// User defined fields
 			workOrder.setUserDefinedFields(new UserDefinedFields());
-			// Reported by
-			//TODO workOrder.setReportedBy(userData.getEamAccount().getCernId());
 
 			// Default values from screen
-			Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
-					entity, userTools.getUserGroup(authenticationTools.getInforContext()));
-			WorkOrderTools.assignDefaultValues(workOrder, screenFields, applicationData);
+			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction, entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+				WorkOrderTools.assignDefaultValues(workOrder, screenFields, applicationData);
+			}
 
 			tools.pupulateBusinessObject(workOrder, parameters);
 

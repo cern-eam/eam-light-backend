@@ -9,36 +9,20 @@ The docker image needs to be parametrized with the following environment variabl
 | ------------- | -----:|---------:|
 | EAMLIGHT_INFOR_WS_URL           | **Yes** |  |
 | EAMLIGHT_INFOR_TENANT         | **Yes** |  |
-| DB_CONNECTION_URL   | **Yes** |  |
-| DB_DRIVER_CLASS   | **Yes** |  |
-| DB_USERNAME   | **Yes** |  |
-| DB_PASSWORD   | **Yes** |  |
-| DB_DRIVER   | **Yes** |  |
-| DB_MIN_POOL_SIZE   | No | 5 |
-| DB_INITIAL_POOL_SIZE   | No | 5 |
-| DB_MAX_POOL_SIZE   | No | 40 |
-| DB_VALID_CONNECTION_CHECKER   | No |  |
-| DB_STALE_CONNECTION_CHECKER   | No |  |
-| DB_EXCEPTION_SORTER   | No |  |
+| EAMLIGHT_ADMIN_USER   | **Yes** |  |
+| EAMLIGHT_ADMIN_PASSWORD   | **Yes** |  |
+| EAMLIGHT_INFOR_ORGANIZATION   | **Yes** |  |
 
 You can for instance store your environment variables in a dedicated .env file:
 
 ```
 EAMLIGHT_INFOR_WS_URL=<url>
 EAMLIGHT_INFOR_TENANT=<tenant>
-DB_CONNECTION_URL=<db-url>
-DB_DRIVER_CLASS=oracle.jdbc.OracleDriver
-DB_USERNAME=<db-username>
-DB_PASSWORD=<db-password>
-DB_DRIVER=ojdbc6.jar
-DB_MIN_POOL_SIZE=5
-DB_INITIAL_POOL_SIZE=5
-DB_MAX_POOL_SIZE=40
-DB_VALID_CONNECTION_CHECKER=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker
-DB_STALE_CONNECTION_CHECKER=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker
-DB_EXCEPTION_SORTER=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter
-```
+EAMLIGHT_ADMIN_USER=<admin user>
+EAMLIGHT_ADMIN_PASSWORD=<password>
+EAMLIGHT_INFOR_ORGANIZATION=<org>
 
+```
 
 ## Run
 

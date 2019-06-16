@@ -195,11 +195,12 @@ public class EquipmentRest extends WSHubController {
 			equipment.setTypeCode(eqpType);
 
 			// Default values from screen
-			Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
-					entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
+						entity, userTools.getUserGroup(authenticationTools.getInforContext()));
+				EquipmentTools.assignDefaultValues(equipment, screenFields, applicationData);
+			}
 
-			// Assign default values
-			EquipmentTools.assignDefaultValues(equipment, screenFields, applicationData);
 			// Populate Object
 			tools.pupulateBusinessObject(equipment, parameters);
 
