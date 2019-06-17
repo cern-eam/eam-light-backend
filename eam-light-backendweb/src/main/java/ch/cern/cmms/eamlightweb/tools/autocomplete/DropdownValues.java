@@ -88,7 +88,7 @@ public abstract class DropdownValues extends WSHubController {
 	protected List<Pair> loadDropdown(GridRequest gridRequest, String code, String desc) throws InforException {
 		return inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 				Pair.generateGridPairMap(code, desc),
-				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
+				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
 	}
 
 }
