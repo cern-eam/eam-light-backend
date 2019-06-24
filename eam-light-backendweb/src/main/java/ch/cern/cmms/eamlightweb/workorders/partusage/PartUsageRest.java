@@ -63,7 +63,7 @@ public class PartUsageRest extends WSHubController {
 			input.getParams().put("param.storefield", "IR");
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("682", "133"),
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), input)));
+					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), input)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -95,7 +95,7 @@ public class PartUsageRest extends WSHubController {
 
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("830", "824"),
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
+					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
