@@ -54,9 +54,9 @@ import javax.persistence.Transient;
 						"    START WITH tree.stc_parent = :equipment   " +
 						"    CONNECT BY NOCYCLE PRIOR tree.stc_child = tree.stc_parent   " +
 						"    GROUP BY obj_code, stc_parent, obj_desc, obj_obrtype, stc_parentrtype " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
+						"	 ORDER BY treelevel, sequence  " +
 						")   " +
-						"WHERE ROWNUM < 20000 " + // LIMIT FOR MEMORY
-						"ORDER BY treelevel, sequence  ",
+						"WHERE ROWNUM < 20000 ", // LIMIT FOR MEMORY
 				resultClass = EquipmentTreeNode.class),
 
 })
