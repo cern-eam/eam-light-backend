@@ -50,7 +50,7 @@ public class MyWorkOrders {
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipment", equipmentCode, "="));
-        gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("workordernum", "DESC")});
+        gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("datecreated", "DESC")});
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));

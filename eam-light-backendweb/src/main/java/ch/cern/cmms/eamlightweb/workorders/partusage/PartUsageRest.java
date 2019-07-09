@@ -30,7 +30,7 @@ import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
-import ch.cern.cmms.eamlightejb.workorders.WorkOrderPartUsage;
+import ch.cern.eam.wshub.core.services.entities.WorkOrderPart;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
@@ -76,7 +76,7 @@ public class PartUsageRest extends WSHubController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response loadBinList(@QueryParam("transaction") String transaction, @QueryParam("bin") String bin,
-			@QueryParam("part") String part, @QueryParam("store") String store) {
+								@QueryParam("part") String part, @QueryParam("store") String store) {
 		try {
 			GridRequest gridRequest;
 			if (transaction.startsWith("I")) {
@@ -106,7 +106,7 @@ public class PartUsageRest extends WSHubController {
 
 	/**
 	 * Loads the default bin
-	 * 
+	 *
 	 * @return Default bin
 	 * @throws InforException
 	 *             Error loading the default bin
@@ -182,7 +182,7 @@ public class PartUsageRest extends WSHubController {
 
 	/**
 	 * Creates the transaction line that is going to be added to the transaction
-	 * 
+	 *
 	 * @return The transaction line to be created
 	 */
 	private IssueReturnPartTransactionLine createTransactionLine() {
@@ -207,7 +207,7 @@ public class PartUsageRest extends WSHubController {
 
 	/**
 	 * Creates the transaction
-	 * 
+	 *
 	 * @return
 	 * @throws InforException
 	 */
@@ -249,16 +249,17 @@ public class PartUsageRest extends WSHubController {
 	public Response loadPartUsageList(@PathParam("workorder") String workorder) {
 		try {
 			// Init the list
-			List<WorkOrderPartUsage> partUsageList = new ArrayList<>();
+			List<WorkOrderPart> partUsageList = new ArrayList<>();
 			// Just execute if there is work order
 			if (workorder != null) {
 				Map<String, String> map = new HashMap<>();
-				map.put("318", "partCode");
-				map.put("357", "partUom");
-				map.put("994", "partDesc");
-				map.put("17484", "activity");
-				map.put("319", "storeCode");
-				map.put("9587", "quantity");
+				map.put("partcode", "partCode");
+				//map.put("357", "partUom");
+				map.put("partdescription", "partDesc");
+				map.put("activity_display", "activityDesc");
+				map.put("storecode", "storeCode");
+				map.put("usedqty", "usedQty");
+				map.put("plannedqty", "plannedQty");
 
 				// Creates simple grid input
 				GridRequest gridRequest = new GridRequest("226", "WSJOBS_PAR", "237");
@@ -266,9 +267,9 @@ public class PartUsageRest extends WSHubController {
 				gridRequest.getParams().put("param.headeractivity", "0");
 				gridRequest.getParams().put("param.headerjob", "0");
 
-				partUsageList = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderPartUsage.class,
-															map,
-															inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
+				partUsageList = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderPart.class,
+						map,
+						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 				partUsageList.stream().forEach(partUsage -> setPartUsageTransType(partUsage));
 			}
@@ -280,13 +281,17 @@ public class PartUsageRest extends WSHubController {
 		}
 	}
 
-	private void setPartUsageTransType(WorkOrderPartUsage workOrderPartUsage) {
+	private void setPartUsageTransType(WorkOrderPart workOrderPartUsage) {
 		try {
-			if (Integer.valueOf(workOrderPartUsage.getQuantity()) < 0) {
+			if (inforClient.getTools().getDataTypeTools().isNotEmpty(workOrderPartUsage.getPlannedQty())) {
+				workOrderPartUsage.setTransType("Planned");
+				workOrderPartUsage.setQuantity(workOrderPartUsage.getPlannedQty());
+			} else if (Integer.valueOf(workOrderPartUsage.getUsedQty()) < 0) {
 				workOrderPartUsage.setTransType("Return");
-				workOrderPartUsage.setQuantity("" + (-1 * Integer.valueOf(workOrderPartUsage.getQuantity())));
+				workOrderPartUsage.setQuantity("" + (-1 * Integer.valueOf(workOrderPartUsage.getUsedQty())));
 			} else {
 				workOrderPartUsage.setTransType("Issue");
+				workOrderPartUsage.setQuantity(workOrderPartUsage.getUsedQty());
 			}
 		} catch (Exception e) {
 			workOrderPartUsage.setTransType("Issue");

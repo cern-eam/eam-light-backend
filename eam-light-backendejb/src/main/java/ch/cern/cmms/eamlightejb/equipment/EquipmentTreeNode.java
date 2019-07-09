@@ -24,28 +24,42 @@ import javax.persistence.Transient;
 						" where id1 = :equipment ",
 				resultClass = EquipmentTreeNode.class),
 		@NamedNativeQuery(name = EquipmentTreeNode.GET_TREE,
-				query = " select * from ( "+
-						" select obj_code as id, null as parent, obj_desc as name, obj_obrtype as type, 0 as treelevel, 0 as sequence "+
-						" from r5objects where obj_code = :equipment "+
-						" union "+
-						" SELECT  distinct a.stc_child as id "+
-						" , CASE WHEN a.stc_child = :equipment THEN null ELSE a.stc_parent END as parent "+
-						" , c.obj_desc as name  "+
-						" , c.OBJ_OBTYPE as type "+
-						" , LEVEL as treelevel "+
-						" , STC_SEQUENCE sequence " +
-						" FROM r5structures a, r5objects b, r5objects c "+
-						" WHERE  a.stc_parent = b.obj_code "+
-						" AND  a.stc_child = c.obj_code  "+
-						" AND  ( a.stc_childrtype  IN ('P', 'A', 'S')  OR  a.stc_parentrtype  ='L' ) "+// --Added on 2007-12-20 to show Locations trees
-						" AND  b.OBJ_NOTUSED = '-' "+
-						" AND  c.OBJ_NOTUSED = '-' "+
-						" START WITH a.stc_parent = :equipment or a.stc_child = :equipment "+
-						" CONNECT BY NOCYCLE PRIOR a.stc_child = a.stc_parent "+
-						" ) " +
-						"WHERE rownum < 10000 " +
-						"order by treelevel, sequence",
-				resultClass = EquipmentTreeNode.class)})
+				query = "SELECT * FROM (  " +
+						"    SELECT   " + // INCLUDE ROOT NODE WITH NO PARENT
+						"        obj_code AS ID,   " +
+						"        null AS PARENT,   " +
+						"        obj_desc AS NAME,   " +
+						"        obj_obrtype AS TYPE,   " +
+						"        0 AS TREELEVEL,   " +
+						"        0 AS SEQUENCE,  " +
+						"        NULL AS STC_PARENTRTYPE  " +
+						"    FROM r5objects   " +
+						"    WHERE obj_code = :equipment   " +
+						"    UNION ALL  " +
+						"    SELECT   " +
+						"        obj_code AS ID,   " +
+						"        stc_parent AS PARENT,   " +
+						"        obj_desc AS NAME,   " +
+						"        obj_obrtype AS TYPE,   " +
+						"        MIN(LEVEL) AS TREELEVEL,   " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
+						"        MIN(stc_sequence) AS SEQUENCE,  " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
+						"        stc_parentrtype  " +
+						"    FROM   " +
+						"        r5structures tree  " +
+						"        INNER JOIN r5objects  " + // IF THEY ARE NOT USED (OUT OF SERVICE), DON'T INCLUDE THEM
+						"            ON obj_code = tree.stc_child  " + // UNIDIRECTIONAL ONLY
+						"            AND obj_notused = '-'   " +
+						"    WHERE  " +
+						"        stc_childtype IN ('P', 'A', 'S')  " +
+						"    START WITH tree.stc_parent = :equipment   " +
+						"    CONNECT BY NOCYCLE PRIOR tree.stc_child = tree.stc_parent   " +
+						"    GROUP BY obj_code, stc_parent, obj_desc, obj_obrtype, stc_parentrtype " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
+						"	 ORDER BY treelevel, sequence  " +
+						")   " +
+						"WHERE ROWNUM < 20000 ", // LIMIT FOR MEMORY
+				resultClass = EquipmentTreeNode.class),
+
+})
 public class EquipmentTreeNode  implements Serializable{
 
 	public final static String GET_TREE = "EquipmentChildren.GET_TREE";
