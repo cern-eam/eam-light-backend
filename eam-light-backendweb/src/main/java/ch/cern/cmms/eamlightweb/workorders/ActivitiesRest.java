@@ -53,6 +53,19 @@ public class ActivitiesRest extends WSHubController {
 		}
 	}
 
+	@PUT
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response updateActivity(Activity activity) {
+		try {
+			return ok(inforClient.getLaborBookingService().updateActivity(authenticationTools.getInforContext(),activity));
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
 	@GET
 	@Path("/init/{workorder}")
 	@Produces("application/json")
