@@ -14,7 +14,6 @@ import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 
-
 public abstract class Autocomplete extends WSHubController {
 
 	@Inject

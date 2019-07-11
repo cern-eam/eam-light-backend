@@ -32,7 +32,6 @@ public class MyWorkOrders {
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
-
     public List<MyWorkOrder> getMyTeamsWorkOrders() throws InforException {
         String userDepartments = readUserDepartments();
         if (userDepartments.isEmpty()) {

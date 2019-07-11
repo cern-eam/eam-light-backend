@@ -13,10 +13,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
+import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -27,32 +28,9 @@ public class AutocompleteACTTask extends Autocomplete {
 
 	@Inject
 	private AuthenticationTools authenticationTools;
+	@Inject
+	private InforClient inforClient;
 
-	private SimpleGridInput prepareInput() throws InforException{
-		SimpleGridInput in = new SimpleGridInput("1181", "LVWTSK", "1147");
-		in.setGridType("LOV");
-		in.setFields(Arrays.asList("1978", "2023"));
-		in.getInforParams().put("eventno", null);
-		in.getInforParams().put("act", "20");
-		in.getInforParams().put("personsreq", null);
-		in.getInforParams().put("techpartfailure", null);
-		in.getInforParams().put("esthrs", "");
-		in.getInforParams().put("reasonforrepair", null);
-		in.getInforParams().put("manufacturer", null);
-		in.getInforParams().put("syslevel", null);
-		in.getInforParams().put("excludenoteeplanning", null);
-		in.getInforParams().put("taskuom", "");
-		in.getInforParams().put("excludeenhanceplanning", null);
-		in.getInforParams().put("trade", null);
-		in.getInforParams().put("isolationmethod", null);
-		in.getInforParams().put("excludemultipletrades", null);
-		in.getInforParams().put("workaccomplished", null);
-		in.getInforParams().put("asslevel", null);
-		in.getInforParams().put("excludejobplanning", null);
-		in.getInforParams().put("complevel", null);
-		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
-		return in;
-	}
 
 	@GET
 	@Path("/act/task/{code}")
@@ -60,12 +38,34 @@ public class AutocompleteACTTask extends Autocomplete {
 	@Consumes("application/json")
 	public Response complete(@PathParam("code") String code) {
 		try {
-			SimpleGridInput in = prepareInput();
-			in.getGridFilters().add(new GridRequestFilter("task", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
-			in.getGridFilters().add(new GridRequestFilter("taskdesc", code.toUpperCase(), "BEGINS" ));
+			GridRequest gridRequest = new GridRequest("LVWTSK");
+			gridRequest.setGridType("LOV");
 
-			in.getSortParams().put("task", true); // true=ASC, false=DESC
-			return ok(getGridResults(in));
+			gridRequest.getParams().put("param.isolationmethod", null);
+			gridRequest.getParams().put("param.excludemultipletrades", null);
+			gridRequest.getParams().put("param.excludejobplanning", null);
+			gridRequest.getParams().put("param.excludenoteeplanning", null);
+			gridRequest.getParams().put("parameter.excludeenhanceplanning", null);
+			gridRequest.getParams().put("param.asslevel", null);
+			gridRequest.getParams().put("param.complevel", null);
+			gridRequest.getParams().put("param.eventno", null);
+			gridRequest.getParams().put("param.act", null);
+			gridRequest.getParams().put("param.esthrs", null);
+			gridRequest.getParams().put("param.manufacturer", null);
+			gridRequest.getParams().put("param.personsreq", null);
+			gridRequest.getParams().put("param.reasonforrepair", null);
+			gridRequest.getParams().put("param.syslevel", null);
+			gridRequest.getParams().put("param.taskuom", null);
+			gridRequest.getParams().put("param.techpartfailure", null);
+			gridRequest.getParams().put("param.trade", null);
+			gridRequest.getParams().put("param.workaccomplished", null);
+
+			gridRequest.getGridRequestFilters().add(new GridRequestFilter("task", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
+			gridRequest.getGridRequestFilters().add(new GridRequestFilter("taskdesc", code.toUpperCase(), "BEGINS" ));
+
+			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+					Pair.generateGridPairMap("task", "taskdesc"),
+					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
