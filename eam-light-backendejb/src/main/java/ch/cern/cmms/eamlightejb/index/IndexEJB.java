@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.logging.Level;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -25,6 +26,7 @@ public class IndexEJB {
     //
     public List<IndexResult> getIndexResults(String hint, String userCode) {
         String query = indexQueryBuilder();
+        inforClient.getTools().log(Level.INFO, "SEARCH / " + userCode + " / " + hint + " / " + query);
         @SuppressWarnings("unchecked")
         List<IndexResult> results = inforClient.getTools().getEntityManager().createNativeQuery(query, IndexResult.class).setParameter("hint", hint + "%")
                 .setParameter("activeUser", userCode).getResultList();
@@ -41,6 +43,7 @@ public class IndexEJB {
      */
     public IndexResult getIndexSingleResult(String hint, String userCode) {
         String query = indexQueryBuilderSingle();
+        inforClient.getTools().log(Level.INFO, "SEARCH / " + userCode + " / " + hint + " / " + query);
         try {
             IndexResult result = (IndexResult) inforClient.getTools().getEntityManager().createNativeQuery(query, IndexResult.class).setParameter("hint", hint)
                     .setParameter("activeUser", userCode).getSingleResult();
