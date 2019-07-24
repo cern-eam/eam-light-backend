@@ -47,6 +47,8 @@ public class ApplicationData {
             GridRequestResult result = inforClient.getGridsService().executeQuery(inforClient.getTools().getInforContext(credentials), gridRequest);
             eamlightValues = Arrays.stream(result.getRows()).collect(toMap(row -> getCellContent("installcode", row), row -> getCellContent("value", row)));
         } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+            e.printStackTrace();
             inforClient.getTools().log(Level.SEVERE, "Couldn't fetch application data: " + e.getMessage());
             eamlightValues = new HashMap<>();
         }

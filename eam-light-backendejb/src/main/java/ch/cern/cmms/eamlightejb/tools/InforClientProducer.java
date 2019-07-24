@@ -3,6 +3,7 @@ package ch.cern.cmms.eamlightejb.tools;
 import ch.cern.cmms.eamlightejb.tools.soaphandler.SOAPHandlerResolver;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
+import com.sun.xml.bind.v2.runtime.unmarshaller.UnmarshallingContext;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -14,6 +15,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -48,6 +51,18 @@ public class InforClientProducer {
                 .withInforInterceptor(inforInterceptor)
                 .withLogger(Logger.getLogger("wshublogger"))
                 .build();
+
+        setUnmarshallingContextErrorsCounter();
+    }
+
+    private void setUnmarshallingContextErrorsCounter() {
+        try {
+            Field field = UnmarshallingContext.class.getDeclaredField("errorsCounter");
+            field.setAccessible(true);
+            field.setInt(null, 0);
+        } catch (Exception exception) {
+            inforClient.getTools().log(Level.SEVERE, "Couldn't set the errorsCounter in the UnmarshallingContext: " + exception.getMessage());
+        }
     }
 
 }
