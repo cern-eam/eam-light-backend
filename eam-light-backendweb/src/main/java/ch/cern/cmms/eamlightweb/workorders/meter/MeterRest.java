@@ -133,6 +133,7 @@ public class MeterRest extends WSHubController {
 			return serverError(e);
 		}
 	}
+
 	@GET
 	@Path("/check")
 	@Produces("application/json")

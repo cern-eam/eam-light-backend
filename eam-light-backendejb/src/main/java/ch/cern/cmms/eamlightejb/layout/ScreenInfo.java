@@ -5,7 +5,7 @@ import javax.persistence.*;
 @NamedNativeQueries({
 	@NamedNativeQuery(name=ScreenInfo.FETCH_USER_SCREENS, 
 			query = 
-			"SELECT NVL(FUN_APPLICATION, EMN_FUNCTION) FUN_APPLICATION, EMN_FUNCTION, EML_TEXT, NVL(DECODE(PRM_SELECT,'?', 1,0),0) PRM_SELECT, NVL(DECODE(PRM_UPDATE,'*', 1,0),0) PRM_UPDATE, NVL(DECODE(PRM_INSERT,'+', 1,0),0) PRM_INSERT, NVL(DECODE(PRM_DELETE,'X', 1,0),0) PRM_DELETE, GRD_GRIDID " + 
+			"SELECT NVL(FUN_APPLICATION, EMN_FUNCTION) FUN_APPLICATION, EMN_FUNCTION, EML_TEXT, NVL(DECODE(PRM_SELECT,'?', 1,0),0) PRM_SELECT, NVL(DECODE(PRM_UPDATE,'*', 1,0),0) PRM_UPDATE, NVL(DECODE(PRM_INSERT,'+', 1,0),0) PRM_INSERT, NVL(DECODE(PRM_DELETE,'X', 1,0),0) PRM_DELETE, GRD_GRIDID, EMN_HIDE " +
 					"FROM R5EXTMENUS, R5EXTMENULANG, R5FUNCTIONS, R5USERS, R5PERMISSIONS, R5GRID " + 
 					"WHERE USR_CODE = :user " + 
 					"AND R5GRID.GRD_GRIDNAME = EMN_FUNCTION " + 
@@ -19,7 +19,7 @@ import javax.persistence.*;
 					resultClass=ScreenInfo.class),
 	@NamedNativeQuery(name=ScreenInfo.FETCH_USER_DEFAULT_SCREEN, 
 			query = 
-			"SELECT NVL(FUN_APPLICATION, EMN_FUNCTION) FUN_APPLICATION, EMN_FUNCTION, EML_TEXT, NVL(DECODE(PRM_SELECT,'?', 1,0),0) PRM_SELECT, NVL(DECODE(PRM_UPDATE,'*', 1,0),0) PRM_UPDATE, NVL(DECODE(PRM_INSERT,'+', 1,0),0) PRM_INSERT, NVL(DECODE(PRM_DELETE,'X', 1),0) PRM_DELETE, GRD_GRIDID " + 
+			"SELECT NVL(FUN_APPLICATION, EMN_FUNCTION) FUN_APPLICATION, EMN_FUNCTION, EML_TEXT, NVL(DECODE(PRM_SELECT,'?', 1,0),0) PRM_SELECT, NVL(DECODE(PRM_UPDATE,'*', 1,0),0) PRM_UPDATE, NVL(DECODE(PRM_INSERT,'+', 1,0),0) PRM_INSERT, NVL(DECODE(PRM_DELETE,'X', 1),0) PRM_DELETE, GRD_GRIDID, EMN_HIDE " +
 					"FROM R5EXTMENUS, R5EXTMENULANG, R5FUNCTIONS, R5USERS, R5PERMISSIONS, R5GRID " + 
 					"WHERE USR_CODE = :user " + 
 					"AND R5GRID.GRD_GRIDNAME = EMN_FUNCTION " + 
@@ -54,6 +54,8 @@ public class ScreenInfo {
 	private boolean updateAllowed;
 	@Column(name="GRD_GRIDID")
 	private String gridId;
+	@Column(name="EMN_HIDE")
+	private String hidden;
 
 	public ScreenInfo() {
 
@@ -119,6 +121,10 @@ public class ScreenInfo {
 	public void setParentScreen(String parentScreen) {
 		this.parentScreen = parentScreen;
 	}
+
+	public String getHidden() { return hidden; }
+	public void setHidden(String hidden) { this.hidden = hidden; }
+
 	@Override
 	public String toString() {
 		return "ScreenInfo [screenCode=" + screenCode + ", parentScreen=" + parentScreen + ", screenDesc=" + screenDesc
