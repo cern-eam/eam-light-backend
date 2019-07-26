@@ -57,11 +57,12 @@ public class InforClientProducer {
 
     private void setUnmarshallingContextErrorsCounter() {
         try {
+            inforClient.getTools().log(Level.INFO, "Setting UnmarshallingContext.errorsCounter to -1 to avoid unmarshaller errors about unknown properties.");
             Field field = UnmarshallingContext.class.getDeclaredField("errorsCounter");
             field.setAccessible(true);
-            field.setInt(null, 0);
+            field.setInt(null, -1);
         } catch (Exception exception) {
-            inforClient.getTools().log(Level.SEVERE, "Couldn't set the errorsCounter in the UnmarshallingContext: " + exception.getMessage());
+            inforClient.getTools().log(Level.SEVERE, "Couldn't set UnmarshallingContext.errorsCounter: " + exception.getMessage());
         }
     }
 
