@@ -56,7 +56,7 @@ public class AutocompletePUAsset extends Autocomplete {
 			if (issuereturn.startsWith("I")) // ISSUE
 				gridRequest.getGridRequestFilters().add(new GridRequestFilter("store", store, "="));
 			else { // RETURN
-				gridRequest.getGridRequestFilters().add(new GridRequestFilter("store", "", "IS_EMPTY"));
+				gridRequest.getGridRequestFilters().add(new GridRequestFilter("store", "", "IS EMPTY"));
 			}
 
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
