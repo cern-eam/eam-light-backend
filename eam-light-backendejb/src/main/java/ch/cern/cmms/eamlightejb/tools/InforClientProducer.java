@@ -52,9 +52,10 @@ public class InforClientProducer {
                 .withLogger(Logger.getLogger("wshublogger"))
                 .build();
 
-        setUnmarshallingContextErrorsCounter();
+        //TODO setUnmarshallingContextErrorsCounter();
     }
 
+    /*
     private void setUnmarshallingContextErrorsCounter() {
         try {
             inforClient.getTools().log(Level.INFO, "Setting UnmarshallingContext.errorsCounter to -1 to avoid unmarshaller errors about unknown properties.");
@@ -65,5 +66,6 @@ public class InforClientProducer {
             inforClient.getTools().log(Level.SEVERE, "Couldn't set UnmarshallingContext.errorsCounter: " + exception.getMessage());
         }
     }
+    */
 
 }
