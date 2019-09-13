@@ -34,7 +34,7 @@ public class Tools {
 			String fieldName = field.getName().toLowerCase();
 			// If the field is the userdefinedscreens, execute the process for
 			// this
-			if (fieldName.equals("userdefinedscreens")) {
+			if (fieldName.equals("userdefinedfields")) {
 				try {
 					// Set the field accessible
 					field.setAccessible(true);
