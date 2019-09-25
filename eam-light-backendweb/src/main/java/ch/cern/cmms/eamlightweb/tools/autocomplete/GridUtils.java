@@ -55,7 +55,7 @@ public class GridUtils {
 				gridRequest.setDepartmentSecurityGridColumn(input.getDepartmentSecurityGridColumn());
 			}
 
-			gridRequest.setCursorPosition(input.getCursorPosition().toString());
+			gridRequest.setCursorPosition(input.getCursorPosition());
 			gridRequest.setDataspyID(input.getDataspyID());
 			gridRequest.setGridID(input.getGridCode());
 			gridRequest.setGridName(input.getGridName());

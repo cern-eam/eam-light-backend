@@ -38,8 +38,7 @@ public class AutocompleteACTTask extends Autocomplete {
 	@Consumes("application/json")
 	public Response complete(@PathParam("code") String code) {
 		try {
-			GridRequest gridRequest = new GridRequest("LVWTSK");
-			gridRequest.setGridType("LOV");
+			GridRequest gridRequest = new GridRequest("LVWTSK", GridRequest.GRIDTYPE.LOV);
 
 			gridRequest.getParams().put("param.isolationmethod", null);
 			gridRequest.getParams().put("param.excludemultipletrades", null);

@@ -36,11 +36,10 @@ public class EquipmentLists extends DropdownValues {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp, @QueryParam("oldStatusCode") String oldStatusCode) throws InforException {
-		GridRequest gridRequest = new GridRequest("BSAUTH_HDR");
-		gridRequest.setGridType("LOV");
+		GridRequest gridRequest = new GridRequest("BSAUTH_HDR", GridRequest.GRIDTYPE.LOV);
 
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, "true", null));
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, "true"));
+		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, true, null));
+		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, true));
 		gridRequest.getGridRequestFilters().add(new GridRequestFilter("entity", "OBJ", "=", GridRequestFilter.JOINER.AND));
 		if (neweqp) {
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("fromstatus", "-", "="));
@@ -66,7 +65,7 @@ public class EquipmentLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readCriticalityCodes() {
 		try {
-			return ok(loadDropdown("2385", "LVMULTICRITIC", "2359", "LIST",
+			return ok(loadDropdown("2385", "LVMULTICRITIC", "2359", GridRequest.GRIDTYPE.LIST,
 					Arrays.asList("101", "103"), new HashMap<>()));
 		} catch (InforException e) {
 			return badRequest(e);

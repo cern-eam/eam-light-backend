@@ -19,7 +19,6 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.cmms.eamlightejb.layout.ScreenInfo;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
 import org.jboss.logging.Logger;
@@ -29,14 +28,16 @@ import org.jboss.logging.Logger;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserData {
 
-	@EJB
-	private LayoutBean layoutBean;
+	@Inject
+	private ScreenService screenService;
 	@Inject
 	private AuthenticationTools authenticationTools;
 	@Inject
 	private InforClient inforClient;
 	@Inject
 	private LoggingService loggingService;
+	@Inject
+	private UserTools userTools;
 
 	@PostConstruct
 	private void init() {
@@ -54,27 +55,19 @@ public class UserData {
 			loggingService.log(Logger.Level.FATAL, "Couldn't read eam user " + e.getMessage());
 		}
 		//
-		//
-		//
-		screenList = new HashMap<>();
-		screenList.put("WSJOBS", "Work Orders");
-		screenList.put("OSOBJA", "Assets");
-		screenList.put("OSOBJP", "Positions");
-		screenList.put("OSOBJS", "Systems");
-		screenList.put("SSPART", "Parts");
-		//
 		// USER SCREENS
 		//
-		if (inforClient.getTools().isDatabaseConnectionConfigured()) {
-			screens = layoutBean.getUserScreens(new ArrayList<>(screenList.keySet()), getEamAccount().getUserCode());
-		} else {
-			screens = getScreensMap();
+		try {
+			screens = screenService.getScreens(authenticationTools.getR5InforContext(), userTools.getUserGroup(authenticationTools.getInforContext()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("ERROR: " + screens);
 		}
+
 	}
 
 	private EAMUser eamAccount;
 	private Map<String, ScreenInfo> screens;
-	private Map<String, String> screenList;
 	private String assetScreen;
 	private String positionScreen;
 	private String systemScreen;
@@ -183,10 +176,10 @@ public class UserData {
 			return screenCode;
 
 		// 3. Checking access to the default screen
-		ScreenInfo screenInfo = layoutBean.getUserDefaultScreen(functionCode, getEamAccount().getUserCode());
-		if (screenInfo != null) {
-			return screenInfo.getScreenCode();
-		}
+		//ScreenInfo screenInfo = layoutBean.getUserDefaultScreen(functionCode, getEamAccount().getUserCode());
+		//if (screenInfo != null) {
+		//	return screenInfo.getScreenCode();
+		//}
 		// Otherwise user has no screen visible for this function
 		return null;
 	}
@@ -224,10 +217,6 @@ public class UserData {
 				+ (systemScreen != null ? "systemScreen=" + systemScreen + ", " : "")
 				+ (workOrderScreen != null ? "workOrderScreen=" + workOrderScreen + ", " : "")
 				+ (partScreen != null ? "partScreen=" + partScreen : "") + "]";
-	}
-
-	private Map<String, ScreenInfo> getScreensMap() {
-		return screenList.keySet().stream().collect(Collectors.toMap(function -> function, function -> new ScreenInfo(function, function, screenList.get(function))));
 	}
 
 }

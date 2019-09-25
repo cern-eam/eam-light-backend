@@ -16,6 +16,7 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -30,7 +31,7 @@ public class AutocompleteEquipmentPosition extends Autocomplete {
 	private SimpleGridInput prepareInput() throws InforException {
 		SimpleGridInput in = new SimpleGridInput("2085", "LVOBJL_EQ", "2055");
 		in.getInforParams().put("objectorg", authenticationTools.getInforContext().getOrganizationCode());
-		in.setGridType("LIST");
+		in.setGridType(GridRequest.GRIDTYPE.LIST);
 		in.setFields(Arrays.asList("247", "249")); // 247=equipmentcode,
 													// 249=equipmentdesc
 		in.getInforParams().put("objectrtype", "P");

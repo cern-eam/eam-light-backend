@@ -8,21 +8,21 @@ The docker image needs to be parametrized with the following environment variabl
 | Variable        | Required?  | Default value |
 | ------------- | -----:|---------:|
 | EAMLIGHT_INFOR_WS_URL           | **Yes** |  |
-| EAMLIGHT_INFOR_TENANT         | **Yes** |  |
 | EAMLIGHT_ADMIN_USER   | **Yes** |  |
 | EAMLIGHT_ADMIN_PASSWORD   | **Yes** |  |
-| EAMLIGHT_INFOR_ORGANIZATION   | **Yes** |  |
 
 You can for instance store your environment variables in a dedicated .env file:
 
 ```
 EAMLIGHT_INFOR_WS_URL=<url>
-EAMLIGHT_INFOR_TENANT=<tenant>
 EAMLIGHT_ADMIN_USER=<admin user>
 EAMLIGHT_ADMIN_PASSWORD=<password>
-EAMLIGHT_INFOR_ORGANIZATION=<org>
 
 ```
+
+In addition you have to create new Grid (Administration / Screen Configuration / Grid Designer) exactly as illustrated below. 
+
+![Alt text](docs/EAMLight_Layout_Grid.png?raw=true "EAM Light Layout Grid")
 
 ## Run
 

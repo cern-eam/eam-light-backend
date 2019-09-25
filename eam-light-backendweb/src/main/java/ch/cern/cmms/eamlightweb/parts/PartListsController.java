@@ -35,8 +35,7 @@ public class PartListsController extends DropdownValues {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response readTrackingMethodCodes() throws InforException {
-		GridRequest gridRequest = new GridRequest("LVTRACK");
-		gridRequest.setGridType("LOV");
+		GridRequest gridRequest = new GridRequest("LVTRACK", GridRequest.GRIDTYPE.LOV);
 		return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 				Pair.generateGridPairMap("101", "103"),
 				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));

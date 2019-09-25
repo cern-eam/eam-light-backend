@@ -16,7 +16,7 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -30,7 +30,7 @@ public class AutocompletePartUOM extends Autocomplete {
 
 	private SimpleGridInput prepareInput() throws InforException {
 		SimpleGridInput in = new SimpleGridInput("33", "LVUOMS", "33");
-		in.setGridType("LOV");
+		in.setGridType(GridRequest.GRIDTYPE.LOV);
 		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
 		in.getInforParams().put("aspect", null);
 		in.setFields(Arrays.asList("666", "103")); // 666=uomcode, 103=description

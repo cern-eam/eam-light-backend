@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/boolists")
@@ -24,7 +25,7 @@ public class BookingLabourLists extends DropdownValues {
 	public Response readTradeCodes() {
 		try {
 			// Load the dropdown
-			return ok(loadDropdown("143", "LVOCTP", "148", "LOV",
+			return ok(loadDropdown("143", "LVOCTP", "148", GridRequest.GRIDTYPE.LOV,
 					Arrays.asList("101", "103"),
 					produceInforParamsForTypeOfHoursDropdown()));
 		} catch (InforException e) {

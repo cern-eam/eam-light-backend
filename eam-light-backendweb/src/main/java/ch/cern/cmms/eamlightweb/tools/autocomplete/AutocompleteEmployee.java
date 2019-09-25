@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -29,7 +30,7 @@ public class AutocompleteEmployee extends Autocomplete {
 		SimpleGridInput in = new SimpleGridInput("42", "LVPERS", "42");
 		in.getInforParams().put("loantodept", "TRUE");
 		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
-		in.setGridType("LOV");
+		in.setGridType(GridRequest.GRIDTYPE.LOV);
 		in.setFields(Arrays.asList("112", "113")); // 112=personcode, 113=description
 		in.getInforParams().put("noemployees", null);
 		in.getInforParams().put("shift", null);

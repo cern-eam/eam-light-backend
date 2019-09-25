@@ -42,8 +42,7 @@ public class InforClientProducer {
             System.out.println("Error: " + e.getMessage());
         }
 
-        inforClient = new InforClient.Builder(Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"), Tools.getVariableValue("EAMLIGHT_INFOR_TENANT"))
-                .withDefaultOrganizationCode(Tools.getVariableValue("EAMLIGHT_INFOR_ORGANIZATION"))
+        inforClient = new InforClient.Builder(Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"))
                 .withSOAPHandlerResolver(new SOAPHandlerResolver())
                 .withDataSource(dataSource)
                 .withEntityManagerFactory(entityManagerFactory)

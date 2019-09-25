@@ -1,53 +1,36 @@
 package ch.cern.cmms.eamlightejb.layout;
-
-import javax.persistence.*;
 import java.util.Map;
 
-@NamedNativeQueries({
-		@NamedNativeQuery(name = TabInfo.FETCH_TAB_INFO, query = "SELECT TRP_FUNCTION, TRP_TAB, TRP_GROUP, "
-				+ "DECODE(TRP_VISIBLE,'+',1,'-',0,0) TRP_VISIBLE, DECODE(TRP_SELECT,'?',1,0) TRP_SELECT, "
-				+ "DECODE(TRP_UPDATE,'*',1,0) TRP_UPDATE, DECODE(TRP_INSERT,'+',1,'-',0,0) TRP_INSERT, "
-				+ "DECODE(TRP_DELETE,'X',1,0) TRP_DELETE, DECODE(TRP_SYSREQUIRED,'+',1,'-',0,0) TRP_SYSREQUIRED, "
-				+ "TRP_SECURITYDDSPYID FROM R5TABPERMISSIONS WHERE TRP_FUNCTION = :function AND TRP_TAB IN :tabnames "
-				+ "AND TRP_GROUP= :usergroup", resultClass = TabInfo.class) })
-@Entity
 public class TabInfo {
 
-	public static final String FETCH_TAB_INFO = "TabInfo.FETCH_TAB_INFO";
+	public TabInfo() {
 
-	
-	@Column(name = "TRP_FUNCTION")
+	}
+
+	public TabInfo(Map<String, ElementInfo> fields) {
+		this.fields = fields;
+	}
+
 	private String function;
 
-	@Id
-	@Column(name = "TRP_TAB")
 	private String tab;
 
-	@Column(name = "TRP_GROUP")
 	private String group;
 
-	@Column(name = "TRP_VISIBLE")
 	private boolean visible;
 
-	@Column(name = "TRP_SELECT")
 	private boolean selectAllowed;
 
-	@Column(name = "TRP_UPDATE")
 	private boolean updateAllowed;
 
-	@Column(name = "TRP_INSERT")
 	private boolean insertAllowed;
 
-	@Column(name = "TRP_DELETE")
 	private boolean deleteAllowed;
 
-	@Column(name = "TRP_SYSREQUIRED")
 	private boolean alwaysAvailable;
 
-	@Column(name = "TRP_SECURITYDDSPYID")
 	private String securityDataSpy;
 	
-	@Transient
 	private Map<String, ElementInfo> fields;
 
 	/**

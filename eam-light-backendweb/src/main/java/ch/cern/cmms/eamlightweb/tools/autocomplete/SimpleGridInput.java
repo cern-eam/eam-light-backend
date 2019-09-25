@@ -1,5 +1,6 @@
 package ch.cern.cmms.eamlightweb.tools.autocomplete;
 
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 
 import java.util.LinkedHashMap;
@@ -13,11 +14,11 @@ public class SimpleGridInput {
 	private String JPAType = "JPA_FINAL";
 	private Boolean useNative = false;
 	private Boolean countTotal = false;
-	private String gridType = "LOV";
+	private GridRequest.GRIDTYPE gridType = GridRequest.GRIDTYPE.LOV;
 	private Map<String, Object> inforParams = new LinkedHashMap<String, Object>();
 	private List<GridRequestFilter> gridFilters = new LinkedList<>();
 	private Map<String, Boolean> sortParams = new LinkedHashMap<String, Boolean>();
-	private String rowCount = "10";
+	private Integer rowCount = 10;
 	private String dataspyID;
 	private String gridCode;
 	private String gridName;
@@ -51,11 +52,11 @@ public class SimpleGridInput {
 		this.useNative = useNative;
 	}
 
-	public String getGridType() {
+	public GridRequest.GRIDTYPE getGridType() {
 		return gridType;
 	}
 
-	public void setGridType(String gridType) {
+	public void setGridType(GridRequest.GRIDTYPE gridType) {
 		this.gridType = gridType;
 	}
 
@@ -83,11 +84,11 @@ public class SimpleGridInput {
 		this.sortParams = sortParams;
 	}
 
-	public String getRowCount() {
+	public Integer getRowCount() {
 		return rowCount;
 	}
 
-	public void setRowCount(String rowCount) {
+	public void setRowCount(Integer rowCount) {
 		this.rowCount = rowCount;
 	}
 

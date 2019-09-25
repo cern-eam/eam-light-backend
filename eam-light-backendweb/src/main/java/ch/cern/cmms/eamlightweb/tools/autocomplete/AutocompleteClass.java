@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -24,7 +25,7 @@ public class AutocompleteClass extends Autocomplete {
 
 	private SimpleGridInput prepareInput() {
 		SimpleGridInput in = new SimpleGridInput("44", "LVCLAS", "44");
-		in.setGridType("LOV");
+		in.setGridType(GridRequest.GRIDTYPE.LOV);
 		in.setFields(Arrays.asList("681", "120")); // 681=class , 629=des_text
 		return in;
 	}
