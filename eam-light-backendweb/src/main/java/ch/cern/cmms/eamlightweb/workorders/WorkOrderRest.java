@@ -139,7 +139,7 @@ public class WorkOrderRest extends WSHubController {
 					: "*";
 			// Custom Fields (Loaded with the default class, or the preloaded one)
 			try {
-				workOrder.setCustomFields(inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), "EVNT", woclass));
+				workOrder.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", woclass));
 			} catch (Exception e) {
 
 			}

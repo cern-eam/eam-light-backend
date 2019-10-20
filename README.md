@@ -8,8 +8,8 @@ The docker image needs to be parametrized with the following environment variabl
 | Variable        | Required?  | Default value |
 | ------------- | -----:|---------:|
 | EAMLIGHT_INFOR_WS_URL           | **Yes** |  |
-| EAMLIGHT_ADMIN_USER   | **Yes** |  |
-| EAMLIGHT_ADMIN_PASSWORD   | **Yes** |  |
+| EAMLIGHT_ADMIN_USER   | **No** |  |
+| EAMLIGHT_ADMIN_PASSWORD   | **No** |  |
 
 You can for instance store your environment variables in a dedicated .env file:
 
@@ -30,12 +30,12 @@ The docker container exposes the following ports:
 
 | Port        | Description  |
 | ------------- | -----:|
-| 8081          | EAM Light Backend | 
+| 8080          | EAM Light Backend | 
 | 9090          | JBoss Management Port |
 
 Once you have your own environment variables set up, you can start a new docker container:
 ```
-docker run -p 8081:8081 -p 9090:9090 --env-file .env cerneam/eam-light-backend
+docker run -p 8080:8080 -p 9090:9090 --env-file .env cerneam/eam-light-backend
 ``` 
 
 Once the docker container is started, the EAM Light REST backend is available at the endpoint `/apis/rest`

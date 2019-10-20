@@ -15,9 +15,11 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
 @ApplicationScoped
 public class InforClientProducer {
@@ -42,29 +44,26 @@ public class InforClientProducer {
             System.out.println("Error: " + e.getMessage());
         }
 
-        inforClient = new InforClient.Builder(Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"))
-                .withSOAPHandlerResolver(new SOAPHandlerResolver())
-                .withDataSource(dataSource)
-                .withEntityManagerFactory(entityManagerFactory)
-                .withExecutorService(executorService)
-                .withInforInterceptor(inforInterceptor)
-                .withLogger(Logger.getLogger("wshublogger"))
-                .build();
-
-        //TODO setUnmarshallingContextErrorsCounter();
-    }
-
-    /*
-    private void setUnmarshallingContextErrorsCounter() {
         try {
-            inforClient.getTools().log(Level.INFO, "Setting UnmarshallingContext.errorsCounter to -1 to avoid unmarshaller errors about unknown properties.");
-            Field field = UnmarshallingContext.class.getDeclaredField("errorsCounter");
-            field.setAccessible(true);
-            field.setInt(null, -1);
+            // Build the Infor Client
+            inforClient = new InforClient.Builder(Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"))
+                    .withSOAPHandlerResolver(new SOAPHandlerResolver())
+                    .withDataSource(dataSource)
+                    .withEntityManagerFactory(entityManagerFactory)
+                    .withExecutorService(executorService)
+                    .withInforInterceptor(inforInterceptor)
+                    .withLogger(Logger.getLogger("wshublogger"))
+                    .build();
+
+            // Avoid 'Chunked transfer encoding is currently not supported' error which might be thrown by some web servers
+            HTTPConduit conduit = (HTTPConduit)ClientProxy.getClient(inforClient.getInforWebServicesToolkitClient()).getConduit();
+            HTTPClientPolicy client = conduit.getClient();
+            client.setAllowChunking(false);
         } catch (Exception exception) {
-            inforClient.getTools().log(Level.SEVERE, "Couldn't set UnmarshallingContext.errorsCounter: " + exception.getMessage());
+            System.out.println("Infor Client could not be initialized: " + exception.getMessage());
+            exception.printStackTrace();
         }
+
     }
-    */
 
 }

@@ -171,7 +171,7 @@ public class PartController extends WSHubController {
 			tools.pupulateBusinessObject(part, parameters);
 
 			// Custom Fields
-			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), "PART",
+			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "PART",
 					part.getClassCode() != null ? part.getClassCode() : "*"));
 
 			// Populate custom fields if they are not null

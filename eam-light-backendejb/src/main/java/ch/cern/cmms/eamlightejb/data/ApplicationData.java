@@ -1,15 +1,10 @@
 package ch.cern.cmms.eamlightejb.data;
 
 import ch.cern.cmms.eamlightejb.tools.Tools;
-import ch.cern.eam.wshub.core.client.InforClient;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class ApplicationData {
-
-    @Inject
-    private InforClient inforClient;
 
     //
     // BASIC SETTINGS

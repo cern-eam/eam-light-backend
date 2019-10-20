@@ -195,7 +195,7 @@ public class EquipmentRest extends WSHubController {
 
 			// Custom fields
 			equipment.setCustomFields(
-					inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), entity, equipment.getClassCode() != null ? equipment.getClassCode() : "*"));
+					inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipment.getClassCode() != null ? equipment.getClassCode() : "*"));
 			// Populate custom fields if they are not null
 			if (equipment.getCustomFields() != null) {
 				tools.populateCustomFields(equipment.getCustomFields(), parameters);

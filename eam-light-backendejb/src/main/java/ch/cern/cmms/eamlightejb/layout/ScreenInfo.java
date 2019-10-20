@@ -2,9 +2,6 @@ package ch.cern.cmms.eamlightejb.layout;
 
 import ch.cern.eam.wshub.core.annotations.GridField;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ScreenInfo {
 
 	@GridField(name="functionname")
@@ -26,7 +23,6 @@ public class ScreenInfo {
 	private boolean tabAlwaysDisplayed;
 	@GridField(name="tabavailable")
 	private boolean tabAvailable;
-
 
 	public String getScreenCode() {
 		return screenCode;

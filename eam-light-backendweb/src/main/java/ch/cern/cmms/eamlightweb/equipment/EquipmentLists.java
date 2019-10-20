@@ -21,6 +21,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
+import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 @Path("/eqplists")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -53,8 +54,7 @@ public class EquipmentLists extends DropdownValues {
 				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 		if (gridRequestResult.getRows().length > 0) {
-			//TODO: do not assume the order from the grid ws response
-			result.add(new Pair(gridRequestResult.getRows()[0].getCell()[2].getContent(), gridRequestResult.getRows()[0].getCell()[3].getContent()));
+			result.add(new Pair(getCellContent("3578", gridRequestResult.getRows()[0]), getCellContent("3579", gridRequestResult.getRows()[0])));
 		}
 		return ok(result);
 	}

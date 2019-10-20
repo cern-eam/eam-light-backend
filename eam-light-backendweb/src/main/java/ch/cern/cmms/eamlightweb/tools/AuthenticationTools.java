@@ -82,8 +82,21 @@ public class AuthenticationTools {
 
     public InforContext getR5InforContext() throws InforException {
         InforContext inforContext = this.getInforContext();
-        inforContext.getCredentials().setUsername(applicationData.getAdminUser());
-        inforContext.getCredentials().setPassword(applicationData.getAdminPassword());
+
+        // Username
+        if (isEmpty(applicationData.getAdminUser())) {
+            inforContext.getCredentials().setUsername(request.getHeader("INFOR_USER"));
+        } else {
+            inforContext.getCredentials().setUsername(applicationData.getAdminUser());
+        }
+
+        // Password
+        if (isEmpty(applicationData.getAdminPassword())) {
+            inforContext.getCredentials().setPassword(request.getHeader("INFOR_PASSWORD"));
+        } else {
+            inforContext.getCredentials().setPassword(applicationData.getAdminPassword());
+        }
+
         return inforContext;
     }
 }
