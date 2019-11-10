@@ -131,7 +131,7 @@ public class AutocompletePUAsset extends Autocomplete {
 	 */
 	private SimpleGridInput prepareInputForPartForAsset() {
 		SimpleGridInput input = new SimpleGridInput("84", "OSOBJA", "85");
-		input.setGridType("LIST");
+		input.setGridType(GridRequest.GRIDTYPE.LIST);
 		input.setFields(Arrays.asList("247", "383", "386", "13058")); // 247=equipmentno,
 		// 383=equipmentdesc
 		// 386=serialnumber

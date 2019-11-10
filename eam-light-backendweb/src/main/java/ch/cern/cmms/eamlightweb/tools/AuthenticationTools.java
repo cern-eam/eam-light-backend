@@ -5,7 +5,8 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.tools.InforException;
-
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class AuthenticationTools {
         String user = null;
         String password = null;
         String organization = null;
+        String tenant = null;
         String sessionid = null;
         String authenticationMode = applicationData.getAuthenticationMode();
 
@@ -34,14 +36,17 @@ public class AuthenticationTools {
                 user = System.getProperty("DEFAULT_USER").toUpperCase();
             }
             password = applicationData.getAdminPassword();
+            tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
         } else if ("SSO".equalsIgnoreCase(authenticationMode)) {
             user = request.getHeader("ADFS_LOGIN").toUpperCase();
             password = applicationData.getAdminPassword();
+            tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
         } else {
             user = request.getHeader("INFOR_USER");
             password = request.getHeader("INFOR_PASSWORD");
+            tenant = request.getHeader("INFOR_TENANT");
             organization = request.getHeader("INFOR_ORGANIZATION");
             sessionid = request.getHeader("INFOR_SESSIONID");
         }
@@ -49,18 +54,24 @@ public class AuthenticationTools {
         InforContext inforContext = new InforContext();
 
         // Organization
-        if (!notEmpty(organization)) {
+        if (isEmpty(organization)) {
             throw inforClient.getTools().generateFault("Organization is required.");
         }
         inforContext.setOrganizationCode(organization);
 
+        // Tenant
+        if (isEmpty(tenant)) {
+            throw inforClient.getTools().generateFault("Tenant is required.");
+        }
+        inforContext.setTenant(tenant);
+
         // Credentials, Session ID
-        if (notEmpty(user) && notEmpty(password)) {
+        if (isNotEmpty(user) && isNotEmpty(password)) {
             Credentials credentials = new Credentials();
             credentials.setUsername(user);
             credentials.setPassword(password);
             inforContext.setCredentials(credentials);
-        } else if (notEmpty(sessionid)) {
+        } else if (isNotEmpty(sessionid)) {
             inforContext.setSessionID(sessionid);
         } else {
             throw inforClient.getTools().generateFault("Credentials or Session ID is required.");
@@ -71,12 +82,21 @@ public class AuthenticationTools {
 
     public InforContext getR5InforContext() throws InforException {
         InforContext inforContext = this.getInforContext();
-        inforContext.getCredentials().setUsername(applicationData.getAdminUser());
-        inforContext.getCredentials().setPassword(applicationData.getAdminPassword());
-        return inforContext;
-    }
 
-    private boolean notEmpty(String string) {
-        return string != null && !string.trim().equals("");
+        // Username
+        if (isEmpty(applicationData.getAdminUser())) {
+            inforContext.getCredentials().setUsername(request.getHeader("INFOR_USER"));
+        } else {
+            inforContext.getCredentials().setUsername(applicationData.getAdminUser());
+        }
+
+        // Password
+        if (isEmpty(applicationData.getAdminPassword())) {
+            inforContext.getCredentials().setPassword(request.getHeader("INFOR_PASSWORD"));
+        } else {
+            inforContext.getCredentials().setPassword(applicationData.getAdminPassword());
+        }
+
+        return inforContext;
     }
 }

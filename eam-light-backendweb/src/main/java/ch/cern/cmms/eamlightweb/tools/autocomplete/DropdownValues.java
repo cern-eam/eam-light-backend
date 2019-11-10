@@ -30,12 +30,12 @@ public abstract class DropdownValues extends WSHubController {
 	protected GridUtils gridUtils;
 
 
-	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, String gridType,
+	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, GridRequest.GRIDTYPE gridType,
 									  List<String> fields, Map<String, String> inforParams) throws InforException {
 	 	return loadDropdown(gridId, gridName,  gridDataSpy, gridType, fields, inforParams, null, false);
 	}
 
-	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, String gridType,
+	protected List<Pair> loadDropdown(String gridId, String gridName, String gridDataSpy, GridRequest.GRIDTYPE gridType,
 									  List<String> fields, Map<String, String> inforParams, List<GridRequestFilter> gridFilters, Boolean useNative) throws InforException {
 		GridRequestResult result = loadGridRequestResult(gridId, gridName, gridDataSpy, gridType, fields, inforParams, gridFilters, useNative);
 		return convertToPairs(fields, result);
@@ -51,7 +51,7 @@ public abstract class DropdownValues extends WSHubController {
 	}
 
 
-	protected GridRequestResult loadGridRequestResult(String gridId, String gridName, String gridDataSpy, String gridType,
+	protected GridRequestResult loadGridRequestResult(String gridId, String gridName, String gridDataSpy, GridRequest.GRIDTYPE gridType,
 													  List<String> fields, Map<String, String> inforParams, List<GridRequestFilter> gridFilters, Boolean useNative) throws InforException
 	{
 		// Creates simple grid input
@@ -61,7 +61,7 @@ public abstract class DropdownValues extends WSHubController {
 		// Fields to be retrieved
 		input.setFields(fields);
 		// Rows to print
-		input.setRowCount("1000");
+		input.setRowCount(1000);
 		// Use native
 		input.setUseNative(useNative);
 		// Parameter map

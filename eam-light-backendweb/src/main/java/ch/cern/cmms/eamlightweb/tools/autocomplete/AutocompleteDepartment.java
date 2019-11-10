@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -28,7 +29,7 @@ public class AutocompleteDepartment extends Autocomplete {
 		SimpleGridInput in = new SimpleGridInput("36", "LVMRCS", "36");
 		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
 		in.getInforParams().put("showstardepartment", null);
-		in.setGridType("LOV");
+		in.setGridType(GridRequest.GRIDTYPE.LOV);
 		in.setFields(Arrays.asList("101", "103")); // 101=department, 103=des_text
 		return in;
 	}

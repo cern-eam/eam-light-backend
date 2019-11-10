@@ -19,6 +19,7 @@ import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -35,7 +36,7 @@ public class AutocompleteWOEquipment extends Autocomplete {
 		in.getInforParams().put("equipmentlookup", "true");
 		in.getInforParams().put("loantodept", "TRUE");
 		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
-		in.setGridType("LIST");
+		in.setGridType(GridRequest.GRIDTYPE.LIST);
 		in.setQueryTimeout(7000);
 		in.getInforParams().put("cctrspcvalidation", "D");
 		in.getInforParams().put("department", "");

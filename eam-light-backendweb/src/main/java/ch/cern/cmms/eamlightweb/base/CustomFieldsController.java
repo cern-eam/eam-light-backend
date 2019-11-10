@@ -67,7 +67,7 @@ public class CustomFieldsController extends Autocomplete {
 		map.put("103", "desc");
 
 		GridRequest gridRequest = new GridRequest("109", "LVCFE", "110");
-		gridRequest.setRowCount("10");
+		gridRequest.setRowCount(10);
 		gridRequest.getGridRequestFilters().add(new GridRequestFilter("customfieldvalue", filter, "BEGINS", GridRequestFilter.JOINER.OR));
 		gridRequest.getGridRequestFilters().add(new GridRequestFilter("description", filter, "BEGINS"));
 
@@ -76,7 +76,7 @@ public class CustomFieldsController extends Autocomplete {
 
 
 	public List<Pair> getData(String paramName, String paramValue, GridRequest gridRequest, Map<String, String> map) throws InforException {
-		gridRequest.setGridType("LOV");
+		gridRequest.setGridType(GridRequest.GRIDTYPE.LOV);
 		gridRequest.getParams().put(paramName, paramValue);
 
 		List<Pair> customFieldLookupValues = inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,

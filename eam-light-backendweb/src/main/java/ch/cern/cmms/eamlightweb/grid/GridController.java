@@ -63,9 +63,9 @@ public class GridController extends WSHubController {
 					});
 
 			// reset the cursor position to 1
-			gridRequest.setCursorPosition("1");
+			gridRequest.setCursorPosition(1);
 			// and set up a maximum of 10000 rows
-			gridRequest.setRowCount("10000");
+			gridRequest.setRowCount(10000);
 
 			// prepare the response
 			GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest);

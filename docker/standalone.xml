@@ -482,7 +482,7 @@
                 <response-header name="x-powered-by-header" header-name="X-Powered-By" header-value="Undertow/1"/>
                 <response-header name="Access-Control-Allow-Origin" header-name="Access-Control-Allow-Origin" header-value="*"/>
                 <response-header name="Access-Control-Allow-Methods" header-name="Access-Control-Allow-Methods" header-value="GET, POST, OPTIONS, PUT, DELETE"/>
-                <response-header name="Access-Control-Allow-Headers" header-name="Access-Control-Allow-Headers" header-value="accept, authorization, content-type, x-requested-with, INFOR_USER, INFOR_PASSWORD, INFOR_ORGANIZATION, INFOR_SESSIONID"/>
+                <response-header name="Access-Control-Allow-Headers" header-name="Access-Control-Allow-Headers" header-value="accept, authorization, content-type, x-requested-with, INFOR_USER, INFOR_PASSWORD, INFOR_ORGANIZATION, INFOR_SESSIONID, INFOR_TENANT"/>
                 <response-header name="Access-Control-Allow-Credentials" header-name="Access-Control-Allow-Credentials" header-value="true"/>
                 <response-header name="Access-Control-Max-Age" header-name="Access-Control-Max-Age" header-value="1"/>
             </filters>
@@ -516,7 +516,7 @@
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9090}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:9993}"/>
         <socket-binding name="ajp" port="${jboss.ajp.port:10809}"/>
-        <socket-binding name="http" port="${jboss.http.port:8081}"/>
+        <socket-binding name="http" port="${jboss.http.port:8080}"/>
         <socket-binding name="https" port="${jboss.https.port:8443}"/>
         <socket-binding name="iiop" interface="unsecure" port="13528"/>
         <socket-binding name="iiop-ssl" interface="unsecure" port="13529"/>

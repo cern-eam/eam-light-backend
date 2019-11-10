@@ -36,7 +36,7 @@ public class CustomFields extends WSHubController {
 	@Consumes("application/json")
 	public Response readCustomFields(@QueryParam("entity") String entity, @QueryParam("inforClass") String inforClass) {
 		try {
-			return ok(inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), entity, inforClass));
+			return ok(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, inforClass));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -52,7 +52,7 @@ public class CustomFields extends WSHubController {
 			@QueryParam("inforClass") String inforClass) {
 		Map<String, List<Pair>> customFieldLookupValues = new HashMap<>();
 		try {
-			CustomField[] customFields = inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), entity, inforClass);
+			CustomField[] customFields = inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, inforClass);
 			for (CustomField customField : customFields) {
 				if (customField.getLovType().equals("C")
 						|| customField.getLovType().equals("E")

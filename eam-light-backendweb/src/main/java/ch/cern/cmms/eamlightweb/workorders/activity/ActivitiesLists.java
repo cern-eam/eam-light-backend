@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/actlists")
@@ -29,7 +30,7 @@ public class ActivitiesLists extends DropdownValues {
 	public Response readTradeCodes() {
 		try {
 			// Load the dropdown
-			return ok(loadDropdown("85", "LVTRADE", "86", "LOV", Arrays.asList("101", "103"),
+			return ok(loadDropdown("85", "LVTRADE", "86", GridRequest.GRIDTYPE.LOV, Arrays.asList("101", "103"),
 					new HashMap<String, String>()));
 		} catch (InforException e) {
 			return badRequest(e);
@@ -44,7 +45,7 @@ public class ActivitiesLists extends DropdownValues {
 	public Response readTasks() {
 		try {
 			// Load the dropdown
-			return ok(loadDropdown("1181", "LVWTSK", "1147", "LOV", Arrays.asList("1978", "2023"),
+			return ok(loadDropdown("1181", "LVWTSK", "1147", GridRequest.GRIDTYPE.LOV, Arrays.asList("1978", "2023"),
 					produceInforParamsForTaskDropdown()));
 		} catch (InforException e) {
 			return badRequest(e);
@@ -61,7 +62,7 @@ public class ActivitiesLists extends DropdownValues {
 			Map<String, String> inforParams = new HashMap<String, String>();
 			inforParams.put("control.org", authenticationTools.getInforContext().getOrganizationCode());
 			// Load the dropdown
-			return ok(loadDropdown("90", "LVMATL", "91", "LOV", Arrays.asList("101", "103"), inforParams));
+			return ok(loadDropdown("90", "LVMATL", "91", GridRequest.GRIDTYPE.LOV, Arrays.asList("101", "103"), inforParams));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

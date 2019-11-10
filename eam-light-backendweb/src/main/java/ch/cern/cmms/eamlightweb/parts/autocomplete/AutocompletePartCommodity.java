@@ -17,6 +17,7 @@ import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -29,7 +30,7 @@ public class AutocompletePartCommodity extends Autocomplete {
 
 	private SimpleGridInput prepareInput() throws InforException{
 		SimpleGridInput in = new SimpleGridInput("37", "LVCOMM", "37");
-		in.setGridType("LOV");
+		in.setGridType(GridRequest.GRIDTYPE.LOV);
 		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
 		in.setFields(Arrays.asList("101", "103")); // 101=commoditycode, 103=des_text
 		return in;

@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -24,7 +25,7 @@ public class AutocompleteEquipmentStore extends Autocomplete {
 
 	private SimpleGridInput prepareInput() {
 		SimpleGridInput in = new SimpleGridInput("172", "LVSTORA", "175");
-		in.setGridType("LOV");
+		in.setGridType(GridRequest.GRIDTYPE.LOV);
 		in.setFields(Arrays.asList("682", "133")); // 682 store
 													// 133 description
 		return in;

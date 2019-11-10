@@ -38,8 +38,7 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readProblemCodes(@QueryParam("woclass") String woclass, @QueryParam("objclass") String objclass) {
 		try {
-			GridRequest gridRequest = new GridRequest("LVRECO");
-			gridRequest.setGridType("LOV");
+			GridRequest gridRequest = new GridRequest("LVRECO", GridRequest.GRIDTYPE.LOV);
 			//
 			gridRequest.getParams().put("param.objclass", objclass);
 			gridRequest.getParams().put("param.objclassorg", null);
@@ -61,8 +60,7 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readStatusCodes(@QueryParam("wostatus") String wostatus, @QueryParam("wotype") String wotype,
 			@QueryParam("newwo") Boolean newwo) throws InforException {
-		GridRequest gridRequest = new GridRequest("LVWRSTDRP");
-		gridRequest.setGridType("LOV");
+		GridRequest gridRequest = new GridRequest("LVWRSTDRP", GridRequest.GRIDTYPE.LOV);
 		// Definition of parameters
 		if (newwo) {
 			gridRequest.getParams().put("param.poldstat", "-");
@@ -81,8 +79,7 @@ public class WorkOrderLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readTypeCodes(@QueryParam("wostatus") String wostatus, @QueryParam("wotype") String wotype,
 			@QueryParam("newwo") Boolean newwo, @QueryParam("ppmwo") Boolean ppmwo) throws InforException {
-		GridRequest gridRequest = new GridRequest("LVGROUPWOTYPE");
-		gridRequest.setGridType("LOV");
+		GridRequest gridRequest = new GridRequest("LVGROUPWOTYPE", GridRequest.GRIDTYPE.LOV);
 		gridRequest.getParams().put("parameter.pagemode", null);
 		gridRequest.getParams().put("parameter.usergroup", userTools.getUserGroup(authenticationTools.getInforContext()));
 		return ok(loadDropdown(gridRequest, "101", "103"));
@@ -116,8 +113,7 @@ public class WorkOrderLists extends DropdownValues {
 	public Response readFailureCodes(@QueryParam("objclass") String objclass,
 			@QueryParam("problemcode") String problemCode) {
 		try {
-			GridRequest gridRequest = new GridRequest("LVFAILURE");
-			gridRequest.setGridType("LOV");
+			GridRequest gridRequest = new GridRequest("LVFAILURE", GridRequest.GRIDTYPE.LOV);
 			gridRequest.getParams().put("param.objclass", objclass);
 			gridRequest.getParams().put("param.problemcod", problemCode);
 			gridRequest.getParams().put("param.objclassorg", null);
@@ -143,8 +139,7 @@ public class WorkOrderLists extends DropdownValues {
 	public Response readCauseCodes(@QueryParam("objclass") String objclass,
 			@QueryParam("failurecode") String failurecode, @QueryParam("problemcode") String problemcode) {
 		try {
-			GridRequest gridRequest = new GridRequest("LVCAUSE");
-			gridRequest.setGridType("LOV");
+			GridRequest gridRequest = new GridRequest("LVCAUSE", GridRequest.GRIDTYPE.LOV);
 			// objclassorg, clgroup, failurecode, problemcode, objclass
 			gridRequest.getParams().put("param.objclass", objclass);
 			gridRequest.getParams().put("param.failurecode", failurecode);
@@ -170,8 +165,7 @@ public class WorkOrderLists extends DropdownValues {
 			@QueryParam("failurecode") String failurecode, @QueryParam("problemcode") String problemcode,
 			@QueryParam("causecode") String causecode) {
 		try {
-			GridRequest gridRequest = new GridRequest("LVACTION");
-			gridRequest.setGridType("LOV");
+			GridRequest gridRequest = new GridRequest("LVACTION", GridRequest.GRIDTYPE.LOV);
 
 			gridRequest.getParams().put("param.objclass", objclass);
 			gridRequest.getParams().put("param.failurecode", failurecode);

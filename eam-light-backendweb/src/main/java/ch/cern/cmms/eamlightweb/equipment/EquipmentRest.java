@@ -30,8 +30,6 @@ import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.cmms.eamlightejb.layout.ElementInfo;
-import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
@@ -48,8 +46,6 @@ public class EquipmentRest extends WSHubController {
 	private InforClient inforClient;
 	@Inject
 	private ApplicationData applicationData;
-	@EJB
-	private LayoutBean layoutBean;
 	@Inject
 	private EquipmentEJB equipmentEJB;
 	@Inject
@@ -194,19 +190,12 @@ public class EquipmentRest extends WSHubController {
 			equipment.setUserDefinedFields(new UserDefinedFields());
 			equipment.setTypeCode(eqpType);
 
-			// Default values from screen
-			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
-				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction,
-						entity, userTools.getUserGroup(authenticationTools.getInforContext()));
-				EquipmentTools.assignDefaultValues(equipment, screenFields, applicationData);
-			}
-
 			// Populate Object
 			tools.pupulateBusinessObject(equipment, parameters);
 
 			// Custom fields
 			equipment.setCustomFields(
-					inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), entity, equipment.getClassCode() != null ? equipment.getClassCode() : "*"));
+					inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipment.getClassCode() != null ? equipment.getClassCode() : "*"));
 			// Populate custom fields if they are not null
 			if (equipment.getCustomFields() != null) {
 				tools.populateCustomFields(equipment.getCustomFields(), parameters);

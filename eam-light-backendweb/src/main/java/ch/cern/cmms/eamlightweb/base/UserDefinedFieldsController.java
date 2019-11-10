@@ -8,6 +8,7 @@ import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -60,7 +61,7 @@ public class UserDefinedFieldsController extends Autocomplete {
 	private SimpleGridInput prepareAutoCompleteInput() throws InforException {
 		SimpleGridInput in = new SimpleGridInput("2297", "LVUDFE", "2240");
 		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
-		in.setGridType("LOV");
+		in.setGridType(GridRequest.GRIDTYPE.LOV);
 		in.setFields(Arrays.asList("101", "103")); // 101=code, 103=description
 		return in;
 	}
@@ -139,10 +140,10 @@ public class UserDefinedFieldsController extends Autocomplete {
 			input = new SimpleGridInput("2296", "LVUDFC", "2239");
 		}
 		// GridController Type
-		input.setGridType("LOV");
+		input.setGridType(GridRequest.GRIDTYPE.LOV);
 		input.setFields(fields);
 		// Max rows to be shown
-		input.setRowCount("1000");
+		input.setRowCount(1000);
 		// Add infor params
 		input.getInforParams().put("rentity", rentity);
 		input.getInforParams().put("field", field);

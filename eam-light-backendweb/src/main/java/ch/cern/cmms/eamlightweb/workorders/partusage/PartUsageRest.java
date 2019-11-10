@@ -59,7 +59,7 @@ public class PartUsageRest extends WSHubController {
 		try {
 			GridRequest input = new GridRequest("LVIRSTOR");
 			input.setUserFunctionName("SSISSU");
-			input.setRowCount("1000");
+			input.setRowCount(1000);
 			input.getParams().put("param.storefield", "IR");
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("682", "133"),
@@ -114,7 +114,7 @@ public class PartUsageRest extends WSHubController {
 	private String loadDefaultBin(String part, String store, String transaction) throws InforException {
 		String result = null;
 		SimpleGridInput input = new SimpleGridInput("110", "SSPART_STO", "133");
-		input.setGridType("LIST");
+		input.setGridType(GridRequest.GRIDTYPE.LIST);
 		input.getInforParams().put("partcode", part);
 		input.getInforParams().put("partorg", authenticationTools.getInforContext().getOrganizationCode());
 		input.getInforParams().put("userfunction", "SSPART");

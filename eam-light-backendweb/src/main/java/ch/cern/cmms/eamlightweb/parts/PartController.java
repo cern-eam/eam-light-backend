@@ -29,7 +29,6 @@ import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.layout.ElementInfo;
-import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
@@ -45,8 +44,6 @@ public class PartController extends WSHubController {
 	private InforClient inforClient;
 	@EJB
 	private PartsEJB partsEJB;
-	@EJB
-	private LayoutBean layoutBean;
 	@Inject
 	private AuthenticationTools authenticationTools;
 	@Inject
@@ -60,8 +57,7 @@ public class PartController extends WSHubController {
 	@Consumes("application/json")
 	public Response readPartStock(@PathParam("part") String partCode) {
 		try {
-			GridRequest gridRequest = new GridRequest("SSPART_BIS");
-			gridRequest.setGridType("LOV");
+			GridRequest gridRequest = new GridRequest("SSPART_BIS", GridRequest.GRIDTYPE.LOV);
 			gridRequest.setUserFunctionName("SSPART");
 			gridRequest.getParams().put("partorg", authenticationTools.getInforContext().getOrganizationCode());
 			gridRequest.getParams().put("partcode", partCode);
@@ -171,17 +167,11 @@ public class PartController extends WSHubController {
 			// User defined fields
 			part.setUserDefinedFields(new UserDefinedFields());
 
-			// Default values from screen
-			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
-				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction, entity, userTools.getUserGroup(authenticationTools.getInforContext()));
-				assignDefaultValues(part, screenFields);
-			}
-
 			// Populate Object
 			tools.pupulateBusinessObject(part, parameters);
 
 			// Custom Fields
-			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), "PART",
+			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "PART",
 					part.getClassCode() != null ? part.getClassCode() : "*"));
 
 			// Populate custom fields if they are not null
@@ -197,67 +187,4 @@ public class PartController extends WSHubController {
 		}
 	}
 
-	/**
-	 * Assign the default values to the object being created
-	 */
-	private void assignDefaultValues(Part part, Map<String, ElementInfo> fields) {
-		// Iterate over the list of fields
-		for (String key : fields.keySet()) {
-			// ElementInfo
-			ElementInfo element = fields.get(key);
-			// Just check if default value is not null
-			if (element.getDefaultValue() == null)
-				continue;/* Continue with next record */
-			// Get default value
-			String defaultValue = element.getDefaultValue().trim();
-			// Switch according to the key
-			switch (key) {
-			case "partcode":
-				part.setCode(defaultValue);
-				break;
-			case "description":
-				part.setDescription(defaultValue);
-				break;
-			case "class":
-				part.setClassCode(defaultValue);
-				break;
-			case "category":
-				part.setCategoryCode(defaultValue);
-				break;
-			case "uom":
-				part.setUOM(defaultValue);
-				break;
-			case "trackingtype":
-				part.setTrackingMethod(defaultValue);
-				break;
-			case "commoditycode":
-				part.setCommodityCode(defaultValue);
-				break;
-			case "trackbyasset":
-				part.setTrackByAsset(defaultValue);
-				break;
-			case "udfchar01":
-				part.getUserDefinedFields().setUdfchar01(defaultValue);
-				break;
-			case "udfchar02":
-				part.getUserDefinedFields().setUdfchar02(defaultValue);
-				break;
-			case "udfchar03":
-				part.getUserDefinedFields().setUdfchar03(defaultValue);
-				break;
-			case "udfchar04":
-				part.getUserDefinedFields().setUdfchar04(defaultValue);
-				break;
-			case "udfchar05":
-				part.getUserDefinedFields().setUdfchar05(defaultValue);
-				break;
-			case "udfchar11":
-				part.getUserDefinedFields().setUdfchar11(defaultValue);
-				break;
-			case "udfchar12":
-				part.getUserDefinedFields().setUdfchar12(defaultValue);
-				break;
-			}
-		}
-	}
 }

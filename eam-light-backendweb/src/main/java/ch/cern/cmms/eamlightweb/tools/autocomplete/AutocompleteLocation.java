@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -30,7 +31,7 @@ public class AutocompleteLocation extends Autocomplete {
 		//TODO
 		//in.getInforParams().put("loantodept", applicationData.getLoadToDept());
 		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
-		in.setGridType("LIST");
+		in.setGridType(GridRequest.GRIDTYPE.LIST);
 		in.setFields(Arrays.asList("247", "249")); // 247=equipmentcode, 249=equipmentdesc
 		in.getInforParams().put("cctrspcvalidation", "D");
 		in.getInforParams().put("department", "");

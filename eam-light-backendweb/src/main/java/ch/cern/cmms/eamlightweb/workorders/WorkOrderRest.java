@@ -25,8 +25,6 @@ import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.cmms.eamlightejb.layout.ElementInfo;
-import ch.cern.cmms.eamlightejb.layout.LayoutBean;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -43,8 +41,6 @@ public class WorkOrderRest extends WSHubController {
 	private AuthenticationTools authenticationTools;
 	@Inject
 	private ApplicationData applicationData;
-	@EJB
-	private LayoutBean layoutBean;
 	@Inject
 	private Tools tools;
 	@EJB
@@ -129,12 +125,6 @@ public class WorkOrderRest extends WSHubController {
 			// User defined fields
 			workOrder.setUserDefinedFields(new UserDefinedFields());
 
-			// Default values from screen
-			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
-				Map<String, ElementInfo> screenFields = layoutBean.getRecordViewElements(systemFunction, userFunction, entity, userTools.getUserGroup(authenticationTools.getInforContext()));
-				WorkOrderTools.assignDefaultValues(workOrder, screenFields, applicationData);
-			}
-
 			tools.pupulateBusinessObject(workOrder, parameters);
 
 			// If there is a standard Work Order, then read the fields
@@ -149,7 +139,7 @@ public class WorkOrderRest extends WSHubController {
 					: "*";
 			// Custom Fields (Loaded with the default class, or the preloaded one)
 			try {
-				workOrder.setCustomFields(inforClient.getTools().getCustomFieldsTools().getMTCustomFields(authenticationTools.getInforContext(), "EVNT", woclass));
+				workOrder.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", woclass));
 			} catch (Exception e) {
 
 			}

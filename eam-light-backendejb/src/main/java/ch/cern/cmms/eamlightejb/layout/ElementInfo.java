@@ -1,108 +1,39 @@
 package ch.cern.cmms.eamlightejb.layout;
 
-import javax.persistence.*;
+import ch.cern.eam.wshub.core.annotations.GridField;
 
-@Entity
-@NamedNativeQueries({ @NamedNativeQuery(name = ElementInfo.GET_RECORD_VIEW_FIELDS, query = "select PLD_PAGENAME,  "
-		+ "PLD_ELEMENTID,  "
-		+ "CASE WHEN (PLD_XPATH IS NOT NULL) THEN replace('EAMID_' || PLD_XPATH,'\\','_')  ELSE replace('EAMID_' || PLD_ELEMENTID,'\\','_') END AS XPATH,  "
-		+ "NVL(PLD_MAXLENGTH,120) as PLD_MAXLENGTH, PLD_CASE,   "
-		+ "CASE WHEN (PLO_PRESENTINJSP = 'N') THEN 'H' ELSE PLO_ATTRIBUTE END AS PLO_ATTRIBUTE,  " + "PLO_USERGROUP,  "
-		+ "CASE WHEN (SELECT UDF_DATETYPE FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity)='DATI' then 'datetime' else PLD_FIELDTYPE end as PLD_FIELDTYPE,  "
-		+ "PLO_DEFAULTVALUE,  " + "PLD_DDFIELDNAME,  "
-		+ "BOT_TEXT,  "
-		+ "NVL((SELECT UDF_LOOKUPTYPE FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity),'NONE') UDF_LOOKUPTYPE, "
-		+ "NVL((SELECT UDF_LOOKUPRENTITY FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity),:entity) UDF_LOOKUPRENTITY, "
-		+ "(SELECT UDF_UOM FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity) UDF_UOM "
-		+ "from (r5defaultpagelayout join r5pagelayout on plo_elementid = PLD_ELEMENTID) left outer join r5boilertexts on LOWER(PLD_ELEMENTID) = LOWER(BOT_FLD1) and bot_function = :pageName where   "
-		+ "PLD_PAGENAME = :masterPageName AND PLO_PAGENAME = :pageName AND PLO_USERGROUP = :userGroup ORDER BY PLD_ELEMENTID", resultClass = ElementInfo.class),
-		@NamedNativeQuery(name = ElementInfo.GET_TAB_FIELDS, query = "select PLD_PAGENAME, " + "PLD_ELEMENTID, "
-				+ "CASE WHEN (PLD_XPATH IS NOT NULL) THEN replace('EAMID_' || PLD_XPATH,'\\','_')  ELSE replace('EAMID_' || PLD_ELEMENTID,'\\','_') END AS XPATH, "
-				+ "NVL(PLD_MAXLENGTH,120) as PLD_MAXLENGTH, PLD_CASE,  "
-				+ "CASE WHEN (PLO_PRESENTINJSP = 'N') THEN 'H' ELSE PLO_ATTRIBUTE END AS PLO_ATTRIBUTE, "
-				+ "PLO_USERGROUP, "
-				+ "CASE WHEN (SELECT UDF_DATETYPE FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity)='DATI' then 'datetime' else PLD_FIELDTYPE end as PLD_FIELDTYPE, "
-				+ "PLO_DEFAULTVALUE, " + "PLD_DDFIELDNAME, "
-				+ "BOT_TEXT, "
-				+ "NVL((SELECT UDF_LOOKUPTYPE FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity),'NONE') UDF_LOOKUPTYPE, "
-				+ "NVL((SELECT UDF_LOOKUPRENTITY FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity),:entity) UDF_LOOKUPRENTITY, "
-				+ "(SELECT UDF_UOM FROM R5USERDEFINEDFIELDSETUP WHERE UDF_FIELD = PLD_ELEMENTID AND UDF_RENTITY = :entity) UDF_UOM "
-				+ "from r5defaultpagelayout ,r5pagelayout,r5boilertexts  where "
-				+ "plo_elementid = PLD_ELEMENTID and pld_elementtype = 'F' AND "
-				+ "bot_function = :pageName and LOWER(PLD_ELEMENTID) = LOWER(substr(BOT_FLD1, 5)) and bot_fld1 like :tabName || '/_%' escape '/' and "
-				+ "PLD_PAGENAME = :masterPageName || '_' || :tabName AND PLO_PAGENAME = :pageName  || '_' || :tabName AND PLO_USERGROUP = :userGroup ORDER BY PLD_ELEMENTID", resultClass = ElementInfo.class) })
 public class ElementInfo {
 
-	public static final String GET_RECORD_VIEW_FIELDS = "ElementInfo.GET_RECORD_VIEW_FIELDS";
-	public static final String GET_TAB_FIELDS = "ElementInfo.GET_TAB_FIELDS";
-	public static final String GET_CUSTOMFIELDS = "ElementInfo.GET_CUSTOMFIELDS";
-	public static final String GET_UDS_FIELDS = "ElementInfo.GET_UDS_FIELDS";
 
-	public ElementInfo() {
-
-	}
-
-	public ElementInfo(String xpath, String attribute) {
-		this.xpath = xpath;
-		this.attribute = attribute;
-	}
-
-	public ElementInfo(String elementId, String pageName, String xpath, String maxLength, String characterCase,
-			String attribute, String userGroup, String fieldType, String defaultValue, String text, boolean readonly) {
-		this.elementId = elementId;
-		this.pageName = pageName;
-		this.xpath = xpath;
-		this.maxLength = maxLength;
-		this.characterCase = characterCase;
-		this.attribute = attribute;
-		this.userGroup = userGroup;
-		this.fieldType = fieldType;
-		this.defaultValue = defaultValue;
-		this.text = text;
-		this.readonly = readonly;
-	}
-
-	@Id
-	@Column(name = "PLD_ELEMENTID")
+	@GridField(name="plo_elementid")
 	private String elementId;
-	//
-	@Column(name = "PLD_PAGENAME")
+	@GridField(name="plo_pagename")
 	private String pageName;
-	//
-	@Column(name = "XPATH")
+	@GridField(name="pld_xpath")
 	private String xpath;
-	// For string only
-	@Column(name = "PLD_MAXLENGTH")
+	@GridField(name="pld_maxlength")
 	private String maxLength;
-	// mixed, uppercase
-	@Column(name = "PLD_CASE")
+	@GridField(name="pld_case")
 	private String characterCase;
 	// H = Hidden, O = Optional, R = Required, S = System Required,
-	@Column(name = "PLO_ATTRIBUTE")
+	@GridField(name="plo_attribute")
 	private String attribute;
-	@Column(name = "PLO_USERGROUP")
 	private String userGroup;
 	// text, date, integer, number, button ...
-	@Column(name = "PLD_FIELDTYPE")
+	@GridField(name="pld_fieldtype")
 	private String fieldType;
 	//
-	@Column(name = "PLO_DEFAULTVALUE")
+	@GridField(name="plo_defaultvalue")
 	private String defaultValue;
 	// Label
-	@Column(name = "BOT_TEXT")
 	private String text;
 	// Lookup type for UDFs
-	@Column(name = "UDF_LOOKUPTYPE")
 	private String udfLookupType;
 	// Lookup entity for UDFs
-	@Column(name = "UDF_LOOKUPRENTITY")
 	private String udfLookupEntity;
 	// UOM from UDF
-	@Column(name = "UDF_UOM")
 	private String udfUom;
-	@Transient
 	private boolean readonly;
-	@Transient
 	private boolean notValid;
 
 	public String getElementId() {

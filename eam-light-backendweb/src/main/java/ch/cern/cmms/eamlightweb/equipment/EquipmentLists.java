@@ -21,6 +21,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
+import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 @Path("/eqplists")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -36,11 +37,10 @@ public class EquipmentLists extends DropdownValues {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp, @QueryParam("oldStatusCode") String oldStatusCode) throws InforException {
-		GridRequest gridRequest = new GridRequest("BSAUTH_HDR");
-		gridRequest.setGridType("LOV");
+		GridRequest gridRequest = new GridRequest("BSAUTH_HDR", GridRequest.GRIDTYPE.LOV);
 
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, "true", null));
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, "true"));
+		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, true, null));
+		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, true));
 		gridRequest.getGridRequestFilters().add(new GridRequestFilter("entity", "OBJ", "=", GridRequestFilter.JOINER.AND));
 		if (neweqp) {
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("fromstatus", "-", "="));
@@ -54,8 +54,7 @@ public class EquipmentLists extends DropdownValues {
 				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 		if (gridRequestResult.getRows().length > 0) {
-			//TODO: do not assume the order from the grid ws response
-			result.add(new Pair(gridRequestResult.getRows()[0].getCell()[2].getContent(), gridRequestResult.getRows()[0].getCell()[3].getContent()));
+			result.add(new Pair(getCellContent("3578", gridRequestResult.getRows()[0]), getCellContent("3579", gridRequestResult.getRows()[0])));
 		}
 		return ok(result);
 	}
@@ -66,7 +65,7 @@ public class EquipmentLists extends DropdownValues {
 	@Consumes("application/json")
 	public Response readCriticalityCodes() {
 		try {
-			return ok(loadDropdown("2385", "LVMULTICRITIC", "2359", "LIST",
+			return ok(loadDropdown("2385", "LVMULTICRITIC", "2359", GridRequest.GRIDTYPE.LIST,
 					Arrays.asList("101", "103"), new HashMap<>()));
 		} catch (InforException e) {
 			return badRequest(e);
