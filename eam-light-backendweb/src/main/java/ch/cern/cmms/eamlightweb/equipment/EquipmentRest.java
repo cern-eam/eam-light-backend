@@ -149,7 +149,7 @@ public class EquipmentRest extends WSHubController {
 			map.put("wojobtype", "jobType");
 
 			GridRequest gridRequest = new GridRequest("EUMLWH");
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND));
+			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
 			gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("wocompleted", "DESC")});
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
 					  map,

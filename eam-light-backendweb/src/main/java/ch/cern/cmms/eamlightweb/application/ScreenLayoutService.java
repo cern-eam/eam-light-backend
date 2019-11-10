@@ -45,9 +45,9 @@ public class ScreenLayoutService {
             GridRequest gridRequestLayout = new GridRequest( "EULLAY");
             gridRequestLayout.setRowCount(1000);
             gridRequestLayout.setUseNative(false);
-            gridRequestLayout.getGridRequestFilters().add(new GridRequestFilter("plo_usergroup", userGroup, "=", GridRequestFilter.JOINER.AND));
-            gridRequestLayout.getGridRequestFilters().add(new GridRequestFilter("plo_pagename", userFunction, "=", GridRequestFilter.JOINER.AND));
-            gridRequestLayout.getGridRequestFilters().add(new GridRequestFilter("pld_pagename", systemFunction, "=", GridRequestFilter.JOINER.AND));
+            gridRequestLayout.addFilter("plo_usergroup", userGroup, "=", GridRequestFilter.JOINER.AND);
+            gridRequestLayout.addFilter("plo_pagename", userFunction, "=", GridRequestFilter.JOINER.AND);
+            gridRequestLayout.addFilter("pld_pagename", systemFunction, "=", GridRequestFilter.JOINER.AND);
 
             List<ElementInfo> elements = inforClient.getTools().getGridTools().converGridResultToObject(ElementInfo.class, null, inforClient.getGridsService().executeQuery(context, gridRequestLayout));
             elements.stream().filter(element -> element.getXpath() != null).forEach(element -> element.setXpath("EAMID_" + element.getXpath().replace("\\", "_")));

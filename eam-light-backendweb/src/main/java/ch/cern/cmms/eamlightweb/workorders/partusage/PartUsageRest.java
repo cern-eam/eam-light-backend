@@ -83,7 +83,7 @@ public class PartUsageRest extends WSHubController {
 				// ISSUE
 				gridRequest = new GridRequest("LVISSUEBIN");
 				if (bin != null && !bin.isEmpty()) {
-					gridRequest.getGridRequestFilters().add(new GridRequestFilter("bincode", bin, "BEGINS"));
+					gridRequest.addFilter("bincode", bin, "BEGINS");
 				}
 			} else {
 				// RETURN

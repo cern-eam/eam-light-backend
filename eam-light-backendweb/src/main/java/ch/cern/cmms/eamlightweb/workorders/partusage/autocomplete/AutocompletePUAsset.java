@@ -51,12 +51,12 @@ public class AutocompletePUAsset extends Autocomplete {
 			@PathParam("code") String code) {
 		try {
 			GridRequest gridRequest = new GridRequest("OSOBJA");
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipmentno", code.toUpperCase(), "CONTAINS", GridRequestFilter.JOINER.AND));
+			gridRequest.addFilter("equipmentno", code.toUpperCase(), "CONTAINS", GridRequestFilter.JOINER.AND);
 
 			if (issuereturn.startsWith("I")) // ISSUE
-				gridRequest.getGridRequestFilters().add(new GridRequestFilter("store", store, "="));
+				gridRequest.addFilter("store", store, "=");
 			else { // RETURN
-				gridRequest.getGridRequestFilters().add(new GridRequestFilter("store", "", "IS EMPTY"));
+				gridRequest.addFilter("store", "", "IS EMPTY");
 			}
 
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
