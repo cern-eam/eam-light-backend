@@ -25,8 +25,8 @@ public class MyWorkOrders {
         EAMUser eamUser = inforClient.getUserSetupService().readUserSetup(authenticationTools.getInforContext(), userCode);
         //
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
-        gridRequest.getGridRequestFilters().add(new GridRequestFilter("assignedto", eamUser.getCernId(), "=", GridRequestFilter.JOINER.AND));
-        gridRequest.getGridRequestFilters().add(new GridRequestFilter("evt_rstatus", "R", "="));
+        gridRequest.addFilter("assignedto", eamUser.getCernId(), "=", GridRequestFilter.JOINER.AND);
+        gridRequest.addFilter("evt_rstatus", "R", "=");
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
@@ -39,8 +39,8 @@ public class MyWorkOrders {
         }
 
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
-        gridRequest.getGridRequestFilters().add(new GridRequestFilter("department", userDepartments, "IN", GridRequestFilter.JOINER.AND));
-        gridRequest.getGridRequestFilters().add(new GridRequestFilter("evt_rstatus", "R", "="));
+        gridRequest.addFilter("department", userDepartments, "IN", GridRequestFilter.JOINER.AND);
+        gridRequest.addFilter("evt_rstatus", "R", "=");
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
@@ -48,7 +48,7 @@ public class MyWorkOrders {
 
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
-        gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipment", equipmentCode, "="));
+        gridRequest.addFilter("equipment", equipmentCode, "=");
         gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("datecreated", "DESC")});
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 createMap(),

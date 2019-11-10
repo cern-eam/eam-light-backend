@@ -68,8 +68,8 @@ public class CustomFieldsController extends Autocomplete {
 
 		GridRequest gridRequest = new GridRequest("109", "LVCFE", "110");
 		gridRequest.setRowCount(10);
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("customfieldvalue", filter, "BEGINS", GridRequestFilter.JOINER.OR));
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("description", filter, "BEGINS"));
+		gridRequest.addFilter("customfieldvalue", filter, "BEGINS", GridRequestFilter.JOINER.OR);
+		gridRequest.addFilter("description", filter, "BEGINS");
 
 		return getData("parameter.propentity", entity, gridRequest, map);
 	}

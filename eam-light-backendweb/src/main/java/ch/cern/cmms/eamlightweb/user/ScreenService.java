@@ -44,13 +44,13 @@ public class ScreenService {
         Map<String, String> test = getTest(context);
 
         GridRequest gridRequestLayout = new GridRequest("BSMESP_HDR", 2000);
-        gridRequestLayout.getGridRequestFilters().add(new GridRequestFilter("usergroup", userGroup, "=", JOINER.AND));
+        gridRequestLayout.addFilter("usergroup", userGroup, "=", JOINER.AND);
 
         // TABS
-        gridRequestLayout.getGridRequestFilters().add(new GridRequestFilter("tab", null, "IS EMPTY", JOINER.AND));
+        gridRequestLayout.addFilter("tab", null, "IS EMPTY", JOINER.AND);
 
         // SCREENS
-        gridRequestLayout.getGridRequestFilters().add(new GridRequestFilter("functionname", String.join(",", test.keySet()), "IN"));
+        gridRequestLayout.addFilter("functionname", String.join(",", test.keySet()), "IN");
 
         Map<String, ScreenInfo> screens = inforClient.getTools().getGridTools().convertGridResultToMap(ScreenInfo.class,
                                             "functionname",
@@ -65,7 +65,7 @@ public class ScreenService {
     public Map<String, String> getTest(InforContext context) throws InforException {
 
         GridRequest gridRequestLayout = new GridRequest("BSFUNC");
-        screens.forEach(screen -> gridRequestLayout.getGridRequestFilters().add(new GridRequestFilter("parentscreencode", screen, "=", JOINER.OR)));
+        screens.forEach(screen -> gridRequestLayout.addFilter("parentscreencode", screen, "=", JOINER.OR));
 
         Map<String, String> functions =  inforClient.getTools().getGridTools().convertGridResultToMap("screencode",
                 "parentscreencode",

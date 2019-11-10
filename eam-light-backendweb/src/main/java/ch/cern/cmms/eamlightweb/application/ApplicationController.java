@@ -46,7 +46,7 @@ public class ApplicationController extends WSHubController {
 	public Response readApplicationData() {
 		try {
 			GridRequest gridRequest = new GridRequest("BSINST");
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("installcode", "EL_", "BEGINS"));
+			gridRequest.addFilter("installcode", "EL_", "BEGINS");
 			return ok(inforClient.getTools().getGridTools().convertGridResultToMap("installcode", "value", inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch(Exception e) {
 			return serverError(e);

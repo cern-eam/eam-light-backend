@@ -59,8 +59,8 @@ public class AutocompleteACTTask extends Autocomplete {
 			gridRequest.getParams().put("param.trade", null);
 			gridRequest.getParams().put("param.workaccomplished", null);
 
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("task", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("taskdesc", code.toUpperCase(), "BEGINS" ));
+			gridRequest.addFilter("task", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR );
+			gridRequest.addFilter("taskdesc", code.toUpperCase(), "BEGINS" );
 
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("task", "taskdesc"),

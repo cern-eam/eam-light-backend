@@ -39,13 +39,13 @@ public class EquipmentLists extends DropdownValues {
 	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp, @QueryParam("oldStatusCode") String oldStatusCode) throws InforException {
 		GridRequest gridRequest = new GridRequest("BSAUTH_HDR", GridRequest.GRIDTYPE.LOV);
 
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, true, null));
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, true));
-		gridRequest.getGridRequestFilters().add(new GridRequestFilter("entity", "OBJ", "=", GridRequestFilter.JOINER.AND));
+		gridRequest.addFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, true, null);
+		gridRequest.addFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, true);
+		gridRequest.addFilter("entity", "OBJ", "=", GridRequestFilter.JOINER.AND);
 		if (neweqp) {
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("fromstatus", "-", "="));
+			gridRequest.addFilter("fromstatus", "-", "=");
 		} else {
-			gridRequest.getGridRequestFilters().add(new GridRequestFilter("fromstatus", oldStatusCode, "="));
+			gridRequest.addFilter("fromstatus", oldStatusCode, "=");
 		}
 
 		GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest);
