@@ -23,7 +23,6 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -43,8 +42,6 @@ public class WorkOrderRest extends WSHubController {
 	private ApplicationData applicationData;
 	@Inject
 	private Tools tools;
-	@EJB
-	private UserTools userTools;
 
 	@GET
 	@Path("/{workorder}")
@@ -130,7 +127,8 @@ public class WorkOrderRest extends WSHubController {
 			// If there is a standard Work Order, then read the fields
 			if (workOrder.getStandardWO() != null && !workOrder.getStandardWO().trim().equals("")) {
 				// Obtain the loaded work order
-				workOrder = inforClient.getWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), workOrder);
+				// TODO !!!
+				// workOrder = inforClient.getWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), workOrder);
 			}
 
 			// Class

@@ -1,12 +1,9 @@
 package ch.cern.cmms.eamlightweb.tools;
 
-import ch.cern.cmms.eamlightejb.layout.ElementInfo;
 import ch.cern.eam.wshub.core.services.entities.CustomField;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 
-import javax.annotation.Resource;
 import javax.enterprise.context.RequestScoped;
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Map;

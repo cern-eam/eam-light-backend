@@ -69,7 +69,6 @@ public class AutocompletePUAsset extends Autocomplete {
 		}
 	}
 
-
 	@GET
 	@Path("/partusage/asset/complete/{workOrder}/{issuereturn}/{store}/{assetCode}")
 	@Produces("application/json")

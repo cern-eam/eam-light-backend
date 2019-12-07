@@ -1,10 +1,7 @@
 package ch.cern.cmms.eamlightweb.workorders;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
@@ -18,8 +15,6 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.user.UserTools;
-import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -27,8 +22,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class WorkOrderLists extends DropdownValues {
 
-	@Inject
-	private UserTools userTools;
 	@Inject
 	private AuthenticationTools authenticationTools;
 
@@ -77,13 +70,12 @@ public class WorkOrderLists extends DropdownValues {
 	@Path("/typecodes")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readTypeCodes(@QueryParam("wostatus") String wostatus, @QueryParam("wotype") String wotype,
-			@QueryParam("newwo") Boolean newwo, @QueryParam("ppmwo") Boolean ppmwo) throws InforException {
+	public Response readTypeCodes(@QueryParam("userGroup") String userGroup) throws InforException {
 		GridRequest gridRequest = new GridRequest("LVGROUPWOTYPE", GridRequest.GRIDTYPE.LOV);
 		gridRequest.getParams().put("parameter.pagemode", null);
-		gridRequest.getParams().put("parameter.usergroup", userTools.getUserGroup(authenticationTools.getInforContext()));
+		gridRequest.getParams().put("parameter.usergroup", userGroup);
 		return ok(loadDropdown(gridRequest, "101", "103"));
-		}
+	}
 
 	@GET
 	@Path("/prioritycodes")

@@ -1,5 +1,6 @@
 package ch.cern.cmms.eamlightweb.workorders.partusage;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -198,7 +199,7 @@ public class PartUsageRest extends WSHubController {
 		// Lot
 		line.setLot(null);
 		// Quantity
-		line.setTransactionQty("1");
+		line.setTransactionQty(new BigDecimal(1));
 		// Asset code
 		line.setAssetIDCode(null);
 		// Returns line created
@@ -283,12 +284,12 @@ public class PartUsageRest extends WSHubController {
 
 	private void setPartUsageTransType(WorkOrderPart workOrderPartUsage) {
 		try {
-			if (inforClient.getTools().getDataTypeTools().isNotEmpty(workOrderPartUsage.getPlannedQty())) {
+			if (workOrderPartUsage.getPlannedQty() != null) {
 				workOrderPartUsage.setTransType("Planned");
 				workOrderPartUsage.setQuantity(workOrderPartUsage.getPlannedQty());
-			} else if (Integer.valueOf(workOrderPartUsage.getUsedQty()) < 0) {
+			} else if (workOrderPartUsage.getUsedQty().compareTo(BigDecimal.ZERO) < 0) {
 				workOrderPartUsage.setTransType("Return");
-				workOrderPartUsage.setQuantity("" + (-1 * Integer.valueOf(workOrderPartUsage.getUsedQty())));
+				workOrderPartUsage.setQuantity(workOrderPartUsage.getUsedQty().abs());
 			} else {
 				workOrderPartUsage.setTransType("Issue");
 				workOrderPartUsage.setQuantity(workOrderPartUsage.getUsedQty());

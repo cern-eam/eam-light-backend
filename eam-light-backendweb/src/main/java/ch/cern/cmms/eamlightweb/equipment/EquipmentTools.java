@@ -3,18 +3,13 @@
  */
 package ch.cern.cmms.eamlightweb.equipment;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
-import ch.cern.cmms.eamlightejb.layout.ElementInfo;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 
 /**

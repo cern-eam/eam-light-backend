@@ -333,9 +333,9 @@ public class EquipmentReplacementService {
     }
 
     private void introduceCernExtensions(InforContext inforContext, String oldEquipmentCode, String newEquipmentCode, String newEquipmentClass) {
-        if (Arrays.stream(applicationData.getCryoEqpReplacementClasses()).noneMatch( cl -> cl.equals(newEquipmentClass))) {
-            return;
-        }
+        //if (Arrays.stream(applicationData.getCryoEqpReplacementClasses()).noneMatch( cl -> cl.equals(newEquipmentClass))) {
+        //    return;
+        //}
 
         Equipment newEquipment = new Equipment();
         newEquipment.setCode(newEquipmentCode);

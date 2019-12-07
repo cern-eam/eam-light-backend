@@ -1,4 +1,4 @@
-package ch.cern.cmms.eamlightejb.layout;
+package ch.cern.cmms.eamlightweb.user.entities;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -14,9 +14,7 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
-import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
-import ch.cern.eam.wshub.core.services.grids.entities.GridDataspy;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
@@ -29,17 +27,15 @@ public class EquipmentLists extends DropdownValues {
 
 	@Inject
 	private MyWorkOrders myWorkOrders;
-	@Inject
-	private UserTools userTools;
 
 	@GET
 	@Path("/statuscodes")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readStatusCodes(@QueryParam("neweqp") Boolean neweqp, @QueryParam("oldStatusCode") String oldStatusCode) throws InforException {
+	public Response readStatusCodes(@QueryParam("userGroup") String userGroup, @QueryParam("neweqp") Boolean neweqp, @QueryParam("oldStatusCode") String oldStatusCode) throws InforException {
 		GridRequest gridRequest = new GridRequest("BSAUTH_HDR", GridRequest.GRIDTYPE.LOV);
 
-		gridRequest.addFilter("usergroupcode", userTools.getUserGroup(authenticationTools.getInforContext()), "=", GridRequestFilter.JOINER.OR, true, null);
+		gridRequest.addFilter("usergroupcode", userGroup, "=", GridRequestFilter.JOINER.OR, true, null);
 		gridRequest.addFilter("usercode", authenticationTools.getInforContext().getCredentials().getUsername(), "=", GridRequestFilter.JOINER.AND, null, true);
 		gridRequest.addFilter("entity", "OBJ", "=", GridRequestFilter.JOINER.AND);
 		if (neweqp) {

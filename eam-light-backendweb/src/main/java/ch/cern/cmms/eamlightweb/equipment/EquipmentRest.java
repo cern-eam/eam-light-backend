@@ -27,7 +27,6 @@ import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.user.UserTools;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
@@ -54,8 +53,6 @@ public class EquipmentRest extends WSHubController {
     private AuthenticationTools authenticationTools;
 	@Inject
 	private Tools tools;
-	@EJB
-	private UserTools userTools;
 	@Inject
 	private MyWorkOrders myWorkOrders;
 

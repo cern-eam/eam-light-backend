@@ -22,10 +22,8 @@
         <class>ch.cern.eam.wshub.core.services.equipment.entities.Equipment</class>
         <class>ch.cern.eam.wshub.core.services.documents.entities.InforDocEntity</class>
         <class>ch.cern.eam.wshub.core.services.documents.entities.InforDocument</class>
-        <class>ch.cern.cmms.eamlightejb.layout.ElementInfo</class>
-        <class>ch.cern.cmms.eamlightejb.layout.ScreenInfo</class>
-        <class>ch.cern.cmms.eamlightejb.layout.TabInfo</class>
-        <class>ch.cern.cmms.eamlightejb.tools.entities.Property</class>
+        <class>ch.cern.cmms.eamlightweb.user.entities.ElementInfo</class>
+        <class>ch.cern.cmms.eamlightweb.user.entities.ScreenInfo</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jboss.entity.manager.factory.jndi.name" value="java:jboss/eamLightEntityManagerFactory" />
