@@ -30,7 +30,6 @@ import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.services.entities.WorkOrderPart;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;

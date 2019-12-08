@@ -16,6 +16,7 @@ import ch.cern.cmms.eamlightweb.user.ScreenLayoutService;
 import ch.cern.cmms.eamlightweb.user.ScreenService;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
 
 @Path("/application")
 @RequestScoped
@@ -43,13 +44,15 @@ public class ApplicationController extends WSHubController {
 	}
 
 	@GET
-	@Path("/cleancache")
+	@Path("/refreshCache")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response cleanCache() {
 		ScreenLayoutService.screenLayoutCache.clear();
+		ScreenLayoutService.screenLayoutLabelCache.clear();
 		ScreenService.screenCache.clear();
-		return ok("Application cache cleaned.");
+		InforGrids.gridFieldCache.clear();
+		return ok("EAM Light cache has been successfully refreshed.");
 	}
 
 }

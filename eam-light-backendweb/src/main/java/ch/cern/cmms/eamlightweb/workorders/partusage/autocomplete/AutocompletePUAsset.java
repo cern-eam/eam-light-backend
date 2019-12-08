@@ -24,7 +24,6 @@ import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
@@ -36,8 +35,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 public class AutocompletePUAsset extends Autocomplete {
 
 	private static final long serialVersionUID = 2103801217084141204L;
-	@Inject
-	private ApplicationData applicationData;
 	@Inject
 	private InforClient inforClient;
 	@Inject

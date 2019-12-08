@@ -47,7 +47,7 @@ public class AutocompleteBOOEmployee extends Autocomplete {
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("personcode", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("description", code.toUpperCase(), "CONTAINS" ));
 
-			gridRequest.sortyBy("description");
+			gridRequest.sortBy("description");
 
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("personcode", "description"),

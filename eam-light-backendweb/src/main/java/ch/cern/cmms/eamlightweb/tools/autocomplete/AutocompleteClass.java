@@ -38,7 +38,7 @@ public class AutocompleteClass extends Autocomplete {
 			gridRequest.getParams().put("parameter.r5role", "");
 			gridRequest.getParams().put("parameter.bypassorg", true);
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("class", code.toUpperCase(), "BEGINS"));
-			gridRequest.sortyBy("class");
+			gridRequest.sortBy("class");
 
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("class", "des_text"),

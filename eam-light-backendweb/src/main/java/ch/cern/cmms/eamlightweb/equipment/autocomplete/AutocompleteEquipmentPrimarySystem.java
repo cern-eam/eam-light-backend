@@ -39,7 +39,7 @@ public class AutocompleteEquipmentPrimarySystem extends Autocomplete {
 			gridRequest.getParams().put("param.objectorg", authenticationTools.getInforContext().getOrganizationCode());
 			gridRequest.getParams().put("param.objectrtype", "S");
 			gridRequest.getParams().put("param.objectcode", "");
-			gridRequest.sortyBy("equipmentcode");
+			gridRequest.sortBy("equipmentcode");
 			gridRequest.setRowCount(10);
 			gridRequest.setGridType(GridRequest.GRIDTYPE.LIST);
 			gridRequest.getGridRequestFilters().add(new GridRequestFilter("equipmentcode", code.toUpperCase(), "BEGINS"));

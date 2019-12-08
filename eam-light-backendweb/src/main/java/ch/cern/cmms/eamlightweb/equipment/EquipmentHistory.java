@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightweb.equipment;
 
 import ch.cern.eam.wshub.core.adapters.DateAdapter;
+import ch.cern.eam.wshub.core.annotations.GridField;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,13 +15,21 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public class  EquipmentHistory  implements Serializable {
 
+	@GridField(name="wocode")
 	private String number;
+	@GridField(name="wotypedescription")
 	private String desc;
+	@GridField(name="woobject")
 	private String object;
+	@GridField(name="relatedobject")
 	private String relatedObject;
+	@GridField(name="wocompleted")
 	private Date completedDate;
+	@GridField(name="woenteredby")
 	private String enteredBy;
+	@GridField(name="wotype")
 	private String type;
+	@GridField(name="wojobtype")
 	private String jobType;
 
 	public String getNumber() {

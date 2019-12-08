@@ -50,7 +50,7 @@ public class MyWorkOrders {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.setRowCount(2000);
         gridRequest.addFilter("equipment", equipmentCode, "=");
-        gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("datecreated", "DESC")});
+        gridRequest.sortBy("datecreated", "DESC");
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
                 null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));

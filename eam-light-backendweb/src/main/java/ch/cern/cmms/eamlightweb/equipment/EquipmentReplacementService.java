@@ -1,6 +1,5 @@
 package ch.cern.cmms.eamlightweb.equipment;
 
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
@@ -23,9 +22,6 @@ public class EquipmentReplacementService {
 
     @Inject
     private InforClient inforClient;
-
-    @Inject
-    private ApplicationData applicationData;
 
     // Replace Equipment modes
     private static final String STANDARD = "Standard";

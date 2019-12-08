@@ -21,8 +21,10 @@ public class ScreenLayoutService {
     @Inject
     private InforClient inforClient;
     public static final Map<String, ScreenLayout> screenLayoutCache = new ConcurrentHashMap<>();
+    public static final Map<String, Map<String, String>> screenLayoutLabelCache = new ConcurrentHashMap<>();
 
     public ScreenLayout getScreenLayout(InforContext context, String systemFunction, String userFunction, List<String> tabs, String userGroup) throws InforException {
+        // Check if value not already in the cache
         String layoutCacheKey = userGroup + "_" + userFunction;
         if (screenLayoutCache.containsKey(layoutCacheKey)) {
             return screenLayoutCache.get(layoutCacheKey);
@@ -35,8 +37,15 @@ public class ScreenLayoutService {
         for (String tab : tabs) {
             screenLayout.getTabs().put(tab, getTabLayout(context, userGroup, systemFunction + "_" + tab, userFunction + "_" + tab));
         }
-        // Layout Labels
-        populateTabLayoutLabels(context, userFunction, screenLayout);
+
+        // Get layout labels first
+        Map<String, String> labels = getTabLayoutLabels(context, userFunction);
+        // For all fields for the record view the bot_fld1 matches the upper-cased elementId
+        screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
+        // For all tab fields bot_fld1 matches upper-cased tab code + '_' + elementId
+        screenLayout.getTabs().keySet().forEach(tab -> {
+            screenLayout.getTabs().get(tab).values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase())));
+        });
 
         // Cache it before returning
         screenLayoutCache.put(layoutCacheKey, screenLayout);
@@ -59,14 +68,17 @@ public class ScreenLayoutService {
     }
 
     /**
-     *
+     * Reads all boiler texts (labels) for given function
      *
      * @param context
      * @param userFunction
-     * @param screenLayout
      * @throws InforException
      */
-    private void populateTabLayoutLabels(InforContext context, String userFunction, ScreenLayout screenLayout) throws InforException {
+    private Map<String, String> getTabLayoutLabels(InforContext context, String userFunction) throws InforException {
+        // Check if value already not present in the cache
+        if (screenLayoutLabelCache.containsKey(userFunction)) {
+            return screenLayoutLabelCache.get(userFunction);
+        }
 
         // Fetch boiler texts for given screen
         GridRequest gridRequestLabels = new GridRequest( "ASOBOT");
@@ -75,13 +87,9 @@ public class ScreenLayoutService {
         gridRequestLabels.addFilter("bot_function", userFunction, "EQUALS");
         Map<String, String> labels = convertGridResultToMap("bot_fld1", "bot_text", inforClient.getGridsService().executeQuery(context, gridRequestLabels));
 
-        // For all fields for the record view the bot_fld1 matches the upper-cased elementId
-        screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
-
-        // For all tab fields bot_fld1 matches upper-cased tab code + '_' + elementId
-        screenLayout.getTabs().keySet().forEach(tab -> {
-            screenLayout.getTabs().get(tab).values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase())));
-        });
+        // Save to cache and return
+        screenLayoutLabelCache.put(userFunction, labels);
+        return labels;
     }
 
 }

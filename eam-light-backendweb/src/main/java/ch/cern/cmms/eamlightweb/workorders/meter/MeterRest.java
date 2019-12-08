@@ -20,7 +20,6 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.WSHubController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightejb.meter.EquipmentMeter;
 import ch.cern.cmms.eamlightejb.meter.MeterEJB;
 import ch.cern.cmms.eamlightejb.meter.MeterReadingEntity;
@@ -41,9 +40,6 @@ public class MeterRest extends WSHubController {
 
 	@Inject
 	private InforClient inforClient;
-
-	@Inject
-	private ApplicationData applicationData;
 
 	@Inject
 	private AuthenticationTools authenticationTools;

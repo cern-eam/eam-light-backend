@@ -29,7 +29,6 @@ import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
@@ -43,8 +42,6 @@ public class EquipmentRest extends WSHubController {
 
 	@Inject
 	private InforClient inforClient;
-	@Inject
-	private ApplicationData applicationData;
 	@Inject
 	private EquipmentEJB equipmentEJB;
 	@Inject
@@ -135,21 +132,12 @@ public class EquipmentRest extends WSHubController {
 	@Produces("application/json")
 	public Response getEquipmentHistory(@QueryParam("c") String equipmentCode) {
 		try {
-			Map<String, String> map= new HashMap<>();
-			map.put("wocode", "number");
-			map.put("wotypedescription", "desc");
-			map.put("woobject", "object");
-			map.put("relatedobject", "relatedObject");
-			map.put("wocompleted", "completedDate");
-			map.put("woenteredby", "enteredBy");
-			map.put("wotype", "type");
-			map.put("wojobtype", "jobType");
-
 			GridRequest gridRequest = new GridRequest("EUMLWH");
+			gridRequest.setRowCount(2000);
 			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
-			gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("wocompleted", "DESC")});
+			gridRequest.sortBy("wocompleted", "DESC");
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
-					  map,
+					  null,
 					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch(Exception e) {
 			return serverError(e);
