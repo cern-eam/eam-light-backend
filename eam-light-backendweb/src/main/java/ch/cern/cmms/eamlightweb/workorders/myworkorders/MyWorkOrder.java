@@ -1,5 +1,7 @@
 package ch.cern.cmms.eamlightweb.workorders.myworkorders;
 
+import ch.cern.eam.wshub.core.annotations.GridField;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,32 +13,45 @@ import javax.persistence.NamedNativeQuery;
 
 public class MyWorkOrder implements Serializable {
 
-
+	@GridField(name="workordernum")
 	private String number;
+
+	@GridField(name="description")
 	private String desc;
+
+	@GridField(name="workorderstatus_display")
 	private String status;
+
+	@GridField(name="workorderstatus")
 	private String statusCode;
+
 	private String jobType;
+
+	@GridField(name="equipment")
 	private String object;
+
+	@GridField(name="department")
 	private String mrc;
+
+	@GridField(name="workordertype_display")
 	private String type;
+
+	@GridField(name="priority_display")
 	private String priority;
+
+	@GridField(name="schedenddate")
 	private Date schedulingEndDate;
+
+	@GridField(name="schedstartdate")
 	private Date schedulingStartDate;
+
+	@GridField(name="datecreated")
 	private Date createdDate;
+
+	@GridField(name="datecompleted")
 	private Date completedDate;
 
 	public MyWorkOrder() {}
-
-	public MyWorkOrder(String number, String desc, String object, String status, String department, Date schedulingStartDate, Date schedulingEndDate) {
-		this.number = number;
-		this.desc = desc;
-		this.object = object;
-		this.status = status;
-		this.mrc = department;
-		this.schedulingStartDate = schedulingStartDate;
-		this.schedulingEndDate = schedulingEndDate;
-	}
 
 	public String getNumber() {
 		return number;

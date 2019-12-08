@@ -28,7 +28,7 @@ public class MyWorkOrders {
         gridRequest.addFilter("assignedto", eamUser.getCernId(), "=", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
-                createMap(),
+                null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
@@ -42,31 +42,20 @@ public class MyWorkOrders {
         gridRequest.addFilter("department", userDepartments, "IN", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
-                createMap(),
+                null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
+        gridRequest.setRowCount(2000);
         gridRequest.addFilter("equipment", equipmentCode, "=");
         gridRequest.setGridRequestSorts(new GridRequestSort[] {new GridRequestSort("datecreated", "DESC")});
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
-                createMap(),
+                null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
-    private Map<String, String> createMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("workordernum", "number"); // wo number
-        map.put("description", "desc"); // description
-        map.put("equipment", "object");   // equipment code
-        map.put("workorderstatus_display", "status");  // status
-        map.put("department", "mrc");   // department
-        map.put("schedstartdate", "schedulingStartDate");  // scheduled start date
-        map.put("schedenddate", "schedulingEndDate"); // scheduled end date
-        map.put("datecreated", "createdDate"); // scheduled end date
-        return map;
-    }
 
     private String readUserDepartments() throws InforException {
         String userCode = authenticationTools.getInforContext().getCredentials().getUsername();

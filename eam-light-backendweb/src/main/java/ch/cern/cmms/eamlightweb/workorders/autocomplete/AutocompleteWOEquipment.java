@@ -1,12 +1,10 @@
 package ch.cern.cmms.eamlightweb.workorders.autocomplete;
 
 import java.util.Arrays;
-import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
-import javax.sound.sampled.Line;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,11 +14,10 @@ import javax.ws.rs.QueryParam;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -30,20 +27,22 @@ public class AutocompleteWOEquipment extends Autocomplete {
 
 	@Inject
 	private AuthenticationTools authenticationTools;
+	@Inject
+	private InforClient inforClient;
 
-	private SimpleGridInput prepareInput() throws InforException {
-		SimpleGridInput in = new SimpleGridInput("67", "LVOBJL", "59");
-		in.getInforParams().put("equipmentlookup", "true");
-		in.getInforParams().put("loantodept", "TRUE");
-		in.getInforParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
-		in.setGridType(GridRequest.GRIDTYPE.LIST);
-		in.setQueryTimeout(7000);
-		in.getInforParams().put("cctrspcvalidation", "D");
-		in.getInforParams().put("department", "");
-		in.getInforParams().put("objectrtype", null);
-		in.getInforParams().put("filterutilitybill", null);
-		in.getInforParams().put("filternonconformity", null);
-		return in;
+	private GridRequest prepareGridRequest() throws InforException {
+		GridRequest gridRequest = new GridRequest("67", "LVOBJL", "59");
+		gridRequest.setGridType(GridRequest.GRIDTYPE.LIST);
+		gridRequest.setRowCount(10);
+		gridRequest.getParams().put("param.objectrtype", null);
+		gridRequest.getParams().put("param.loantodept", true);
+		gridRequest.getParams().put("param.bypassdeptsecurity", false);
+		gridRequest.getParams().put("parameter.filterutilitybill", null);
+		gridRequest.getParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
+		gridRequest.getParams().put("param.cctrspcvalidation", "D");
+		gridRequest.getParams().put("param.department", null);
+
+		return gridRequest;
 	}
 
 	@GET
@@ -52,14 +51,12 @@ public class AutocompleteWOEquipment extends Autocomplete {
 	@Consumes("application/json")
 	public Response complete(@QueryParam("s") String code) {
 		try {
-			// Input
-			SimpleGridInput in = prepareInput();
-			in.setFields(Arrays.asList("247", "249")); // 247=equipmentcode,
-														// 249=equipmentdesc
-			in.getGridFilters().add(new GridRequestFilter("equipmentcode", code.toUpperCase(), "BEGINS"));
-			// Result
-			List<Pair> resultList = getGridResults(in);
-			return ok(resultList);
+			GridRequest gridRequest = prepareGridRequest();
+			gridRequest.addFilter("equipmentcode", code.toUpperCase(), "BEGINS");
+
+			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+					Pair.generateGridPairMap("equipmentcode", "equipmentdesc"),
+					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -73,15 +70,15 @@ public class AutocompleteWOEquipment extends Autocomplete {
 	@Consumes("application/json")
 	public Response getValuesSelectedEquipment(@QueryParam("code") String code) {
 		try {
-			// Input
-			SimpleGridInput input = prepareInput();
-			input.getGridFilters().add(new GridRequestFilter("equipmentcode", code.trim(), "EQUALS"));
-			// 247=equipmentcode, 249=equipmentdesc, 9439=departmentCode,
-			// 254=departmentDesc, 250=eqLocationCode, 252=eqLocationDesc,
-			// 397=equipcostcode
-			input.setFields(Arrays.asList("247", "249", "9439", "254", "250", "252", "397"));
-			// Result
-			return ok(getGridSingleRowResult(input));
+
+			GridRequest gridRequest = prepareGridRequest();
+			gridRequest.addFilter("equipmentcode", code.trim(), "EQUALS");
+
+			String[] fields = new String[] {"equipmentcode", "equipmentdesc", "department",
+					                        "departmentdisc", "parentlocation", "locationdesc", "equipcostcode"};
+
+			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(Arrays.asList(fields),
+					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
