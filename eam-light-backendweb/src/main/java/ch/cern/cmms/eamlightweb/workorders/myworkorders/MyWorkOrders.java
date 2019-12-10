@@ -49,6 +49,7 @@ public class MyWorkOrders {
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.setRowCount(2000);
+        gridRequest.setUseNative(false);
         gridRequest.addFilter("equipment", equipmentCode, "=");
         gridRequest.sortBy("datecreated", "DESC");
         return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,

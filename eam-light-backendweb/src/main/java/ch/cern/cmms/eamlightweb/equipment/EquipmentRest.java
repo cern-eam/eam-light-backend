@@ -134,6 +134,7 @@ public class EquipmentRest extends WSHubController {
 		try {
 			GridRequest gridRequest = new GridRequest("EUMLWH");
 			gridRequest.setRowCount(2000);
+			gridRequest.setUseNative(false);
 			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
 			gridRequest.sortBy("wocompleted", "DESC");
 			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
