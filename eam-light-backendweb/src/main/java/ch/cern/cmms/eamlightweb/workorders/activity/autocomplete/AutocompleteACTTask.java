@@ -1,10 +1,6 @@
 package ch.cern.cmms.eamlightweb.workorders.activity.autocomplete;
 
-import java.util.Arrays;
-
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -29,7 +25,6 @@ public class AutocompleteACTTask extends EAMLightController {
 	@Consumes("application/json")
 	public Response complete(@PathParam("code") String code) {
 		GridRequest gridRequest = new GridRequest("LVWTSK", GridRequest.GRIDTYPE.LOV);
-		gridRequest.setUseNative(false);
 
 		gridRequest.addParam("param.isolationmethod", null);
 		gridRequest.addParam("param.excludemultipletrades", null);
