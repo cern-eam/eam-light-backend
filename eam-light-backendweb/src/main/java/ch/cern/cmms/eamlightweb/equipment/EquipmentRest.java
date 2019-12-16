@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.EJB;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -24,7 +24,7 @@ import javax.ws.rs.core.UriInfo;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
@@ -36,9 +36,9 @@ import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/equipment")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class EquipmentRest extends WSHubController {
+public class EquipmentRest extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;
@@ -137,7 +137,7 @@ public class EquipmentRest extends WSHubController {
 			gridRequest.setUseNative(false);
 			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
 			gridRequest.sortBy("wocompleted", "DESC");
-			return ok(inforClient.getTools().getGridTools().converGridResultToObject(EquipmentHistory.class,
+			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(EquipmentHistory.class,
 					  null,
 					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch(Exception e) {
@@ -215,17 +215,12 @@ public class EquipmentRest extends WSHubController {
 			@PathParam("equipment") String equipment) {
 		try {
 			GridRequest gridRequest = new GridRequest("402", "BSPARA", "414");
-			Map<String, String> map = new HashMap<>();
-			map.put("1019", "partCode");
-			map.put("1022", "partDesc");
-			map.put("1020", "quantity");
-			map.put("2207", "uom");
 
-			gridRequest.getParams().put("param.entity", "OBJ");
-			gridRequest.getParams().put("param.valuecode", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.addParam("param.entity", "OBJ");
+			gridRequest.addParam("param.valuecode", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode());
 
-			List<PartAssociated> parts = inforClient.getTools().getGridTools().converGridResultToObject(PartAssociated.class,
-											map,
+			List<PartAssociated> parts = inforClient.getTools().getGridTools().convertGridResultToObject(PartAssociated.class,
+											null,
 											inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 			return ok(parts);

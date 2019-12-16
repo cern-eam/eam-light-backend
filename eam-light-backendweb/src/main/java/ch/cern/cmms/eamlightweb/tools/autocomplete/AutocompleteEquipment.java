@@ -1,7 +1,8 @@
-package ch.cern.cmms.eamlightweb.workorders.autocomplete;
+package ch.cern.cmms.eamlightweb.tools.autocomplete;
 
 import java.util.Arrays;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -12,35 +13,27 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.QueryParam;
 
-import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
-import ch.cern.cmms.eamlightweb.tools.Pair;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class AutocompleteWOEquipment extends Autocomplete {
+public class AutocompleteEquipment extends EAMLightController {
 
-	@Inject
-	private AuthenticationTools authenticationTools;
-	@Inject
-	private InforClient inforClient;
-
-	private GridRequest prepareGridRequest() throws InforException {
+	private GridRequest prepareGridRequest()  {
 		GridRequest gridRequest = new GridRequest("67", "LVOBJL", "59");
 		gridRequest.setGridType(GridRequest.GRIDTYPE.LIST);
 		gridRequest.setRowCount(10);
-		gridRequest.getParams().put("param.objectrtype", null);
-		gridRequest.getParams().put("param.loantodept", true);
-		gridRequest.getParams().put("param.bypassdeptsecurity", false);
-		gridRequest.getParams().put("parameter.filterutilitybill", null);
-		gridRequest.getParams().put("control.org", authenticationTools.getInforContext().getOrganizationCode());
-		gridRequest.getParams().put("param.cctrspcvalidation", "D");
-		gridRequest.getParams().put("param.department", null);
+		gridRequest.addParam("param.objectrtype", null);
+		gridRequest.addParam("param.loantodept", true);
+		gridRequest.addParam("param.bypassdeptsecurity", false);
+		gridRequest.addParam("parameter.filterutilitybill", null);
+		gridRequest.addParam("control.org", authenticationTools.getOrganizationCode());
+		gridRequest.addParam("param.cctrspcvalidation", "D");
+		gridRequest.addParam("param.department", null);
 
 		return gridRequest;
 	}
@@ -50,18 +43,9 @@ public class AutocompleteWOEquipment extends Autocomplete {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@QueryParam("s") String code) {
-		try {
-			GridRequest gridRequest = prepareGridRequest();
-			gridRequest.addFilter("equipmentcode", code.toUpperCase(), "BEGINS");
-
-			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
-					Pair.generateGridPairMap("equipmentcode", "equipmentdesc"),
-					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
+		GridRequest gridRequest = prepareGridRequest();
+		gridRequest.addFilter("equipmentcode", code.toUpperCase(), "BEGINS");
+		return getPairListResponse(gridRequest, "equipmentcode", "equipmentdesc");
 	}
 
 	@GET

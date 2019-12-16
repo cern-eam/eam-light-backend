@@ -1,6 +1,5 @@
 package ch.cern.cmms.eamlightweb.workorders.activity;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -24,7 +23,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.LaborBooking;
 
 @Path("/bookinglabour")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class BookingLabourRest extends WSHubController {
+public class BookingLabourRest extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;

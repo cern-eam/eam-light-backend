@@ -3,7 +3,10 @@
  */
 package ch.cern.cmms.eamlightweb.equipment;
 
+import ch.cern.eam.wshub.core.annotations.GridField;
+
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Represents a Part associated to the Equipment. Used to display the
@@ -12,9 +15,13 @@ import java.io.Serializable;
  */
 public class PartAssociated  implements Serializable {
 
+	@GridField(name="papartcode")
 	private String partCode;
+	@GridField(name="description")
 	private String partDesc;
-	private String quantity;
+	@GridField(name="quantity")
+	private BigDecimal quantity;
+	@GridField(name="partuom")
 	private String uom;
 
 	public String getPartCode() {
@@ -33,11 +40,11 @@ public class PartAssociated  implements Serializable {
 		this.partDesc = partDesc;
 	}
 
-	public String getQuantity() {
+	public BigDecimal getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(String quantity) {
+	public void setQuantity(BigDecimal quantity) {
 		this.quantity = quantity;
 	}
 

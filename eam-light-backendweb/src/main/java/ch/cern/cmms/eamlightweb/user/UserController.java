@@ -1,10 +1,11 @@
 package ch.cern.cmms.eamlightweb.user;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.tools.InforException;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -13,9 +14,9 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/users")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class UserController extends WSHubController {
+public class UserController extends EAMLightController {
 
 	@Inject
 	private UserService userService;

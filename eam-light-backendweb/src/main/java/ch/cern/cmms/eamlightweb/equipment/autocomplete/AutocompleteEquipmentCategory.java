@@ -2,7 +2,7 @@ package ch.cern.cmms.eamlightweb.equipment.autocomplete;
 
 import java.util.Arrays;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -11,45 +11,30 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class AutocompleteEquipmentCategory extends Autocomplete {
-
-	private SimpleGridInput prepareInput() {
-		SimpleGridInput in = new SimpleGridInput("121", "LVCAT", "119");
-		in.setGridType(GridRequest.GRIDTYPE.LOV);
-		in.getInforParams().put("onlymatchclass", "");
-		in.getInforParams().put("class", "");
-		return in;
-	}
+public class AutocompleteEquipmentCategory extends EAMLightController {
 
 	@GET
 	@Path("/eqp/category/{code}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response complete(@PathParam("code") String code) {
-		SimpleGridInput in = prepareInput();
-		in.setFields(Arrays.asList("101", "103")); // 101=category,
-													// 103=categorydesc
-		in.getGridFilters().add(new GridRequestFilter("category", code.toUpperCase(), "BEGINS"));
+	public Response complete(@PathParam("code") String code)  {
+		GridRequest gridRequest = new GridRequest( "LVCAT", GridRequest.GRIDTYPE.LOV, 10);
 
-		in.getSortParams().put("category", true); // true=ASC, false=DESC
+		gridRequest.addParam("parameter.class", "");
+		gridRequest.addParam("parameter.onlymatchclass", "");
 
-		try {
-			return ok(getGridResults(in));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
+		gridRequest.sortBy("category");
+		gridRequest.addFilter("category", code.toUpperCase(), "BEGINS");
+
+		return getPairListResponse(gridRequest, "category", "categorydesc");
 	}
 
 	@GET
@@ -58,14 +43,16 @@ public class AutocompleteEquipmentCategory extends Autocomplete {
 	@Consumes("application/json")
 	public Response getCategoryData(@PathParam("code") String code) {
 		try {
-			SimpleGridInput in = prepareInput();
-			in.setFields(Arrays.asList("101", "103", "389", "484", "515")); // 101=category,
-																			// 103=categorydesc,
-																			// 389=categoryclass,
-																			// 484=categoryclassdesc,
-																			// 515=manufacturer
-			in.getGridFilters().add(new GridRequestFilter("category", code, "EQUALS"));
-			return ok(getGridSingleRowResult(in));
+			GridRequest gridRequest = new GridRequest( "LVCAT", GridRequest.GRIDTYPE.LOV, 10);
+			gridRequest.addParam("parameter.class", "");
+			gridRequest.addParam("parameter.onlymatchclass", "");
+			gridRequest.addFilter("category", code.toUpperCase(), "EQUALS");
+
+			String[] fields = new String[] {"category", "categorydesc", "categoryclass",
+					"categoryclassdesc", "manufacturer"};
+
+			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(Arrays.asList(fields),
+					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

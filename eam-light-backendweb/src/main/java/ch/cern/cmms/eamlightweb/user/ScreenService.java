@@ -8,6 +8,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter.JOINER;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.LinkedList;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@RequestScoped
+@ApplicationScoped
 public class ScreenService {
 
     @Inject

@@ -2,13 +2,12 @@ package ch.cern.cmms.eamlightweb.workorders.partusage;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -21,13 +20,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightweb.equipment.EquipmentHistory;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
-import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrder;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.GridUtils;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.entities.WorkOrderPart;
@@ -40,14 +35,12 @@ import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 
 @Path("/partusage")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class PartUsageRest extends WSHubController {
+public class PartUsageRest extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;
-	@Inject
-	private GridUtils gridUtils;
 	@Inject
 	private AuthenticationTools authenticationTools;
 
@@ -61,7 +54,7 @@ public class PartUsageRest extends WSHubController {
 			input.setUserFunctionName("SSISSU");
 			input.setRowCount(1000);
 			input.getParams().put("param.storefield", "IR");
-			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("682", "133"),
 					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), input)));
 		} catch (InforException e) {
@@ -89,11 +82,11 @@ public class PartUsageRest extends WSHubController {
 				// RETURN
 				gridRequest = new GridRequest("LVRETURNBIN");
 			}
-			gridRequest.getParams().put("part_code", part);
-			gridRequest.getParams().put("part_org", authenticationTools.getInforContext().getOrganizationCode());
-			gridRequest.getParams().put("store_code", store);
+			gridRequest.addParam("part_code", part);
+			gridRequest.addParam("part_org", authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.addParam("store_code", store);
 
-			return ok(inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("830", "824"),
 					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch (InforException e) {
@@ -101,46 +94,6 @@ public class PartUsageRest extends WSHubController {
 		} catch(Exception e) {
 			return serverError(e);
 		}
-	}
-
-
-	/**
-	 * Loads the default bin
-	 *
-	 * @return Default bin
-	 * @throws InforException
-	 *             Error loading the default bin
-	 */
-	private String loadDefaultBin(String part, String store, String transaction) throws InforException {
-		String result = null;
-		SimpleGridInput input = new SimpleGridInput("110", "SSPART_STO", "133");
-		input.setGridType(GridRequest.GRIDTYPE.LIST);
-		input.getInforParams().put("partcode", part);
-		input.getInforParams().put("partorg", authenticationTools.getInforContext().getOrganizationCode());
-		input.getInforParams().put("userfunction", "SSPART");
-		input.getGridFilters().add(new GridRequestFilter("storecode", store, "EQUALS" ));
-
-		if (transaction.startsWith("I")) // ISSUE
-			input.setFields(Arrays.asList("661")); // 661=defaultbin
-		else
-			input.setFields(Arrays.asList("12651"));// 12651=defaultreturnbin
-
-		GridRequestResult res = gridUtils.getGridRequestResult(input, authenticationTools.getInforContext());
-
-		List<List<String>> gridRow = Arrays.stream(res.getRows())
-				.map(row -> Arrays.stream(row.getCell()).filter(cell -> input.getFields().contains(cell.getCol()))
-						.sorted((cell1, cell2) -> input.getFields().indexOf(cell1.getCol())
-								- input.getFields().indexOf(cell2.getCol()))
-						.map(cell -> cell.getContent()).collect(Collectors.toList()))
-				.collect(Collectors.toList());
-
-		try {
-			if (gridRow != null && !gridRow.isEmpty() && gridRow.get(0) != null && !gridRow.get(0).isEmpty())
-				result = gridRow.get(0).get(0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result == null ? "" : result;
 	}
 
 	@POST
@@ -263,11 +216,11 @@ public class PartUsageRest extends WSHubController {
 
 				// Creates simple grid input
 				GridRequest gridRequest = new GridRequest("226", "WSJOBS_PAR", "237");
-				gridRequest.getParams().put("param.workordernum", workorder);
-				gridRequest.getParams().put("param.headeractivity", "0");
-				gridRequest.getParams().put("param.headerjob", "0");
+				gridRequest.addParam("param.workordernum", workorder);
+				gridRequest.addParam("param.headeractivity", "0");
+				gridRequest.addParam("param.headerjob", "0");
 
-				partUsageList = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderPart.class,
+				partUsageList = inforClient.getTools().getGridTools().convertGridResultToObject(WorkOrderPart.class,
 						map,
 						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 

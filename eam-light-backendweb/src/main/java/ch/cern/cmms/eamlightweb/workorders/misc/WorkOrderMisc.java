@@ -14,7 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
@@ -22,7 +22,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/workordersmisc")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class WorkOrderMisc extends WSHubController {
+public class WorkOrderMisc extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;
@@ -42,9 +42,9 @@ public class WorkOrderMisc extends WSHubController {
 			map.put("448", "equipmentTypeDesc");
 
 			GridRequest gridRequest = new GridRequest("1631", "WSJOBS_MEC", "1618");
-			gridRequest.getParams().put("param.workordernum", workorder);
+			gridRequest.addParam("param.workordernum", workorder);
 
-			List<WorkOrderEquipment> childrenWOs = inforClient.getTools().getGridTools().converGridResultToObject(WorkOrderEquipment.class,
+			List<WorkOrderEquipment> childrenWOs = inforClient.getTools().getGridTools().convertGridResultToObject(WorkOrderEquipment.class,
 					map,
 					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 			return ok(childrenWOs);
@@ -67,9 +67,9 @@ public class WorkOrderMisc extends WSHubController {
 			map.put("12", "type");
 
 			GridRequest gridRequest = new GridRequest("176", "WSJOBS_CWO", "180");
-			gridRequest.getParams().put("param.jobnum", workorder);
+			gridRequest.addParam("param.jobnum", workorder);
 
-			List<ChildWorkOrder> childrenWOs = inforClient.getTools().getGridTools().converGridResultToObject(ChildWorkOrder.class,
+			List<ChildWorkOrder> childrenWOs = inforClient.getTools().getGridTools().convertGridResultToObject(ChildWorkOrder.class,
 														map,
 														inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 			return ok(childrenWOs);

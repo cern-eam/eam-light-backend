@@ -9,13 +9,13 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@RequestScoped
+@ApplicationScoped
 public class ScreenLayoutService {
 
     @Inject
@@ -62,7 +62,7 @@ public class ScreenLayoutService {
         gridRequestLayout.addFilter("plo_pagename", userFunction, "=", GridRequestFilter.JOINER.AND);
         gridRequestLayout.addFilter("pld_pagename", systemFunction, "=", GridRequestFilter.JOINER.AND);
 
-        List<ElementInfo> elements = inforClient.getTools().getGridTools().converGridResultToObject(ElementInfo.class, null, inforClient.getGridsService().executeQuery(context, gridRequestLayout));
+        List<ElementInfo> elements = inforClient.getTools().getGridTools().convertGridResultToObject(ElementInfo.class, null, inforClient.getGridsService().executeQuery(context, gridRequestLayout));
         elements.stream().filter(element -> element.getXpath() != null).forEach(element -> element.setXpath("EAMID_" + element.getXpath().replace("\\", "_")));
         return elements.stream().collect(Collectors.toMap(ElementInfo::getElementId, element -> element));
     }

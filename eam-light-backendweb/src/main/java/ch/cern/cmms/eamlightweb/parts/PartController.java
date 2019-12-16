@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
@@ -23,7 +23,7 @@ import javax.ws.rs.core.UriInfo;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightejb.parts.PartsEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
@@ -34,9 +34,9 @@ import ch.cern.eam.wshub.core.services.material.entities.PartStock;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/parts")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class PartController extends WSHubController {
+public class PartController extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;
@@ -55,10 +55,10 @@ public class PartController extends WSHubController {
 		try {
 			GridRequest gridRequest = new GridRequest("SSPART_BIS", GridRequest.GRIDTYPE.LOV);
 			gridRequest.setUserFunctionName("SSPART");
-			gridRequest.getParams().put("partorg", authenticationTools.getInforContext().getOrganizationCode());
-			gridRequest.getParams().put("partcode", partCode);
+			gridRequest.addParam("partorg", authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.addParam("partcode", partCode);
 
-			return ok(inforClient.getTools().getGridTools().converGridResultToObject(PartStock.class,
+			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(PartStock.class,
 					null,
 					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch(Exception e) {

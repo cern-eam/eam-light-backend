@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ApplicationData {
 
+    public static final Integer AUTOCOMPLETE_RESULT_SIZE = 10;
     //
     // BASIC SETTINGS
     //

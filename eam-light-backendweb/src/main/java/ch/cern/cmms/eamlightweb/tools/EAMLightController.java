@@ -1,8 +1,20 @@
 package ch.cern.cmms.eamlightweb.tools;
 
-import javax.ws.rs.core.Response;
+import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.tools.InforException;
 
-public class WSHubController {
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import java.util.List;
+
+public class EAMLightController {
+
+
+    @Inject
+    protected AuthenticationTools authenticationTools;
+    @Inject
+    protected InforClient inforClient;
 
     /**
      * Return an object included within the standard WS Hub response, with a OK (200) HTTP status
@@ -52,5 +64,16 @@ public class WSHubController {
                 .build();
     }
 
+    public Response getPairListResponse(GridRequest gridRequest, String codeKey, String descKey) {
+        try {
+            return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
+                    Pair.generateGridPairMap(codeKey, descKey),
+                    inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
+        } catch (InforException e) {
+            return badRequest(e);
+        } catch(Exception e) {
+            return serverError(e);
+        }
+    }
 
 }

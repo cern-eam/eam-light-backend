@@ -17,7 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.meter.EquipmentMeter;
@@ -33,7 +33,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.MeterReading;
  */
 @Path("/meters")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class MeterRest extends WSHubController {
+public class MeterRest extends EAMLightController {
 
 	@EJB
 	private MeterEJB meterEJB;

@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
@@ -23,7 +23,7 @@ import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 @Path("/eqplists")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class EquipmentLists extends DropdownValues {
+public class EquipmentLists extends EAMLightController {
 
 	@Inject
 	private MyWorkOrders myWorkOrders;
@@ -45,7 +45,7 @@ public class EquipmentLists extends DropdownValues {
 		}
 
 		GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest);
-		List<Pair> result = inforClient.getTools().getGridTools().converGridResultToObject(Pair.class,
+		List<Pair> result = inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
 				Pair.generateGridPairMap("3580", "3581"),
 				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
@@ -60,14 +60,8 @@ public class EquipmentLists extends DropdownValues {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response readCriticalityCodes() {
-		try {
-			return ok(loadDropdown("2385", "LVMULTICRITIC", "2359", GridRequest.GRIDTYPE.LIST,
-					Arrays.asList("101", "103"), new HashMap<>()));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
+		GridRequest gridRequest = new GridRequest("LVMULTICRITIC", GridRequest.GRIDTYPE.LOV);
+		return getPairListResponse(gridRequest, "criticality", "description");
 	}
 
 	@GET

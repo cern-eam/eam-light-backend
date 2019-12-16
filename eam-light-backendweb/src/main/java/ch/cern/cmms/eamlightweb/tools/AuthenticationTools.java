@@ -99,4 +99,14 @@ public class AuthenticationTools {
 
         return inforContext;
     }
+
+    public String getOrganizationCode() {
+        try {
+            return inforClient.getTools().getOrganizationCode(getInforContext());
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+
 }

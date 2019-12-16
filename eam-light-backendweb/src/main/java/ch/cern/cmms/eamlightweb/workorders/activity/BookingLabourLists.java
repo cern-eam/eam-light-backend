@@ -1,6 +1,5 @@
 package ch.cern.cmms.eamlightweb.workorders.activity;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,28 +10,24 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.DropdownValues;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/boolists")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class BookingLabourLists extends DropdownValues {
+public class BookingLabourLists extends EAMLightController {
 
 	@GET
 	@Path("/typehours")
 	@Produces("application/json")
 	public Response readTradeCodes() {
-		try {
-			// Load the dropdown
-			return ok(loadDropdown("143", "LVOCTP", "148", GridRequest.GRIDTYPE.LOV,
-					Arrays.asList("101", "103"),
-					produceInforParamsForTypeOfHoursDropdown()));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
+		GridRequest gridRequest = new GridRequest("LVOCTP", GridRequest.GRIDTYPE.LOV);
+		gridRequest.addParam("date", null);
+		gridRequest.addParam("trade", "20");
+		gridRequest.addParam("dept", null);
+		gridRequest.addParam("event", null);
+		gridRequest.addParam("employee", "");
+		return getPairListResponse(gridRequest, "101", "103");
 	}
 
 	private Map<String, String> produceInforParamsForTypeOfHoursDropdown() {

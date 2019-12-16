@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
@@ -13,16 +14,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.meter.MeterEJB;
 import ch.cern.cmms.eamlightejb.meter.MeterReadingEntity;
 
 @Path("/autocomplete")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class AutocompleteMeterCode extends Autocomplete {
+public class AutocompleteMeterCode extends EAMLightController {
 
 	@EJB
 	private MeterEJB meterEJB;

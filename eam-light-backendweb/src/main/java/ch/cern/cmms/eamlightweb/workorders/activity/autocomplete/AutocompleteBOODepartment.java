@@ -1,8 +1,6 @@
 package ch.cern.cmms.eamlightweb.workorders.activity.autocomplete;
 
-import java.util.Arrays;
-
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -11,46 +9,34 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightweb.tools.autocomplete.Autocomplete;
-import ch.cern.cmms.eamlightweb.tools.autocomplete.SimpleGridInput;
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
-import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class AutocompleteBOODepartment extends Autocomplete {
-
-	private SimpleGridInput prepareInput() {
-		SimpleGridInput in = new SimpleGridInput("144", "LVMRCSANDRATE", "149");
-		in.setGridType(GridRequest.GRIDTYPE.LOV);
-		in.setFields(Arrays.asList("101", "103")); // 101=department, 103=des_text
-		in.getInforParams().put("date", null);
-		in.getInforParams().put("employee", null);
-		in.getInforParams().put("trade", null);
-		in.getInforParams().put("event", null);
-		in.getInforParams().put("octype", null);
-		return in;
-	}
+public class AutocompleteBOODepartment extends EAMLightController {
 
 	@GET
 	@Path("/boo/department/{code}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@PathParam("code") String code) {
-		SimpleGridInput in = prepareInput();
-		in.getGridFilters().add(new GridRequestFilter("department", code.toUpperCase(), "BEGINS" ));
+		GridRequest gridRequest = new GridRequest( "LVMRCSANDRATE", GridRequest.GRIDTYPE.LOV, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
 
-		in.getSortParams().put("department", true); // true=ASC, false=DESC
-		try {
-			return ok(getGridResults(in));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
+		gridRequest.addParam("param.bypassdeptsecurity", null);
+		gridRequest.addParam("param.event", null);
+		gridRequest.addParam("param.trade", null);
+		gridRequest.addParam("param.octype", null);
+		gridRequest.addParam("param.date", null);
+		gridRequest.addParam("param.employee", null);
+
+		gridRequest.addFilter("department", code.toUpperCase(), "BEGINS" );
+		gridRequest.sortBy("department");
+
+		return getPairListResponse(gridRequest, "department", "des_text");
 	}
 
 }

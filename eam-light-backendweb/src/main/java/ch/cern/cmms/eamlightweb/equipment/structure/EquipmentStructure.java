@@ -9,13 +9,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 
 @Path("/eqstructure")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class EquipmentStructure extends WSHubController {
+public class EquipmentStructure extends EAMLightController {
 
 	@EJB
 	private EquipmentEJB equipmentEJB;

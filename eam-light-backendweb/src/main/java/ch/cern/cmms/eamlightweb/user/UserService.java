@@ -7,10 +7,10 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-@RequestScoped
+@ApplicationScoped
 public class UserService {
 
     @Inject

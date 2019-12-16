@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 
 /**
@@ -18,7 +18,7 @@ import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
  */
 @Path("/myworkorders")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class MyWorkOrdersController extends WSHubController {
+public class MyWorkOrdersController extends EAMLightController {
 
 	@Inject
 	private MyWorkOrders myWorkOrders;

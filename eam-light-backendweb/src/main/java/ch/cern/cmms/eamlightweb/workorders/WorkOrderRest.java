@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
@@ -21,17 +20,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.Tools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
+import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrder;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 @Path("/workorders")
-@RequestScoped
+@ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
-public class WorkOrderRest extends WSHubController {
+public class WorkOrderRest extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;
@@ -122,16 +124,21 @@ public class WorkOrderRest extends WSHubController {
 			tools.pupulateBusinessObject(workOrder, parameters);
 
 			// If there is a standard Work Order, then read the fields
-			if (workOrder.getStandardWO() != null && !workOrder.getStandardWO().trim().equals("")) {
-				// Obtain the loaded work order
-				// TODO !!!
-				// workOrder = inforClient.getWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), workOrder);
+			if (isNotEmpty(workOrder.getStandardWO())) {
+				 StandardWorkOrder standardWorkOrder = inforClient.getStandardWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), workOrder.getStandardWO());
+				 if (isEmpty(workOrder.getTypeCode())) {
+				 	workOrder.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
+				 }
+				 if (isEmpty(workOrder.getClassCode())) {
+				 	workOrder.setClassCode(standardWorkOrder.getWoClassCode());
+				 }
+				 if (isEmpty(workOrder.getPriorityCode())) {
+					workOrder.setPriorityCode(standardWorkOrder.getPriorityCode());
+				 }
 			}
 
 			// Class
-			String woclass = workOrder.getClassCode() != null && !"".equals(workOrder.getClassCode())
-					? workOrder.getClassCode()
-					: "*";
+			String woclass = isNotEmpty(workOrder.getClassCode()) ? workOrder.getClassCode() : "*";
 			// Custom Fields (Loaded with the default class, or the preloaded one)
 			try {
 				workOrder.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", woclass));

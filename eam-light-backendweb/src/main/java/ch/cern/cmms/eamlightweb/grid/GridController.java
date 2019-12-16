@@ -1,27 +1,23 @@
 package ch.cern.cmms.eamlightweb.grid;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.Pair;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.services.entities.Credentials;
 import ch.cern.eam.wshub.core.services.grids.entities.GridDDSpyFieldsResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
-import javax.sql.DataSource;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 
 @Path("/grids")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class GridController extends WSHubController {
+public class GridController extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;

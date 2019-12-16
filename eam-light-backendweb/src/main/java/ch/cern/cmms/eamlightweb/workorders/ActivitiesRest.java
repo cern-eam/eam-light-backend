@@ -1,7 +1,7 @@
 package ch.cern.cmms.eamlightweb.workorders;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.WSHubController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
@@ -17,7 +17,7 @@ import java.util.Date;
 
 @Path("/activities")
 @Interceptors({ RESTLoggingInterceptor.class })
-public class ActivitiesRest extends WSHubController {
+public class ActivitiesRest extends EAMLightController {
 
 	@Inject
 	private InforClient inforClient;

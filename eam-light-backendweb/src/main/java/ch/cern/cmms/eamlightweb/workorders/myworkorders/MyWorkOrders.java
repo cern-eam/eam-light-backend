@@ -5,14 +5,13 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestSort;
 import ch.cern.eam.wshub.core.tools.InforException;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.*;
 
-@RequestScoped
+@ApplicationScoped
 public class MyWorkOrders {
 
     @Inject
@@ -27,7 +26,7 @@ public class MyWorkOrders {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.addFilter("assignedto", eamUser.getCernId(), "=", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
-        return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
+        return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
                 null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
@@ -41,7 +40,7 @@ public class MyWorkOrders {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.addFilter("department", userDepartments, "IN", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
-        return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
+        return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
                 null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
@@ -52,7 +51,7 @@ public class MyWorkOrders {
         gridRequest.setUseNative(false);
         gridRequest.addFilter("equipment", equipmentCode, "=");
         gridRequest.sortBy("datecreated", "DESC");
-        return inforClient.getTools().getGridTools().converGridResultToObject(MyWorkOrder.class,
+        return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
                 null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
