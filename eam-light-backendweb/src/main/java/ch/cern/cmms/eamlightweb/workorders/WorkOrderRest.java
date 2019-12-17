@@ -126,14 +126,15 @@ public class WorkOrderRest extends EAMLightController {
 			// If there is a standard Work Order, then read the fields
 			if (isNotEmpty(workOrder.getStandardWO())) {
 				 StandardWorkOrder standardWorkOrder = inforClient.getStandardWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), workOrder.getStandardWO());
-				 if (isEmpty(workOrder.getTypeCode())) {
-				 	workOrder.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
-				 }
+				 workOrder.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
 				 if (isEmpty(workOrder.getClassCode())) {
 				 	workOrder.setClassCode(standardWorkOrder.getWoClassCode());
 				 }
 				 if (isEmpty(workOrder.getPriorityCode())) {
 					workOrder.setPriorityCode(standardWorkOrder.getPriorityCode());
+				 }
+				 if (isEmpty(workOrder.getDescription())) {
+				 	workOrder.setDescription(standardWorkOrder.getDesc());
 				 }
 			}
 
