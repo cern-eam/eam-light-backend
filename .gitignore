@@ -25,3 +25,7 @@ eam-light-backendweb/.project
 eam-light-backendweb/.tern-project
 eam-light-backendweb/src/main/webapp/WEB-INF/.faces-config.xml.jsfdia
 eam-light-backendweb/eam-light-backendweb.iml
+
+# POM Backup
+*.versionsBackup
+
