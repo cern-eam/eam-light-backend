@@ -3,7 +3,7 @@
   <parent>
     <groupId>ch.cern.cmms</groupId>
     <artifactId>eam-light-backend</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>3.3.0</version>
   </parent>
   <artifactId>eam-light-backendejb</artifactId>
   <packaging>ejb</packaging>
