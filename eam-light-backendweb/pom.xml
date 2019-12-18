@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.cern.cmms</groupId>
 		<artifactId>eam-light-backend</artifactId>
-		<version>3.3.1-SNAPSHOT</version>
+		<version>3.3.1</version>
 	</parent>
 	<artifactId>eam-light-backendweb</artifactId>
 	<packaging>war</packaging>
@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>ch.cern.cmms</groupId>
 			<artifactId>eam-light-backendejb</artifactId>
-			<version>3.3.1-SNAPSHOT</version>
+			<version>3.3.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
