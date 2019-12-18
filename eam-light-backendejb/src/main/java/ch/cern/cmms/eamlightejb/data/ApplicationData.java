@@ -2,6 +2,12 @@ package ch.cern.cmms.eamlightejb.data;
 
 import ch.cern.cmms.eamlightejb.tools.Tools;
 import javax.enterprise.context.ApplicationScoped;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Enumeration;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 @ApplicationScoped
 public class ApplicationData {
@@ -26,5 +32,9 @@ public class ApplicationData {
     public String getAdminPassword() { return Tools.getVariableValue("EAMLIGHT_ADMIN_PASSWORD"); }
 
     public String getAdminUser() { return Tools.getVariableValue("EAMLIGHT_ADMIN_USER"); }
+
+    public String getVersion() {
+        return getClass().getPackage().getImplementationVersion();
+    }
 
 }

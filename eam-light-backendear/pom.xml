@@ -12,20 +12,20 @@
 		<dependency>
 			<groupId>ch.cern.cmms</groupId>
 			<artifactId>eam-light-backendejb</artifactId>
-			<version>3.3.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.cern.cmms</groupId>
 			<artifactId>eam-light-backendweb</artifactId>
-			<version>3.3.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>war</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.cern.cmms</groupId>
 			<artifactId>eamtools</artifactId>
-			<version>2.0.5</version>
+			<version>${ch.cern.cmms.eamtools.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -44,7 +44,7 @@
 				<artifactId>wildfly-maven-plugin</artifactId>
 				<version>1.0.2.Final</version>
 				<configuration>
-					<filename>${artefact.filename}</filename>
+					<filename>${artifact.filename}.ear</filename>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -52,7 +52,7 @@
 				<artifactId>maven-ear-plugin</artifactId>
 				<version>2.8</version>
 				<configuration>
-					<finalName>${artefact.filename}</finalName>
+					<finalName>${artifact.filename}</finalName>
 					<includeLibInApplicationXml>true</includeLibInApplicationXml>
 					<displayName>eam-light-backend</displayName>
 					<modules>

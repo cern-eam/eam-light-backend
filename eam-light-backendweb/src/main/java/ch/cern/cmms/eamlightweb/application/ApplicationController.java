@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.base.CustomFieldsController;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
@@ -29,6 +30,9 @@ public class ApplicationController extends EAMLightController {
 	private AuthenticationTools authenticationTools;
 	@Inject
 	private InforClient inforClient;
+	@Inject
+	private ApplicationData applicationData;
+
 
 	@GET
 	@Path("/applicationdata")
@@ -59,4 +63,11 @@ public class ApplicationController extends EAMLightController {
 		return ok("EAM Light cache has been successfully refreshed.");
 	}
 
+	@GET
+	@Path("/version")
+	@Produces("application/json")
+	public Response readVersion() {
+		String version = applicationData.getVersion();
+		return ok(version);
+	}
 }
