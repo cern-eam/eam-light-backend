@@ -1,29 +1,15 @@
 package ch.cern.cmms.eamlightweb.equipment;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
@@ -34,6 +20,8 @@ import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.InforException;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @Path("/equipment")
 @ApplicationScoped
@@ -48,8 +36,6 @@ public class EquipmentRest extends EAMLightController {
 	private EquipmentReplacementService equipmentReplacementService;
 	@Inject
     private AuthenticationTools authenticationTools;
-	@Inject
-	private Tools tools;
 	@Inject
 	private MyWorkOrders myWorkOrders;
 
@@ -157,35 +143,25 @@ public class EquipmentRest extends EAMLightController {
 	}
 
 	@GET
-	@Path("/init/{entity}/{eqpType}/{systemFunction}/{userFunction}")
+	@Path("/init/{entity}/{eqpType}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response initEquipment(@PathParam("entity") String entity, @PathParam("eqpType") String eqpType,
-			@PathParam("systemFunction") String systemFunction, @PathParam("userFunction") String userFunction,
-			@Context UriInfo info) {
+								  @DefaultValue("") @QueryParam("newCode") String newCode,
+								  @DefaultValue("") @QueryParam("classcode") String classCode) {
 		try {
-			// Default values from request
-			Map<String, List<String>> queryParams = info.getQueryParameters();
-			Map<String, String> parameters = new HashMap<>();
-			queryParams.forEach((k, v) -> parameters.put(k, v != null ? v.get(0) : null));
-			// Check if there is screen parameter
-			userFunction = parameters.get("screen") != null ? parameters.get("screen") : userFunction;
-
 			Equipment equipment = new Equipment();
 			// User defined fields
 			equipment.setUserDefinedFields(new UserDefinedFields());
 			equipment.setTypeCode(eqpType);
 
-			// Populate Object
-			tools.pupulateBusinessObject(equipment, parameters);
-
-			// Custom fields
-			equipment.setCustomFields(
-					inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipment.getClassCode() != null ? equipment.getClassCode() : "*"));
-			// Populate custom fields if they are not null
-			if (equipment.getCustomFields() != null) {
-				tools.populateCustomFields(equipment.getCustomFields(), parameters);
+			if (isNotEmpty(newCode)) {
+				equipment.setCode(newCode);
 			}
+
+			String equipmentClass = isNotEmpty(classCode) ? classCode : "*";
+			equipment.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipmentClass));
+
 			// Commision date
 			if (equipment.getComissionDate() == null)
 				equipment.setComissionDate(new Date());

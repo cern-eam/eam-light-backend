@@ -1,28 +1,14 @@
 package ch.cern.cmms.eamlightweb.parts;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.Tools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightejb.parts.PartsEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
@@ -32,6 +18,8 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
 import ch.cern.eam.wshub.core.services.material.entities.PartStock;
 import ch.cern.eam.wshub.core.tools.InforException;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @Path("/parts")
 @ApplicationScoped
@@ -44,8 +32,6 @@ public class PartController extends EAMLightController {
 	private PartsEJB partsEJB;
 	@Inject
 	private AuthenticationTools authenticationTools;
-	@Inject
-	private Tools tools;
 
 	@GET
 	@Path("/partstock/{part}")
@@ -137,35 +123,24 @@ public class PartController extends EAMLightController {
 	}
 
 	@GET
-	@Path("/init/{entity}/{systemFunction}/{userFunction}")
+	@Path("/init/{entity}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response initPart(@PathParam("entity") String entity, @PathParam("systemFunction") String systemFunction,
-			@PathParam("userFunction") String userFunction, @Context UriInfo info) {
+	public Response initPart(@PathParam("entity") String entity,
+							 @DefaultValue("") @QueryParam("newCode") String newCode,
+							 @DefaultValue("") @QueryParam("classcode") String classCode) {
 		try {
-			// Default values from request
-			Map<String, List<String>> queryParams = info.getQueryParameters();
-			Map<String, String> parameters = new HashMap<>();
-			queryParams.forEach((k, v) -> parameters.put(k, v != null ? v.get(0) : null));
-			// Check if there is screen parameter
-			userFunction = parameters.get("screen") != null ? parameters.get("screen") : userFunction;
-
 			Part part = new Part();
-			// User defined fields
 			part.setUserDefinedFields(new UserDefinedFields());
 
-			// Populate Object
-			tools.pupulateBusinessObject(part, parameters);
+			if (isNotEmpty(newCode)) {
+				part.setCode(newCode);
+			}
 
 			// Custom Fields
-			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "PART",
-					part.getClassCode() != null ? part.getClassCode() : "*"));
+			String partClass = isNotEmpty(classCode) ? classCode : "*";
+			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getR5InforContext(), "PART", partClass));
 
-			// Populate custom fields if they are not null
-			if (part.getCustomFields() != null) {
-				tools.populateCustomFields(part.getCustomFields(), parameters);
-			}
-			// Final response
 			return ok(part);
 		} catch (InforException e) {
 			return badRequest(e);
