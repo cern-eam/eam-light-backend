@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern.cmms</groupId>
 	<artifactId>eam-light-backend</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>3.3.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>eam-light-backendear</module>
@@ -12,6 +11,9 @@
 	</modules>
 
 	<properties>
+		<artifact.filename>${project.build.finalName}-${project.version}</artifact.filename>
+
+        <ch.cern.cmms.eamtools.version>2.2.0</ch.cern.cmms.eamtools.version>
 		<ch.cern.eam.eam-wshub-core.version>11.4-67</ch.cern.eam.eam-wshub-core.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
