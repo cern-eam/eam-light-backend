@@ -9,6 +9,7 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class UserService {
@@ -78,16 +79,20 @@ public class UserService {
         }
 
         // Check now if the screen code has any value
-        if (isNotEmpty(screenCode)) {
-            return screenCode;
+        final String defaultScreenCode = screenCode;
+        if (isNotEmpty(defaultScreenCode)
+                && userData.getScreens().values().stream().anyMatch(s -> defaultScreenCode.equals(s.getScreenCode()))) {
+            return defaultScreenCode;
         }
 
         // 3. Checking access to the default screen
-        return userData.getScreens().values().stream()
+        String stream = userData.getScreens().values().stream()
                                      .filter(screenInfo -> functionCode.equals(screenInfo.getParentScreen()))
                                      .map(ScreenInfo::getScreenCode)
                                      .findFirst()
                                      .orElse(null);
+
+        return stream;
     }
 
 }
