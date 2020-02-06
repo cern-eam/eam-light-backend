@@ -78,11 +78,9 @@ public class UserService {
                 break;
         }
 
-        // Check now if the screen code has any value
-        final String defaultScreenCode = screenCode;
-        if (isNotEmpty(defaultScreenCode)
-                && userData.getScreens().values().stream().anyMatch(s -> defaultScreenCode.equals(s.getScreenCode()))) {
-            return defaultScreenCode;
+        // Check if the screen code has any value and if the user has access to the screen with that screen code
+        if (isNotEmpty(screenCode) && userData.getScreens().containsKey(screenCode)) {
+            return screenCode;
         }
 
         // 3. Checking access to the default screen
