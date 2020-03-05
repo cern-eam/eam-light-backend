@@ -1,15 +1,14 @@
 package ch.cern.cmms.eamlightweb.user;
 
-import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
+
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
+import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
 import ch.cern.cmms.eamlightweb.user.entities.UserData;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.tools.InforException;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.stream.Stream;
 
 @ApplicationScoped
 public class UserService {
@@ -33,6 +32,7 @@ public class UserService {
         userData.setSystemScreen(getScreenCode("OSOBJS", "system", currentScreen, screenCode, userData));
         userData.setWorkOrderScreen(getScreenCode("WSJOBS", "workorder", currentScreen, screenCode, userData));
         userData.setPartScreen(getScreenCode("SSPART", "part", currentScreen, screenCode, userData));
+        userData.setLocationScreen(getScreenCode("OSOBJL", "location", currentScreen, screenCode, userData));
 
         return userData;
     }
