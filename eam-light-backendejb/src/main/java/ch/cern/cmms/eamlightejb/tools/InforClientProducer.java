@@ -47,6 +47,8 @@ public class InforClientProducer {
         try {
             // Build the Infor Client
             inforClient = new InforClient.Builder(Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"))
+                    .withDefaultTenant(Tools.getVariableValue("EAMLIGHT_INFOR_TENANT"))
+                    .withDefaultOrganizationCode(Tools.getVariableValue("EAMLIGHT_INFOR_ORGANIZATION"))
                     .withSOAPHandlerResolver(new SOAPHandlerResolver())
                     .withDataSource(dataSource)
                     .withEntityManagerFactory(entityManagerFactory)

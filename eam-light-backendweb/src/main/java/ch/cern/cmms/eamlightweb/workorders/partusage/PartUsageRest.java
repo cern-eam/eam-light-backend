@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
@@ -205,23 +204,14 @@ public class PartUsageRest extends EAMLightController {
 			List<WorkOrderPart> partUsageList = new ArrayList<>();
 			// Just execute if there is work order
 			if (workorder != null) {
-				Map<String, String> map = new HashMap<>();
-				map.put("partcode", "partCode");
-				//map.put("357", "partUom");
-				map.put("partdescription", "partDesc");
-				map.put("activity_display", "activityDesc");
-				map.put("storecode", "storeCode");
-				map.put("usedqty", "usedQty");
-				map.put("plannedqty", "plannedQty");
-
 				// Creates simple grid input
-				GridRequest gridRequest = new GridRequest("226", "WSJOBS_PAR", "237");
+				GridRequest gridRequest = new GridRequest("WSJOBS_PAR");
 				gridRequest.addParam("param.workordernum", workorder);
 				gridRequest.addParam("param.headeractivity", "0");
 				gridRequest.addParam("param.headerjob", "0");
 
 				partUsageList = inforClient.getTools().getGridTools().convertGridResultToObject(WorkOrderPart.class,
-						map,
+						null,
 						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 				partUsageList.stream().forEach(partUsage -> setPartUsageTransType(partUsage));

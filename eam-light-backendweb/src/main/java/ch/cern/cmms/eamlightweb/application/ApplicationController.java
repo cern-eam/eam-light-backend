@@ -20,6 +20,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
+import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
 
 @Path("/application")
 @ApplicationScoped
@@ -32,7 +33,6 @@ public class ApplicationController extends EAMLightController {
 	private InforClient inforClient;
 	@Inject
 	private ApplicationData applicationData;
-
 
 	@GET
 	@Path("/applicationdata")
@@ -60,6 +60,7 @@ public class ApplicationController extends EAMLightController {
 		InforGrids.gridFieldCache.clear();
 		GridsServiceImpl.gridIdCache.clear();
 		CustomFieldsController.customFieldsLookupValuesCache.clear();
+		ChecklistServiceImpl.findingsCache.clear();
 		return ok("EAM Light cache has been successfully refreshed.");
 	}
 

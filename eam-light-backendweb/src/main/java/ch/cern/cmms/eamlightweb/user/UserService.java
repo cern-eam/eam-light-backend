@@ -9,7 +9,6 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.stream.Stream;
 
 @ApplicationScoped
 public class UserService {
@@ -62,19 +61,19 @@ public class UserService {
         String screenCode = null;
         switch (functionCode) {
             case "WSJOBS":/* UDF05 - Work Order */
-                screenCode = userData.getEamAccount().getUdfchar05();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar05();
                 break;
             case "SSPART":/* UDF06 - Part */
-                screenCode = userData.getEamAccount().getUdfchar06();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar06();
                 break;
             case "OSOBJA":/* UDF07 - Asset */
-                screenCode = userData.getEamAccount().getUdfchar07();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar07();
                 break;
             case "OSOBJP":/* UDF08 - Position */
-                screenCode = userData.getEamAccount().getUdfchar08();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar08();
                 break;
             case "OSOBJS":/* UDF09 - System */
-                screenCode = userData.getEamAccount().getUdfchar09();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar09();
                 break;
         }
 

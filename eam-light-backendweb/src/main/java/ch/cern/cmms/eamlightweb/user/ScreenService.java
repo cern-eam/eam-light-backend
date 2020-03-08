@@ -63,9 +63,8 @@ public class ScreenService {
     }
 
     public Map<String, String> getFunctions(InforContext context) throws InforException {
-
-        GridRequest gridRequestLayout = new GridRequest("BSFUNC");
-        screens.forEach(screen -> gridRequestLayout.addFilter("parentscreencode", screen, "=", JOINER.OR));
+        GridRequest gridRequestLayout = new GridRequest("BSFUNC", 1000);
+        gridRequestLayout.addFilter("parentscreencode", String.join(",", screens), "IN");
 
         Map<String, String> functions =  inforClient.getTools().getGridTools().convertGridResultToMap("screencode",
                 "parentscreencode",
