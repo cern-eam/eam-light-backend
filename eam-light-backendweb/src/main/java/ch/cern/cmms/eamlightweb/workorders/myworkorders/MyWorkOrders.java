@@ -2,7 +2,7 @@ package ch.cern.cmms.eamlightweb.workorders.myworkorders;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.services.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -24,7 +24,7 @@ public class MyWorkOrders {
         EAMUser eamUser = inforClient.getUserSetupService().readUserSetup(authenticationTools.getInforContext(), userCode);
         //
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
-        gridRequest.addFilter("assignedto", eamUser.getCernId(), "=", GridRequestFilter.JOINER.AND);
+        gridRequest.addFilter("assignedto", eamUser.getEmployeeCode(), "=", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
         return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
                 null,

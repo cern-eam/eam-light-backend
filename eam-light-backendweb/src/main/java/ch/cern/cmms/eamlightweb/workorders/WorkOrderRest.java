@@ -100,30 +100,12 @@ public class WorkOrderRest extends EAMLightController {
 								  @DefaultValue("") @QueryParam("standardwo") String standardWO) {
 		try {
 			WorkOrder workOrder = inforClient.getWorkOrderService().readWorkOrderDefault(authenticationTools.getInforContext(), "");
-
 			// User defined fields
 			workOrder.setUserDefinedFields(new UserDefinedFields());
-
-			// If there is a standard Work Order, then read the fields
-			if (isNotEmpty(standardWO)) {
-				 StandardWorkOrder standardWorkOrder = inforClient.getStandardWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), standardWO);
-				 workOrder.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
-				 if (isEmpty(workOrder.getClassCode())) {
-				 	workOrder.setClassCode(standardWorkOrder.getWoClassCode());
-				 }
-				 if (isEmpty(workOrder.getPriorityCode())) {
-					workOrder.setPriorityCode(standardWorkOrder.getPriorityCode());
-				 }
-				 if (isEmpty(workOrder.getDescription())) {
-				 	workOrder.setDescription(standardWorkOrder.getDesc());
-				 }
-			}
-
 			// Class
 			String woclass = isNotEmpty(classCode) ? classCode : "*";
 			// Custom Fields (Loaded with the default class, or the preloaded one)
 			workOrder.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", woclass));
-
 			return ok(workOrder);
 		} catch (InforException e) {
 			return badRequest(e);

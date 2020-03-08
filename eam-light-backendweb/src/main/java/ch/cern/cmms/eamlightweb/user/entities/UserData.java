@@ -1,8 +1,8 @@
 package ch.cern.cmms.eamlightweb.user.entities;
 
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+
 import java.util.Map;
-import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
-import ch.cern.eam.wshub.core.services.entities.EAMUser;
 
 public class UserData {
 
