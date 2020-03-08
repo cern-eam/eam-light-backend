@@ -1,7 +1,6 @@
 package ch.cern.cmms.eamlightweb.user.entities;
 
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
-
 import java.util.Map;
 
 public class UserData {
@@ -13,6 +12,7 @@ public class UserData {
 	private String systemScreen;
 	private String workOrderScreen;
 	private String partScreen;
+	private String locationScreen;
 
 	public EAMUser getEamAccount() {
 		return eamAccount;
@@ -70,6 +70,14 @@ public class UserData {
 		this.partScreen = partScreen;
 	}
 
+	public String getLocationScreen() {
+		return locationScreen;
+	}
+
+	public void setLocationScreen(String locationScreen) {
+		this.locationScreen = locationScreen;
+	}
+
 	public String getLanguage() {
 		return "EN";
 	}
@@ -85,5 +93,6 @@ public class UserData {
 				+ (workOrderScreen != null ? "workOrderScreen=" + workOrderScreen + ", " : "")
 				+ (partScreen != null ? "partScreen=" + partScreen : "") + "]";
 	}
+
 
 }
