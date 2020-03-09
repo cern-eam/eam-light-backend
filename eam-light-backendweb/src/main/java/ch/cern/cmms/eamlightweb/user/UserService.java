@@ -6,9 +6,13 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
 import ch.cern.cmms.eamlightweb.user.entities.UserData;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.tools.InforException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class UserService {
@@ -19,12 +23,13 @@ public class UserService {
     private AuthenticationTools authenticationTools;
     @Inject
     private InforClient inforClient;
+    public static final Map<String, EAMUser> userCache = new ConcurrentHashMap<>();
 
     public UserData getUserData(String currentScreen, String screenCode) throws InforException {
         UserData userData = new UserData();
 
         String userCode = authenticationTools.getInforContext().getCredentials().getUsername();
-        userData.setEamAccount(inforClient.getUserSetupService().readUserSetup(authenticationTools.getInforContext(), userCode));
+        userData.setEamAccount(readUserSetup(authenticationTools.getInforContext(), userCode));
         userData.setScreens(screenService.getScreens(authenticationTools.getR5InforContext(), userData.getEamAccount().getUserGroup()));
 
         userData.setAssetScreen(getScreenCode("OSOBJA", "asset", currentScreen, screenCode, userData));
@@ -91,6 +96,13 @@ public class UserService {
                                      .orElse(null);
 
         return stream;
+    }
+
+    public EAMUser readUserSetup(InforContext inforContext, String userCode) throws InforException {
+        if (!userCache.containsKey(userCode)) {
+            userCache.put(userCode, inforClient.getUserSetupService().readUserSetup(inforContext, userCode));
+        }
+        return userCache.get(userCode);
     }
 
 }

@@ -101,11 +101,21 @@ public class WorkOrderRest extends EAMLightController {
 		try {
 			WorkOrder workOrder = inforClient.getWorkOrderService().readWorkOrderDefault(authenticationTools.getInforContext(), "");
 			// User defined fields
-			workOrder.setUserDefinedFields(new UserDefinedFields());
-			// Class
-			String woclass = isNotEmpty(classCode) ? classCode : "*";
-			// Custom Fields (Loaded with the default class, or the preloaded one)
-			workOrder.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", woclass));
+			if (isNotEmpty(standardWO)) {
+				StandardWorkOrder standardWorkOrder = inforClient.getStandardWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), standardWO);
+				workOrder.setUserDefinedFields(standardWorkOrder.getUserDefinedFields());
+				workOrder.setCustomFields(standardWorkOrder.getCustomFields());
+				workOrder.setClassCode(standardWorkOrder.getWoClassCode());
+				workOrder.setPriorityCode(standardWorkOrder.getPriorityCode());
+				workOrder.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
+				workOrder.setDescription(standardWorkOrder.getDesc());
+				workOrder.setProblemCode(standardWorkOrder.getProblemCode());
+			} else {
+				workOrder.setUserDefinedFields(new UserDefinedFields());
+				workOrder.setCustomFields(inforClient.getTools()
+						.getCustomFieldsTools()
+						.getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", isNotEmpty(classCode) ? classCode : "*"));
+			}
 			return ok(workOrder);
 		} catch (InforException e) {
 			return badRequest(e);
