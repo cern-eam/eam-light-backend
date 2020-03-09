@@ -29,3 +29,6 @@ eam-light-backendweb/eam-light-backendweb.iml
 # POM Backup
 *.versionsBackup
 
+#IntelliJ
+.idea/
+eam-light-backend.iml
