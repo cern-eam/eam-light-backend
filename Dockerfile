@@ -10,4 +10,3 @@ ADD docker/standalone.xml /opt/jboss/wildfly/standalone/configuration/
 
 EXPOSE 8080/tcp
 EXPOSE 9090/tcp
-

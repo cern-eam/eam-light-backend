@@ -23,12 +23,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>ch.cern.cmms</groupId>
-			<artifactId>eamtools</artifactId>
-			<version>${ch.cern.cmms.eamtools.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-core</artifactId>
 			<version>${ch.cern.eam.eam-wshub-core.version}</version>
@@ -59,7 +53,7 @@
 						<webModule>
 							<groupId>ch.cern.cmms</groupId>
 							<artifactId>eam-light-backendweb</artifactId>
-							<contextRoot>/SSO/eamlightws</contextRoot>
+							<contextRoot>/apis</contextRoot>
 						</webModule>
 					</modules>
 					<archive>
