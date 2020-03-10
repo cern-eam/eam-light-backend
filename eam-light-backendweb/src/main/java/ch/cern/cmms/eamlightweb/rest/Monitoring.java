@@ -2,6 +2,8 @@ package ch.cern.cmms.eamlightweb.rest;
 
 import ch.cern.cmms.eamlightejb.MonitoringService.MonitoringService;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
+import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import ch.cern.eam.wshub.core.tools.InforException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,25 +24,52 @@ public class Monitoring {
     @Inject
     MonitoringService monitoringService;
 
+
+    private String EQUIPMENT_CODE = "TEST_MONITORING";
+    private String WORKORDER_CODE = "25316908";
+
     @GET
     @Path("/")
     @Produces("application/json")
     @Consumes("application/json")
     public Response monitor(@QueryParam("equipment") String equipment, @QueryParam("workorder") String number) {
         Map<String, String> responses = new HashMap<>();
+        Equipment equipmentForUpdate = new Equipment();
+        WorkOrder workorderForUpdate = new WorkOrder();
         boolean check = true;
         try {
-            responses = monitoringService.monitoring(equipment, number, authenticationTools.getInforContext());
-        } catch (InforException e) {
-            e.printStackTrace();
+            String result = monitoringService.monitoringReadEquipment(equipment,
+                authenticationTools.getInforContext()).toString();
+            responses.put("READEQUIPMENT", result);
+        } catch (Exception e) {
+            check = false;
+            responses.put("READEQUIPMENT", "ERROR " + e.getMessage());
         }
-        String str = "ERROR ";
+        try {
+            String result = monitoringService.monitoringReadWorkorder(number,
+                authenticationTools.getInforContext()).toString();
+            responses.put("READWORKORDER", result);
+        } catch (Exception e) {
+            check = false;
+            responses.put("READWORKORDER", "ERROR " + e.getMessage());
+        }
+        try {
+            String result = monitoringService.monitoringUpdateEquipment(equipmentForUpdate, EQUIPMENT_CODE,
+                authenticationTools.getInforContext()).toString();
+            responses.put("UPDATEEQUIPMENT", result);
+        } catch (Exception e) {
+            check = false;
+            responses.put("UPDATEEQUIPMENT", "ERROR " + e.getMessage());
+        }
+        try {
+            String result = monitoringService.monitoringUpdateWorkorder(workorderForUpdate, WORKORDER_CODE,
+                authenticationTools.getInforContext()).toString();
+            responses.put("UPDATEWORKORDER", result);
+        } catch (Exception e) {
+            check = false;
+            responses.put("UPDATEWORKORDER", "ERROR " + e.getMessage());
+        }
 
-        for (String key : responses.values()) {
-            if (key.contains(str)) {
-                check = false;
-            }
-        }
         if (!check) {
             return Response
                 .status(Response.Status.INTERNAL_SERVER_ERROR)
