@@ -24,53 +24,27 @@ public class Monitoring {
     @Inject
     MonitoringService monitoringService;
 
-
-    private String EQUIPMENT_CODE = "TEST_MONITORING";
-    private String WORKORDER_CODE = "25316908";
-
     @GET
     @Path("/")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response monitor(@QueryParam("equipment") String equipment, @QueryParam("workorder") String number) {
+    public Response monitor(@QueryParam("equipment") String equipment, @QueryParam("workorder") String number,
+        @QueryParam("equipmentUpdate") String equipmentUpdate, @QueryParam("workorderUpdate") String workorderUpdate) {
         Map<String, String> responses = new HashMap<>();
         Equipment equipmentForUpdate = new Equipment();
         WorkOrder workorderForUpdate = new WorkOrder();
-        boolean check = true;
         try {
-            String result = monitoringService.monitoringReadEquipment(equipment,
-                authenticationTools.getInforContext()).toString();
-            responses.put("READEQUIPMENT", result);
+            responses = monitoringService.monitorEndpoints(equipment, number, equipmentForUpdate, workorderForUpdate,
+                equipmentUpdate,
+                workorderUpdate, authenticationTools.getInforContext());
         } catch (Exception e) {
-            check = false;
-            responses.put("READEQUIPMENT", "ERROR " + e.getMessage());
-        }
-        try {
-            String result = monitoringService.monitoringReadWorkorder(number,
-                authenticationTools.getInforContext()).toString();
-            responses.put("READWORKORDER", result);
-        } catch (Exception e) {
-            check = false;
-            responses.put("READWORKORDER", "ERROR " + e.getMessage());
-        }
-        try {
-            String result = monitoringService.monitoringUpdateEquipment(equipmentForUpdate, EQUIPMENT_CODE,
-                authenticationTools.getInforContext()).toString();
-            responses.put("UPDATEEQUIPMENT", result);
-        } catch (Exception e) {
-            check = false;
-            responses.put("UPDATEEQUIPMENT", "ERROR " + e.getMessage());
-        }
-        try {
-            String result = monitoringService.monitoringUpdateWorkorder(workorderForUpdate, WORKORDER_CODE,
-                authenticationTools.getInforContext()).toString();
-            responses.put("UPDATEWORKORDER", result);
-        } catch (Exception e) {
-            check = false;
-            responses.put("UPDATEWORKORDER", "ERROR " + e.getMessage());
+            Response
+                .status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(e.getMessage())
+                .build();
         }
 
-        if (!check) {
+        if (!checkForError(responses)) {
             return Response
                 .status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(responses)
@@ -78,6 +52,17 @@ public class Monitoring {
         } else {
             return Response.ok(responses).build();
         }
+    }
+
+    public boolean checkForError(Map<String, String> map) {
+        String str = "ERROR ";
+
+        for (String key : map.values()) {
+            if (key.startsWith(str)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

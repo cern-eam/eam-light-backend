@@ -5,7 +5,9 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -19,6 +21,45 @@ public class MonitoringService {
     private InforClient inforClient;
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy HH-mm-ss", Locale.ENGLISH);
+    private Map<String, String> responses;
+
+    public Map<String, String> monitorEndpoints(String equipment, String number,
+        Equipment equipmentForUpdate, WorkOrder workorderForUpdate, String equipmentNumber, String workorderNumber,
+        InforContext inforContext) {
+        responses = new HashMap<>();
+        try {
+            String result = monitoringReadEquipment(equipment,
+                inforContext).toString();
+            responses.put("READEQUIPMENT", result);
+        } catch (Exception e) {
+            responses.put("READEQUIPMENT", "ERROR " + e.getMessage());
+        }
+        try {
+            String result = monitoringReadWorkorder(number,
+                inforContext).toString();
+            responses.put("READWORKORDER", result);
+        } catch (Exception e) {
+            responses.put("READWORKORDER", "ERROR " + e.getMessage());
+        }
+        try {
+            String result = monitoringUpdateEquipment(equipmentForUpdate, equipmentNumber,
+                inforContext).toString();
+            responses.put("UPDATEEQUIPMENT", result);
+        } catch (Exception e) {
+            responses.put("UPDATEEQUIPMENT", "ERROR " + e.getMessage());
+        }
+        try {
+            String result = monitoringUpdateWorkorder(workorderForUpdate, workorderNumber,
+                inforContext).toString();
+            responses.put("UPDATEWORKORDER", result);
+        } catch (Exception e) {
+            responses.put("UPDATEWORKORDER", "ERROR " + e.getMessage());
+        }
+
+        return responses;
+
+    }
+
 
     public Equipment monitoringReadEquipment(String equipment, InforContext inforContext) throws Exception {
         return inforClient.getEquipmentFacadeService().readEquipment(inforContext,
