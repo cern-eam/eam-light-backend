@@ -24,7 +24,7 @@ public class MonitoringService {
     private Map<String, String> responses;
 
     public Map<String, String> monitorEndpoints(String equipment, String number,
-        Equipment equipmentForUpdate, WorkOrder workorderForUpdate, String equipmentNumber, String workorderNumber,
+        String equipmentNumber, String workorderNumber,
         InforContext inforContext) {
         responses = new HashMap<>();
         try {
@@ -42,14 +42,14 @@ public class MonitoringService {
             responses.put("READWORKORDER", "ERROR " + e.getMessage());
         }
         try {
-            String result = monitoringUpdateEquipment(equipmentForUpdate, equipmentNumber,
+            String result = monitoringUpdateEquipment(equipmentNumber,
                 inforContext).toString();
             responses.put("UPDATEEQUIPMENT", result);
         } catch (Exception e) {
             responses.put("UPDATEEQUIPMENT", "ERROR " + e.getMessage());
         }
         try {
-            String result = monitoringUpdateWorkorder(workorderForUpdate, workorderNumber,
+            String result = monitoringUpdateWorkorder(workorderNumber,
                 inforContext).toString();
             responses.put("UPDATEWORKORDER", result);
         } catch (Exception e) {
@@ -70,10 +70,10 @@ public class MonitoringService {
         return inforClient.getWorkOrderService().readWorkOrder(inforContext, number);
     }
 
-    public Equipment monitoringUpdateEquipment(Equipment equipmentForUpdate, String EQUIPMENT_CODE,
+    public Equipment monitoringUpdateEquipment(String EQUIPMENT_CODE,
         InforContext inforContext)
         throws Exception {
-
+        Equipment equipmentForUpdate = new Equipment();
         equipmentForUpdate.setCode(EQUIPMENT_CODE);
         equipmentForUpdate.setDescription("MONITORING ASSET / " + getCurrentDate());
 
@@ -81,9 +81,11 @@ public class MonitoringService {
         return inforClient.getEquipmentFacadeService().readEquipment(inforContext, equipmentForUpdate.getCode());
     }
 
-    public WorkOrder monitoringUpdateWorkorder(WorkOrder workOrderForUpdate, String WORKORDER_CODE,
-        InforContext inforContext)
-        throws Exception {
+    public WorkOrder monitoringUpdateWorkorder(String WORKORDER_CODE,
+        InforContext inforContext) throws Exception {
+
+        WorkOrder workOrderForUpdate = new WorkOrder();
+
         workOrderForUpdate.setNumber(WORKORDER_CODE);
         workOrderForUpdate.setDescription("MONITORING WO / " + getCurrentDate());
 

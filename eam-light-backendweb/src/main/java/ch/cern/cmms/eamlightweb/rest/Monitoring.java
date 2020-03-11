@@ -31,10 +31,8 @@ public class Monitoring {
     public Response monitor(@QueryParam("equipment") String equipment, @QueryParam("workorder") String number,
         @QueryParam("equipmentUpdate") String equipmentUpdate, @QueryParam("workorderUpdate") String workorderUpdate) {
         Map<String, String> responses = new HashMap<>();
-        Equipment equipmentForUpdate = new Equipment();
-        WorkOrder workorderForUpdate = new WorkOrder();
         try {
-            responses = monitoringService.monitorEndpoints(equipment, number, equipmentForUpdate, workorderForUpdate,
+            responses = monitoringService.monitorEndpoints(equipment, number,
                 equipmentUpdate,
                 workorderUpdate, authenticationTools.getInforContext());
         } catch (Exception e) {
