@@ -20,6 +20,8 @@ public class MonitoringService {
     @Inject
     private InforClient inforClient;
 
+    private String errorMessage = "ERROR ";
+
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy HH-mm-ss", Locale.ENGLISH);
     private Map<String, String> responses;
 
@@ -27,33 +29,34 @@ public class MonitoringService {
         String equipmentNumber, String workorderNumber,
         InforContext inforContext) {
         responses = new HashMap<>();
+
         try {
             String result = monitoringReadEquipment(equipment,
                 inforContext).toString();
             responses.put("READEQUIPMENT", result);
         } catch (Exception e) {
-            responses.put("READEQUIPMENT", "ERROR " + e.getMessage());
+            responses.put("READEQUIPMENT", errorMessage + e.getMessage());
         }
         try {
             String result = monitoringReadWorkorder(number,
                 inforContext).toString();
             responses.put("READWORKORDER", result);
         } catch (Exception e) {
-            responses.put("READWORKORDER", "ERROR " + e.getMessage());
+            responses.put("READWORKORDER", errorMessage + e.getMessage());
         }
         try {
             String result = monitoringUpdateEquipment(equipmentNumber,
                 inforContext).toString();
             responses.put("UPDATEEQUIPMENT", result);
         } catch (Exception e) {
-            responses.put("UPDATEEQUIPMENT", "ERROR " + e.getMessage());
+            responses.put("UPDATEEQUIPMENT", errorMessage + e.getMessage());
         }
         try {
             String result = monitoringUpdateWorkorder(workorderNumber,
                 inforContext).toString();
             responses.put("UPDATEWORKORDER", result);
         } catch (Exception e) {
-            responses.put("UPDATEWORKORDER", "ERROR " + e.getMessage());
+            responses.put("UPDATEWORKORDER", errorMessage + e.getMessage());
         }
 
         return responses;
@@ -70,23 +73,23 @@ public class MonitoringService {
         return inforClient.getWorkOrderService().readWorkOrder(inforContext, number);
     }
 
-    public Equipment monitoringUpdateEquipment(String EQUIPMENT_CODE,
+    public Equipment monitoringUpdateEquipment(String equipmentCode,
         InforContext inforContext)
         throws Exception {
         Equipment equipmentForUpdate = new Equipment();
-        equipmentForUpdate.setCode(EQUIPMENT_CODE);
+        equipmentForUpdate.setCode(equipmentCode);
         equipmentForUpdate.setDescription("MONITORING ASSET / " + getCurrentDate());
 
         inforClient.getEquipmentFacadeService().updateEquipment(inforContext, equipmentForUpdate);
         return inforClient.getEquipmentFacadeService().readEquipment(inforContext, equipmentForUpdate.getCode());
     }
 
-    public WorkOrder monitoringUpdateWorkorder(String WORKORDER_CODE,
+    public WorkOrder monitoringUpdateWorkorder(String workorderCode,
         InforContext inforContext) throws Exception {
 
         WorkOrder workOrderForUpdate = new WorkOrder();
 
-        workOrderForUpdate.setNumber(WORKORDER_CODE);
+        workOrderForUpdate.setNumber(workorderCode);
         workOrderForUpdate.setDescription("MONITORING WO / " + getCurrentDate());
 
         inforClient.getWorkOrderService().updateWorkOrder(inforContext, workOrderForUpdate);
@@ -95,6 +98,10 @@ public class MonitoringService {
 
     private String getCurrentDate() {
         return simpleDateFormat.format(new Date());
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
 }

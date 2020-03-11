@@ -1,10 +1,12 @@
 package ch.cern.cmms.eamlightweb.rest;
 
 import ch.cern.cmms.eamlightejb.MonitoringService.MonitoringService;
-import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
-import ch.cern.eam.wshub.core.tools.InforException;
+
+import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.Credentials;
+
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
@@ -18,11 +20,15 @@ import javax.ws.rs.core.Response;
 @Path("/monitoring")
 public class Monitoring {
 
-    @Inject
-    private AuthenticationTools authenticationTools;
 
     @Inject
     MonitoringService monitoringService;
+
+    @Inject
+    ApplicationData applicationData;
+
+    @Inject
+    InforClient inforClient;
 
     @GET
     @Path("/")
@@ -31,16 +37,14 @@ public class Monitoring {
     public Response monitor(@QueryParam("equipment") String equipment, @QueryParam("workorder") String number,
         @QueryParam("equipmentUpdate") String equipmentUpdate, @QueryParam("workorderUpdate") String workorderUpdate) {
         Map<String, String> responses = new HashMap<>();
-        try {
-            responses = monitoringService.monitorEndpoints(equipment, number,
-                equipmentUpdate,
-                workorderUpdate, authenticationTools.getInforContext());
-        } catch (Exception e) {
-            Response
-                .status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(e.getMessage())
-                .build();
-        }
+        Credentials credentials = new Credentials();
+        credentials.setUsername("R5");
+        credentials.setPassword(applicationData.getAdminPassword());
+        InforContext inforContext = inforClient.getTools().getInforContext(credentials);
+
+        responses = monitoringService.monitorEndpoints(equipment, number,
+            equipmentUpdate,
+            workorderUpdate, inforContext);
 
         if (!checkForError(responses)) {
             return Response
@@ -53,10 +57,9 @@ public class Monitoring {
     }
 
     public boolean checkForError(Map<String, String> map) {
-        String str = "ERROR ";
 
-        for (String key : map.values()) {
-            if (key.startsWith(str)) {
+        for (String value : map.values()) {
+            if (value.startsWith(monitoringService.getErrorMessage())) {
                 return false;
             }
         }
