@@ -49,13 +49,13 @@ public class PartUsageRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response loadStoreList() {
 		try {
-			GridRequest input = new GridRequest("LVIRSTOR");
-			input.setUserFunctionName("SSISSU");
-			input.setRowCount(1000);
-			input.getParams().put("param.storefield", "IR");
+			GridRequest gridRequest = new GridRequest("LVIRSTOR", GridRequest.GRIDTYPE.LOV, 1000);
+			gridRequest.setUserFunctionName("SSISSU");
+			gridRequest.getParams().put("param.storefield", "IR");
+			gridRequest.getParams().put("parameter.r5role", "");
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("682", "133"),
-					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), input)));
+					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -73,7 +73,7 @@ public class PartUsageRest extends EAMLightController {
 			GridRequest gridRequest;
 			if (transaction.startsWith("I")) {
 				// ISSUE
-				gridRequest = new GridRequest("LVISSUEBIN");
+				gridRequest = new GridRequest("LVISSUEBIN", GridRequest.GRIDTYPE.LOV);
 				if (bin != null && !bin.isEmpty()) {
 					gridRequest.addFilter("bincode", bin, "BEGINS");
 				}

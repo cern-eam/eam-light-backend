@@ -75,4 +75,16 @@ public class EquipmentLists extends EAMLightController {
 			return serverError(e);
 		}
 	}
+
+	@GET
+	@Path("/statecodes")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response readEquipmentStateCodes() {
+		GridRequest gridRequest = new GridRequest("BSUCOD_HDR", 20);
+		gridRequest.addParam("param.entitycode", "OBSA");
+		return getPairListResponse(gridRequest, "usercode", "usercodedescription");
+
+	}
+
 }

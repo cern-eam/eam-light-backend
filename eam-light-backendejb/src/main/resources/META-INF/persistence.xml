@@ -5,7 +5,6 @@
     <persistence-unit name="asbmgr">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <jta-data-source>java:/datasources/asbmgrDS</jta-data-source>
-        <class>ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder</class>
         <class>ch.cern.cmms.eamlightejb.index.IndexResult</class>
         <class>ch.cern.cmms.eamlightejb.equipment.EquipmentChildren</class>
         <class>ch.cern.cmms.eamlightejb.equipment.EquipmentTreeNode</class>

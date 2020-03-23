@@ -31,7 +31,7 @@ public class AutocompletePUPart extends EAMLightController {
 	@Consumes("application/json")
 	public Response complete(@PathParam("workorder") String workorder, @PathParam("store") String store,
 							 @PathParam("code") String code) throws InforException{
-		GridRequest gridRequest = new GridRequest( "LVIRPART", GridRequest.GRIDTYPE.LIST, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
+		GridRequest gridRequest = new GridRequest( "LVIRPART", GridRequest.GRIDTYPE.LOV, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
 		gridRequest.addParam("control.org", authenticationTools.getInforContext().getOrganizationCode());
 		gridRequest.addParam("multiequipwo", "false");
 		gridRequest.addParam("store_code", store);
