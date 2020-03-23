@@ -77,7 +77,7 @@ public class IndexEJB {
             query1.append(obj_obtypeIN.toString());
             query1.append(
                     " AND obj_mrc IN (SELECT DISTINCT DSE_MRC from R5DEPARTMENTSECURITY where DSE_USER = :activeUser)");
-            query1.append(" AND (obj_code = :hint OR obj_alias = :hint OR obj_serialno = :hint OR obj_udfchar45 = :hint) ");
+            query1.append(" AND (obj_code = :hint OR obj_alias = :hint OR upper(obj_serialno) = upper(:hint) OR obj_udfchar45 = :hint) ");
             sjQuery.add(query1.toString());
         }
 
@@ -124,7 +124,7 @@ public class IndexEJB {
             query1.append(
                     " AND obj_mrc IN (SELECT DISTINCT DSE_MRC from R5DEPARTMENTSECURITY where DSE_USER = :activeUser)");
             query1.append(
-                    " AND (obj_code like :hint ESCAPE '\\' OR obj_alias like :hint ESCAPE '\\' OR obj_serialno like :hint ESCAPE '\\' OR obj_udfchar45 like :hint ESCAPE '\\') and ROWNUM < 101 ");
+                    " AND (obj_code like :hint ESCAPE '\\' OR obj_alias like :hint ESCAPE '\\' OR upper(obj_serialno) like upper(:hint) ESCAPE '\\' OR obj_udfchar45 like :hint ESCAPE '\\') and ROWNUM < 101 ");
             sjQuery.add(query1.toString());
         }
 
