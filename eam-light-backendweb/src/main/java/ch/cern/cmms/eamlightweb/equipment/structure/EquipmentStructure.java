@@ -1,9 +1,15 @@
 package ch.cern.cmms.eamlightweb.equipment.structure;
 
+import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
+import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
+import ch.cern.eam.wshub.core.tools.InforException;
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.Produces;
@@ -20,6 +26,13 @@ public class EquipmentStructure extends EAMLightController {
 	@EJB
 	private EquipmentEJB equipmentEJB;
 
+    @Inject
+    private InforClient inforClient;
+
+    @Inject
+    private AuthenticationTools authenticationTools;
+
+
 	@GET
 	@Path("/tree")
 	@Produces("application/json")
@@ -31,5 +44,21 @@ public class EquipmentStructure extends EAMLightController {
 			return serverError(e);
 		}
 	}
+
+	@POST
+    @Path("/attach")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response attachEquipment(ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure equipmentStructure){
+
+        try{
+            return ok(inforClient.getEquipmentStructureService().addEquipmentToStructure(authenticationTools.getInforContext(),
+                equipmentStructure));
+        }catch (InforException ie){
+            return serverError(ie);
+        }
+
+
+    }
 
 }
