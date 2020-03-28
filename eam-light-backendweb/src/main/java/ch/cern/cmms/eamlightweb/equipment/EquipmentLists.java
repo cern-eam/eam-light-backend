@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import ch.cern.cmms.eamlightweb.tools.Pair;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
@@ -60,8 +60,9 @@ public class EquipmentLists extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response readCriticalityCodes() {
-		GridRequest gridRequest = new GridRequest("LVMULTICRITIC", GridRequest.GRIDTYPE.LOV);
-		return getPairListResponse(gridRequest, "criticality", "description");
+		GridRequest gridRequest = new GridRequest("BSUCOD_HDR", GridRequest.GRIDTYPE.LIST);
+		gridRequest.addParam("param.entitycode", "OBCR");
+		return getPairListResponse(gridRequest, "usercode", "usercodedescription");
 	}
 
 	@GET

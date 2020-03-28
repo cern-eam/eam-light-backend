@@ -32,4 +32,5 @@ public class EquipmentStructure extends EAMLightController {
 		}
 	}
 
+
 }

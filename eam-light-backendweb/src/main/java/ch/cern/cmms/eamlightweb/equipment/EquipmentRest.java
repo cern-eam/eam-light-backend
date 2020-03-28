@@ -20,7 +20,7 @@ import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.InforException;
-
+import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @Path("/equipment")
@@ -151,20 +151,37 @@ public class EquipmentRest extends EAMLightController {
 								  @DefaultValue("") @QueryParam("classcode") String classCode) {
 		try {
 			Equipment equipment = new Equipment();
-			// User defined fields
-			equipment.setUserDefinedFields(new UserDefinedFields());
-			equipment.setTypeCode(eqpType);
 
+			/*
+			//TODO: Uncomment once Infor fixes the web services used below
+			switch (eqpType) {
+				case "A":
+					equipment = inforClient.getAssetService().readAssetDefault(authenticationTools.getInforContext(), "");
+					break;
+				case "P":
+					equipment = inforClient.getPositionService().readPositionDefault(authenticationTools.getInforContext(), "");
+					break;
+				case "S":
+					equipment = inforClient.getSystemService().readSystemDefault(authenticationTools.getInforContext(), "");
+					break;
+				default:
+					throw generateFault("Equipment type not supported.");
+			}
+			*/
+
+			equipment.setTypeCode(eqpType);
+			equipment.setStateCode("GOOD");
+			equipment.setStatusCode("I");
+			equipment.setComissionDate(new Date());
 			if (isNotEmpty(newCode)) {
 				equipment.setCode(newCode);
 			}
 
+			equipment.setUserDefinedFields(new UserDefinedFields());
+
 			String equipmentClass = isNotEmpty(classCode) ? classCode : "*";
 			equipment.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipmentClass));
 
-			// Commision date
-			if (equipment.getComissionDate() == null)
-				equipment.setComissionDate(new Date());
 			return ok(equipment);
 		} catch (InforException e) {
 			return badRequest(e);
