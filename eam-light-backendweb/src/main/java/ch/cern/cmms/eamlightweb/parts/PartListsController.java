@@ -4,7 +4,6 @@ import java.util.*;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
-import javax.sound.sampled.Line;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -52,6 +51,8 @@ public class PartListsController extends EAMLightController {
 			map.put("15932", "type");
 
 			GridRequest gridRequest = new GridRequest( "SSPART_EPA");
+			gridRequest.setUserFunctionName("SSPART");
+
 			gridRequest.addParam("partcode", part);
 			gridRequest.addParam("partorg", authenticationTools.getInforContext().getOrganizationCode());
 

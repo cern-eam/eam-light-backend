@@ -226,7 +226,7 @@ public class PartUsageRest extends EAMLightController {
 
 	private void setPartUsageTransType(WorkOrderPart workOrderPartUsage) {
 		try {
-			if (workOrderPartUsage.getPlannedQty() != null) {
+			if (workOrderPartUsage.getPlannedQty().compareTo(BigDecimal.ZERO) == 1) {
 				workOrderPartUsage.setTransType("Planned");
 				workOrderPartUsage.setQuantity(workOrderPartUsage.getPlannedQty());
 			} else if (workOrderPartUsage.getUsedQty().compareTo(BigDecimal.ZERO) < 0) {
