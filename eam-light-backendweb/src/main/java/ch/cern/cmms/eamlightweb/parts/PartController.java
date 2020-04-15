@@ -130,7 +130,8 @@ public class PartController extends EAMLightController {
 							 @DefaultValue("") @QueryParam("newCode") String newCode,
 							 @DefaultValue("") @QueryParam("classcode") String classCode) {
 		try {
-			Part part = new Part();
+			Part part = inforClient.getPartService().readPartDefault(authenticationTools.getInforContext(), "");
+
 			part.setUserDefinedFields(new UserDefinedFields());
 
 			if (isNotEmpty(newCode)) {

@@ -30,14 +30,4 @@ public class BookingLabourLists extends EAMLightController {
 		return getPairListResponse(gridRequest, "101", "103");
 	}
 
-	private Map<String, String> produceInforParamsForTypeOfHoursDropdown() {
-		Map<String, String> inforParams = new HashMap<String, String>();
-		inforParams.put("date", null);
-		inforParams.put("trade", "20");
-		inforParams.put("dept", null);
-		inforParams.put("event", null);
-		inforParams.put("employee", "");
-		return inforParams;
-	}
-
 }

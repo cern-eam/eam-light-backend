@@ -1,14 +1,18 @@
 package ch.cern.cmms.eamlightweb.user;
 
-import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
-import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.user.entities.UserData;
-import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
+import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
+import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
+import ch.cern.cmms.eamlightweb.user.entities.UserData;
+import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+import ch.cern.eam.wshub.core.tools.InforException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class UserService {
@@ -19,12 +23,13 @@ public class UserService {
     private AuthenticationTools authenticationTools;
     @Inject
     private InforClient inforClient;
+    public static final Map<String, EAMUser> userCache = new ConcurrentHashMap<>();
 
     public UserData getUserData(String currentScreen, String screenCode) throws InforException {
         UserData userData = new UserData();
 
         String userCode = authenticationTools.getInforContext().getCredentials().getUsername();
-        userData.setEamAccount(inforClient.getUserSetupService().readUserSetup(authenticationTools.getInforContext(), userCode));
+        userData.setEamAccount(readUserSetup(authenticationTools.getInforContext(), userCode));
         userData.setScreens(screenService.getScreens(authenticationTools.getR5InforContext(), userData.getEamAccount().getUserGroup()));
 
         userData.setAssetScreen(getScreenCode("OSOBJA", "asset", currentScreen, screenCode, userData));
@@ -32,6 +37,7 @@ public class UserService {
         userData.setSystemScreen(getScreenCode("OSOBJS", "system", currentScreen, screenCode, userData));
         userData.setWorkOrderScreen(getScreenCode("WSJOBS", "workorder", currentScreen, screenCode, userData));
         userData.setPartScreen(getScreenCode("SSPART", "part", currentScreen, screenCode, userData));
+        userData.setLocationScreen(getScreenCode("OSOBJL", "location", currentScreen, screenCode, userData));
 
         return userData;
     }
@@ -61,33 +67,42 @@ public class UserService {
         String screenCode = null;
         switch (functionCode) {
             case "WSJOBS":/* UDF05 - Work Order */
-                screenCode = userData.getEamAccount().getUdfchar05();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar05();
                 break;
             case "SSPART":/* UDF06 - Part */
-                screenCode = userData.getEamAccount().getUdfchar06();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar06();
                 break;
             case "OSOBJA":/* UDF07 - Asset */
-                screenCode = userData.getEamAccount().getUdfchar07();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar07();
                 break;
             case "OSOBJP":/* UDF08 - Position */
-                screenCode = userData.getEamAccount().getUdfchar08();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar08();
                 break;
             case "OSOBJS":/* UDF09 - System */
-                screenCode = userData.getEamAccount().getUdfchar09();
+                screenCode = userData.getEamAccount().getUserDefinedFields().getUdfchar09();
                 break;
         }
 
-        // Check now if the screen code has any value
-        if (isNotEmpty(screenCode)) {
+        // Check if the screen code has any value and if the user has access to the screen with that screen code
+        if (isNotEmpty(screenCode) && userData.getScreens().containsKey(screenCode)) {
             return screenCode;
         }
 
         // 3. Checking access to the default screen
-        return userData.getScreens().values().stream()
+        String stream = userData.getScreens().values().stream()
                                      .filter(screenInfo -> functionCode.equals(screenInfo.getParentScreen()))
                                      .map(ScreenInfo::getScreenCode)
                                      .findFirst()
                                      .orElse(null);
+
+        return stream;
+    }
+
+    public EAMUser readUserSetup(InforContext inforContext, String userCode) throws InforException {
+        if (!userCache.containsKey(userCode)) {
+            userCache.put(userCode, inforClient.getUserSetupService().readUserSetup(inforContext, userCode));
+        }
+        return userCache.get(userCode);
     }
 
 }

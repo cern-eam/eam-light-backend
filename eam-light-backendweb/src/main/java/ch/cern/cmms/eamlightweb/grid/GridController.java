@@ -4,16 +4,13 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.services.grids.entities.GridDDSpyFieldsResult;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
 
 @Path("/grids")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -43,40 +40,14 @@ public class GridController extends EAMLightController {
 	@Produces("text/csv")
 	@Consumes("application/json")
 	public Response exportGridDataToCSV(GridRequest gridRequest) {
-
 		String fileName = "dataGridExport.csv";
 		String fileContent = "";
-
 		try {
-
-			// fetch fields names and labels
-			GridDDSpyFieldsResult fieldsInfo = inforClient.getGridsService().getDDspyFields(authenticationTools.getInforContext(),gridRequest.getGridID(), "LIST",
-					gridRequest.getDataspyID(), gridRequest.getLang());
-
-			fileContent = Arrays.asList(fieldsInfo.getGridFields()).stream()
-					.sorted((a, b) -> Integer.compare(Integer.parseInt(a.getOrder()), Integer.parseInt(b.getOrder())))
-					.map(h -> h.getLabel()).reduce("", (a, b) -> {
-						return (a == null ? "" : a) + (b == null ? "" : b) + ",";
-					});
-
-			// reset the cursor position to 1
+			// change the grid 'range'
 			gridRequest.setCursorPosition(1);
-			// and set up a maximum of 10000 rows
 			gridRequest.setRowCount(10000);
-
-			// prepare the response
-			GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest);
-
 			// build the csv
-			fileContent += Arrays.asList(gridRequestResult.getRows()).stream().map(row -> {
-				return Arrays.asList(row.getCell()).stream().filter(cell -> {
-					return cell.getOrder() > -1;
-				}).map(cell -> cell.getContent()).reduce("", (acc, text) -> {
-					return acc + prepareCellData(text);
-				});
-			}).reduce("", (a, b) -> {
-				return a + "\n" + b;
-			});
+			fileContent = inforClient.getGridsService().getGridCsvData(authenticationTools.getInforContext(), gridRequest);
 		} catch (InforException exception) {
 			return badRequest(exception);
 		}
@@ -84,10 +55,7 @@ public class GridController extends EAMLightController {
 		return Response.ok(fileContent).header("Content-Disposition", "attachment; filename=" + fileName).build();
 	}
 
-	private String prepareCellData(String text) {
-		text = text == null ? "" : text;
-		return text.length() > 0 ? "\"" + text.replaceAll("\"", "\"\"") + "\"," : ",";
-	}
+
 
 	@GET
 	@Path("/{gridid}/metadata")

@@ -1,15 +1,8 @@
 package ch.cern.cmms.eamlightweb.workorders.myworkorders;
 
 import ch.cern.eam.wshub.core.annotations.GridField;
-
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 
 public class MyWorkOrder implements Serializable {
 
@@ -169,29 +162,6 @@ public class MyWorkOrder implements Serializable {
 
 	public void setPriority(String priority) {
 		this.priority = priority;
-	}
-
-	public String getDays() {
-		if (schedulingEndDate == null) {
-			return null;
-		}
-
-		Date now = new Date();
-		double days = (schedulingEndDate.getTime() - now.getTime()) / (1000.0 * 60.0 * 60.0);
-
-		if (days >= -24 && days <= 0) {
-			return "TODAY";
-		}
-
-		if (days < -24) {
-			return "LATE";
-		}
-
-		if (days >= 0 && days < 144) {
-			return "WEEK";
-		}
-
-		return "ALL";
 	}
 
 	@Override

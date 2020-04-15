@@ -16,10 +16,12 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.user.ScreenLayoutService;
 import ch.cern.cmms.eamlightweb.user.ScreenService;
+import ch.cern.cmms.eamlightweb.user.UserService;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
+import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
 
 @Path("/application")
 @ApplicationScoped
@@ -32,7 +34,6 @@ public class ApplicationController extends EAMLightController {
 	private InforClient inforClient;
 	@Inject
 	private ApplicationData applicationData;
-
 
 	@GET
 	@Path("/applicationdata")
@@ -60,6 +61,8 @@ public class ApplicationController extends EAMLightController {
 		InforGrids.gridFieldCache.clear();
 		GridsServiceImpl.gridIdCache.clear();
 		CustomFieldsController.customFieldsLookupValuesCache.clear();
+		ChecklistServiceImpl.findingsCache.clear();
+		UserService.userCache.clear();
 		return ok("EAM Light cache has been successfully refreshed.");
 	}
 

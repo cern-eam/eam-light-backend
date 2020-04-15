@@ -3,8 +3,6 @@ package ch.cern.cmms.eamlightweb.tools.autocomplete;
 import java.util.Arrays;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -39,7 +37,7 @@ public class AutocompleteEquipment extends EAMLightController {
 	}
 
 	@GET
-	@Path("/wo/eqp")
+	@Path("/eqp")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@QueryParam("s") String code) {
@@ -49,7 +47,7 @@ public class AutocompleteEquipment extends EAMLightController {
 	}
 
 	@GET
-	@Path("/wo/eqp/selected")
+	@Path("/eqp/selected")
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response getValuesSelectedEquipment(@QueryParam("code") String code) {

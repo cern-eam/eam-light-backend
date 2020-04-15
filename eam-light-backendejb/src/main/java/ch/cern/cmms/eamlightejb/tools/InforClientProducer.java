@@ -3,8 +3,7 @@ package ch.cern.cmms.eamlightejb.tools;
 import ch.cern.cmms.eamlightejb.tools.soaphandler.SOAPHandlerResolver;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
-import com.sun.xml.bind.v2.runtime.unmarshaller.UnmarshallingContext;
-
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -15,7 +14,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.logging.Logger;
 
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
@@ -47,6 +45,8 @@ public class InforClientProducer {
         try {
             // Build the Infor Client
             inforClient = new InforClient.Builder(Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"))
+                    .withDefaultTenant(Tools.getVariableValue("EAMLIGHT_INFOR_TENANT"))
+                    .withDefaultOrganizationCode(Tools.getVariableValue("EAMLIGHT_INFOR_ORGANIZATION"))
                     .withSOAPHandlerResolver(new SOAPHandlerResolver())
                     .withDataSource(dataSource)
                     .withEntityManagerFactory(entityManagerFactory)

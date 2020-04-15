@@ -9,7 +9,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +31,7 @@ public class ScreenService {
         screens.add("OSOBJP");
         screens.add("OSOBJS");
         screens.add("SSPART");
+        screens.add("OSOBJL");
     }
 
     public Map<String, ScreenInfo> getScreens(InforContext context, String userGroup) throws InforException {
@@ -63,9 +63,8 @@ public class ScreenService {
     }
 
     public Map<String, String> getFunctions(InforContext context) throws InforException {
-
-        GridRequest gridRequestLayout = new GridRequest("BSFUNC");
-        screens.forEach(screen -> gridRequestLayout.addFilter("parentscreencode", screen, "=", JOINER.OR));
+        GridRequest gridRequestLayout = new GridRequest("BSFUNC", 1000);
+        gridRequestLayout.addFilter("parentscreencode", String.join(",", screens), "IN");
 
         Map<String, String> functions =  inforClient.getTools().getGridTools().convertGridResultToMap("screencode",
                 "parentscreencode",

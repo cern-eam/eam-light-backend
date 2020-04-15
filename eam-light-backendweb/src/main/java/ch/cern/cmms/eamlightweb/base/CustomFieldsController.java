@@ -1,7 +1,7 @@
 package ch.cern.cmms.eamlightweb.base;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.Pair;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.CustomField;

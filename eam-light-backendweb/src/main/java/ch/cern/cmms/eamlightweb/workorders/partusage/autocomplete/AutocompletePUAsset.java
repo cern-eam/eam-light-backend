@@ -61,7 +61,7 @@ public class AutocompletePUAsset extends EAMLightController {
 				gridRequest.addFilter("store", store.toUpperCase(), "EQUALS");
 			} else {
 				// RETURN
-				gridRequest.addFilter("store", store.toUpperCase(), "IS_EMPTY");
+				gridRequest.addFilter("store", store.toUpperCase(), "IS EMPTY");
 			}
 
 			String[] fields = {"equipmentno", "equipmentdesc", "part", "bin", "lot"};

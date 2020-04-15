@@ -27,7 +27,7 @@ public class MyWorkOrdersController extends EAMLightController {
 	@Path("/my")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response read1() {
+	public Response readMyOpenWorkOrders() {
 		try {
 			return ok(myWorkOrders.getMyOpenWorkOrders());
 		} catch(Exception e) {
@@ -39,7 +39,7 @@ public class MyWorkOrdersController extends EAMLightController {
 	@Path("/myteam")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response read2() {
+	public Response readMyDepartmentWorkOrders() {
 		try {
 			return ok(myWorkOrders.getMyTeamsWorkOrders());
 		} catch(Exception e) {

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
@@ -23,7 +22,7 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.cmms.eamlightweb.tools.Pair;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.entities.WorkOrderPart;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
@@ -50,13 +49,13 @@ public class PartUsageRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response loadStoreList() {
 		try {
-			GridRequest input = new GridRequest("LVIRSTOR");
-			input.setUserFunctionName("SSISSU");
-			input.setRowCount(1000);
-			input.getParams().put("param.storefield", "IR");
+			GridRequest gridRequest = new GridRequest("LVIRSTOR", GridRequest.GRIDTYPE.LOV, 1000);
+			gridRequest.setUserFunctionName("SSISSU");
+			gridRequest.getParams().put("param.storefield", "IR");
+			gridRequest.getParams().put("parameter.r5role", "");
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("682", "133"),
-					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), input)));
+					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -74,7 +73,7 @@ public class PartUsageRest extends EAMLightController {
 			GridRequest gridRequest;
 			if (transaction.startsWith("I")) {
 				// ISSUE
-				gridRequest = new GridRequest("LVISSUEBIN");
+				gridRequest = new GridRequest("LVISSUEBIN", GridRequest.GRIDTYPE.LOV);
 				if (bin != null && !bin.isEmpty()) {
 					gridRequest.addFilter("bincode", bin, "BEGINS");
 				}
@@ -205,23 +204,14 @@ public class PartUsageRest extends EAMLightController {
 			List<WorkOrderPart> partUsageList = new ArrayList<>();
 			// Just execute if there is work order
 			if (workorder != null) {
-				Map<String, String> map = new HashMap<>();
-				map.put("partcode", "partCode");
-				//map.put("357", "partUom");
-				map.put("partdescription", "partDesc");
-				map.put("activity_display", "activityDesc");
-				map.put("storecode", "storeCode");
-				map.put("usedqty", "usedQty");
-				map.put("plannedqty", "plannedQty");
-
 				// Creates simple grid input
-				GridRequest gridRequest = new GridRequest("226", "WSJOBS_PAR", "237");
+				GridRequest gridRequest = new GridRequest("WSJOBS_PAR");
 				gridRequest.addParam("param.workordernum", workorder);
 				gridRequest.addParam("param.headeractivity", "0");
 				gridRequest.addParam("param.headerjob", "0");
 
 				partUsageList = inforClient.getTools().getGridTools().convertGridResultToObject(WorkOrderPart.class,
-						map,
+						null,
 						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 				partUsageList.stream().forEach(partUsage -> setPartUsageTransType(partUsage));
@@ -236,7 +226,7 @@ public class PartUsageRest extends EAMLightController {
 
 	private void setPartUsageTransType(WorkOrderPart workOrderPartUsage) {
 		try {
-			if (workOrderPartUsage.getPlannedQty() != null) {
+			if (workOrderPartUsage.getPlannedQty().compareTo(BigDecimal.ZERO) == 1) {
 				workOrderPartUsage.setTransType("Planned");
 				workOrderPartUsage.setQuantity(workOrderPartUsage.getPlannedQty());
 			} else if (workOrderPartUsage.getUsedQty().compareTo(BigDecimal.ZERO) < 0) {
