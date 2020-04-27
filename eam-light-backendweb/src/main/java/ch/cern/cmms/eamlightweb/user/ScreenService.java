@@ -42,6 +42,7 @@ public class ScreenService {
         Map<String, String> functions = getFunctions(context);
 
         GridRequest gridRequestLayout = new GridRequest("BSMESP_HDR", 2000);
+        gridRequestLayout.setUseNative(false);
         gridRequestLayout.addFilter("usergroup", userGroup, "=", JOINER.AND);
 
         // Record view filter
