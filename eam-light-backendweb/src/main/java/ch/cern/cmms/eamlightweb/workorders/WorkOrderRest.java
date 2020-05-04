@@ -1,26 +1,17 @@
 package ch.cern.cmms.eamlightweb.workorders;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
-import ch.cern.eam.wshub.core.services.workorders.entities.StandardWorkOrder;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 @Path("/workorders")
 @ApplicationScoped
@@ -95,27 +86,14 @@ public class WorkOrderRest extends EAMLightController {
 	@Path("/init/{entity}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response initWorkOrder(@PathParam("entity") String entity,
-								  @DefaultValue("") @QueryParam("classcode") String classCode,
-								  @DefaultValue("") @QueryParam("standardwo") String standardWO) {
+	public Response initWorkOrder(@PathParam("entity") String entity) {
 		try {
-			WorkOrder workOrder = inforClient.getWorkOrderService().readWorkOrderDefault(authenticationTools.getInforContext(), "");
-			// User defined fields
-			if (isNotEmpty(standardWO)) {
-				StandardWorkOrder standardWorkOrder = inforClient.getStandardWorkOrderService().readStandardWorkOrder(authenticationTools.getInforContext(), standardWO);
-				workOrder.setUserDefinedFields(standardWorkOrder.getUserDefinedFields());
-				workOrder.setCustomFields(standardWorkOrder.getCustomFields());
-				workOrder.setClassCode(standardWorkOrder.getWoClassCode());
-				workOrder.setPriorityCode(standardWorkOrder.getPriorityCode());
-				workOrder.setTypeCode(standardWorkOrder.getWorkOrderTypeCode());
-				workOrder.setDescription(standardWorkOrder.getDesc());
-				workOrder.setProblemCode(standardWorkOrder.getProblemCode());
-			} else {
-				workOrder.setUserDefinedFields(new UserDefinedFields());
-				workOrder.setCustomFields(inforClient.getTools()
-						.getCustomFieldsTools()
-						.getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", isNotEmpty(classCode) ? classCode : "*"));
-			}
+			WorkOrder workOrder = inforClient.getWorkOrderService()
+					.readWorkOrderDefault(authenticationTools.getInforContext(), "");
+			workOrder.setUserDefinedFields(new UserDefinedFields());
+			workOrder.setCustomFields(inforClient.getTools()
+					.getCustomFieldsTools()
+					.getWSHubCustomFields(authenticationTools.getInforContext(), "EVNT", "*"));
 			return ok(workOrder);
 		} catch (InforException e) {
 			return badRequest(e);
