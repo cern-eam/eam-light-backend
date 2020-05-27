@@ -75,7 +75,7 @@ public class PartController extends EAMLightController {
 			// Generate new numeric code if the requested code starts with @
 			if (part.getCode()!=null && part.getCode().startsWith("@")) {
 				String prefix = part.getCode().substring(1,part.getCode().length());
-				Optional<String> newCode = partsEJB.getNextAvailablePartCode(prefix);
+				Optional<String> newCode = partsEJB.getNextAvailablePartCodeGrid(prefix, authenticationTools.getInforContext());
 				if (newCode.isPresent()) {
 					part.setCode(newCode.get());
 				} else {
