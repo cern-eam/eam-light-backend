@@ -70,8 +70,9 @@ public class PartsEJB {
 
 
     public Optional<String> getNextAvailablePartCodeGrid(String prefixCode, InforContext context) {
-        GridRequest gridRequest = new GridRequest("SSPART");
+        GridRequest gridRequest = new GridRequest("SSPART", 1);
         gridRequest.addFilter("partCode", prefixCode, "BEGINS");
+        gridRequest.sortBy("partCode", "DESC");
 
         String newPartCode = null;
 
@@ -84,7 +85,7 @@ public class PartsEJB {
                 "partCode", grd);
 
             //This is the entry with highest value
-            String entry = parts.values().stream().sorted(Comparator.reverseOrder()).findFirst().get();
+            String entry = parts.values().stream().findFirst().get();
 
             boolean testForLetters = false;
 
