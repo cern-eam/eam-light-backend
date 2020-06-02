@@ -81,11 +81,8 @@ public class PartsEJB {
                 inforClient.getGridsService().executeQuery(context,
                     gridRequest);
 
-            Map<String, String> parts = inforClient.getTools().getGridTools().convertGridResultToMap("partCode",
-                "partCode", grd);
-
-            //This is the entry with highest value
-            String entry = parts.values().stream().findFirst().get();
+            String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
+                "partCode");
 
             boolean testForLetters = false;
 
