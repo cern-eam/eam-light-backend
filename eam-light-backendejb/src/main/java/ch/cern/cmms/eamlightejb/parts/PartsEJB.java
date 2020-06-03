@@ -54,12 +54,9 @@ public class PartsEJB {
 
 			if (entry.matches(".*\\D") && entry.matches(prefixCode)) {
 				newPartCode = prefixCode + "1";
-			} else {
-				String withoutNumbers = withoutPrefix.replaceAll("\\d*", "");
-				if (!withoutNumbers.matches(".")) {
+			} else if(withoutPrefix.matches("\\d*")) {
 					Integer newCode = Integer.parseInt(withoutPrefix) + 1;
-					newPartCode = entry.replace(withoutPrefix, newCode.toString());
-				}
+					newPartCode = entry.replaceAll(withoutPrefix+"$", newCode.toString());
 			}
 
 		} catch (NoResultException exception) {
