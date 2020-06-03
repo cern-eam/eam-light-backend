@@ -50,15 +50,13 @@ public class PartsEJB {
 
 			String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
 				"partCode");
-
 			String withoutPrefix = entry.substring(prefixCode.length());
 
-			if (entry.matches(".*\\D")) {
+			if (entry.matches(".*\\D") && entry.matches(prefixCode)) {
 				newPartCode = prefixCode + "1";
 			} else {
-				String withoutNumbers = withoutPrefix.replaceAll("[^a-zA-Z_-]", "");
-				boolean digitCheck = withoutNumbers.matches(".");
-				if (!digitCheck) {
+				String withoutNumbers = withoutPrefix.replaceAll("\\d*", "");
+				if (!withoutNumbers.matches(".")) {
 					Integer newCode = Integer.parseInt(withoutPrefix) + 1;
 					newPartCode = entry.replace(withoutPrefix, newCode.toString());
 				}
