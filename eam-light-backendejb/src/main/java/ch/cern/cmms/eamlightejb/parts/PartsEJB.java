@@ -37,6 +37,10 @@ public class PartsEJB {
 		gridRequest.addFilter("partCode", prefixCode, "BEGINS");
 		gridRequest.sortBy("partCode", "DESC");
 
+		if (prefixCode == null || prefixCode.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+
 		String newPartCode = null;
 
 		try {
