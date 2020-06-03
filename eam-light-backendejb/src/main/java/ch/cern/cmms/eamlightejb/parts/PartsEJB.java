@@ -47,33 +47,16 @@ public class PartsEJB {
 			String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
 				"partCode");
 
-			boolean testForLetters = false;
+			String withoutPrefix = entry.substring(prefixCode.length());
 
-			String whatsLeft = entry.substring(prefixCode.length());
-			for (int i = 0; i < whatsLeft.length(); i++) {
-				if (!Character.isDigit(whatsLeft.charAt(i))) {
-					for (int j = entry.length() - 1; j >= 0; j--) {
-						if (!Character.isDigit(entry.charAt(j))) {
-							testForLetters = true;
-							break;
-						}
-					}
-				}
-			}
-			if (!testForLetters) {
-
-				if (!Character.isDigit(entry.charAt(entry.length() - 1))) {
-					newPartCode = prefixCode + "000001";
-				} else {
-					for (int i = prefixCode.length() - 1; i >= 0; i--) {
-						if (!Character.isDigit(entry.charAt(i))) {
-							Integer newCode = Integer.parseInt(entry.substring(i + 1)) + 1;
-							newPartCode = entry.replace(entry.substring(i + 1), newCode.toString());
-							break;
-						}
-					}
-
-					return Optional.ofNullable(newPartCode);
+			if (entry.matches(".*\\D")) {
+				newPartCode = prefixCode + "1";
+			} else {
+				String withoutNumbers = withoutPrefix.replaceAll("[^a-zA-Z_-]", "");
+				boolean digitCheck = withoutNumbers.matches(".");
+				if (!digitCheck) {
+					Integer newCode = Integer.parseInt(withoutPrefix) + 1;
+					newPartCode = entry.replace(withoutPrefix, newCode.toString());
 				}
 			}
 
