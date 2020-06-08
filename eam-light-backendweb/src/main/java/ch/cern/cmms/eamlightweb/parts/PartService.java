@@ -6,6 +6,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -38,12 +39,27 @@ public class PartService {
 			String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
 				"partCode");
 			String withoutPrefix = entry.substring(prefixCode.length());
+			GridRequest gridRequestAsset = new GridRequest("OSOBJA", 1);
 
-			if (entry.matches(prefixCode)) {
-				return Optional.ofNullable(prefixCode + "1");
+			if (entry.matches(Pattern.quote(prefixCode))) {
+				gridRequestAsset.addFilter("equipmentno", prefixCode + "000001", "EQUALS");
+				GridRequestResult grdAsset = inforClient.getGridsService().executeQuery(context, gridRequestAsset);
+				String asset = inforClient.getTools().getGridTools().extractSingleResult(grdAsset,
+					"equipmentno");
+				if (asset == null) {
+					return Optional.ofNullable(prefixCode + "000001");
+				}
 			} else if (withoutPrefix.matches("\\d*")) {
 				Integer newCode = Integer.parseInt(withoutPrefix) + 1;
-				return Optional.ofNullable(entry.replaceAll(withoutPrefix + "$", newCode.toString()));
+				String newCodeFormatted = String.format("%0" + withoutPrefix.length() + "d", newCode);
+				String newCodeString = entry.replaceAll(withoutPrefix + "$", newCodeFormatted);
+				gridRequestAsset.addFilter("equipmentno", newCodeString, "EQUALS");
+				GridRequestResult grdAsset = inforClient.getGridsService().executeQuery(context, gridRequestAsset);
+				String asset = inforClient.getTools().getGridTools().extractSingleResult(grdAsset,
+					"equipmentno");
+				if (asset == null) {
+					return Optional.ofNullable(newCodeString);
+				}
 			}
 
 		} catch (NoResultException exception) {
