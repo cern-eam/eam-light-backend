@@ -56,16 +56,12 @@ public class PartService {
 	}
 
 	private boolean isAssetPresent(String equipmentCode, InforContext context) throws Exception {
-		boolean result = false;
 		GridRequest gridRequestAsset = new GridRequest("OSOBJA", 1);
 		gridRequestAsset.addFilter("equipmentno", equipmentCode, "EQUALS");
 		GridRequestResult grdAsset = inforClient.getGridsService().executeQuery(context, gridRequestAsset);
 		String asset = inforClient.getTools().getGridTools().extractSingleResult(grdAsset,
 			"equipmentno");
-		if (asset != null) {
-			result = true;
-		}
-		return result;
+		return asset != null;
 	}
 
 }
