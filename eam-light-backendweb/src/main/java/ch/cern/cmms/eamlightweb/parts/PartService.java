@@ -38,6 +38,9 @@ public class PartService {
 					gridRequest);
 			String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
 				"partCode");
+			if (entry == null || entry.isEmpty()) {
+				return Optional.ofNullable(null);
+			}
 			String withoutPrefix = entry.substring(prefixCode.length());
 			if (withoutPrefix.matches("\\d*")) {
 				Integer newCode = Integer.parseInt(withoutPrefix) + 1;
