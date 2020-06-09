@@ -28,8 +28,8 @@ public class PartController extends EAMLightController {
 	private InforClient inforClient;
 	@Inject
 	private AuthenticationTools authenticationTools;
-    @Inject
-    private PartService partService;
+	@Inject
+	private PartService partService;
 
 	@GET
 	@Path("/partstock/{part}")
@@ -74,7 +74,7 @@ public class PartController extends EAMLightController {
 			if (part.getCode()!=null && part.getCode().startsWith("@")) {
 				String prefix = part.getCode().substring(1,part.getCode().length());
 				Optional<String> newCode = partService.getNextAvailablePartCode(prefix,
-                    authenticationTools.getInforContext());
+					authenticationTools.getInforContext());
 				if (newCode.isPresent()) {
 					part.setCode(newCode.get());
 				} else {
