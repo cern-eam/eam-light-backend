@@ -1,20 +1,19 @@
-package ch.cern.cmms.eamlightweb.parts;
+package ch.cern.cmms.eamlightweb.codegenerator;
 
 import ch.cern.cmms.eamlightejb.tools.LoggingService;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
-import ch.cern.eam.wshub.core.tools.InforException;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import org.jboss.logging.Logger.Level;
 
+
 @ApplicationScoped
-public class PartService {
+public class CodeGeneratorService {
 
 	@Inject
 	private InforClient inforClient;
@@ -23,21 +22,21 @@ public class PartService {
 	private LoggingService logger;
 
 
-	public Optional<String> getNextAvailablePartCode(String prefixCode, InforContext context) {
+	public Optional<String> getNextAvailableCode(String prefixCode, InforContext context, String code, String grid) {
 
 		if (prefixCode == null || prefixCode.isEmpty()) {
 			return Optional.ofNullable(null);
 		}
-		GridRequest gridRequest = new GridRequest("SSPART", 1);
-		gridRequest.addFilter("partCode", prefixCode, "BEGINS");
-		gridRequest.sortBy("partCode", "DESC");
+		GridRequest gridRequest = new GridRequest(grid, 1);
+		gridRequest.addFilter(code, prefixCode, "BEGINS");
+		gridRequest.sortBy(code, "DESC");
 
 		try {
 			GridRequestResult grd =
 				inforClient.getGridsService().executeQuery(context,
 					gridRequest);
 			String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
-				"partCode");
+				code);
 			if (entry == null || entry.isEmpty()) {
 				return Optional.ofNullable(null);
 			}
@@ -45,7 +44,7 @@ public class PartService {
 			if (withoutPrefix.matches("\\d*")) {
 				Integer newCode = Integer.parseInt(withoutPrefix) + 1;
 				String newCodeString = prefixCode + String.format("%0" + withoutPrefix.length() + "d", newCode);
-				if (!isAssetPresent(newCodeString, context)) {
+				if (!isEquipmentPresent(newCodeString, context)) {
 					return Optional.ofNullable(newCodeString);
 				}
 			}
@@ -58,13 +57,22 @@ public class PartService {
 		return Optional.ofNullable(null);
 	}
 
-	private boolean isAssetPresent(String equipmentCode, InforContext context) throws Exception {
-		GridRequest gridRequestAsset = new GridRequest("OSOBJA", 1);
-		gridRequestAsset.addFilter("equipmentno", equipmentCode, "EQUALS");
-		GridRequestResult grdAsset = inforClient.getGridsService().executeQuery(context, gridRequestAsset);
-		String asset = inforClient.getTools().getGridTools().extractSingleResult(grdAsset,
+	private boolean isEquipmentPresent(String equipmentCode, InforContext context) throws Exception {
+		boolean asset = gridRequest(equipmentCode, context, "OSOBJA");
+		boolean position = gridRequest(equipmentCode, context, "OSOBJP");
+		boolean system = gridRequest(equipmentCode, context, "OSOBJS");
+		return asset || position || system;
+	}
+
+	private boolean gridRequest(String equipmentCode, InforContext context, String grid) throws Exception {
+		GridRequest gridRequest = new GridRequest(grid, 1);
+		gridRequest.addFilter("equipmentno", equipmentCode, "EQUALS");
+		GridRequestResult grd = inforClient.getGridsService().executeQuery(context, gridRequest);
+		String item = inforClient.getTools().getGridTools().extractSingleResult(grd,
 			"equipmentno");
-		return asset != null;
+
+		return item != null;
+
 	}
 
 }

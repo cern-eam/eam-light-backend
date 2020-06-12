@@ -1,8 +1,10 @@
 package ch.cern.cmms.eamlightweb.equipment;
 
+import ch.cern.cmms.eamlightweb.codegenerator.CodeGeneratorService;
 import java.util.Date;
 import java.util.List;
 
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -38,6 +40,8 @@ public class EquipmentRest extends EAMLightController {
     private AuthenticationTools authenticationTools;
 	@Inject
 	private MyWorkOrders myWorkOrders;
+    @Inject
+    private CodeGeneratorService codeGeneratorService;
 
 	@GET
 	@Path("/")
@@ -59,6 +63,18 @@ public class EquipmentRest extends EAMLightController {
 	public Response createEquipment(Equipment equipment) {
 		Equipment response = null;
 		try {
+            // Generate new numeric code if the requested code starts with @
+            if (equipment.getCode()!=null && equipment.getCode().startsWith("@")) {
+                String prefix = equipment.getCode().substring(1,equipment.getCode().length());
+                Optional<String> newCode = codeGeneratorService.getNextAvailableCode(prefix,
+                    authenticationTools.getInforContext(), "equipmentno", "OSOBJ"+equipment.getTypeCode());
+                if (newCode.isPresent()) {
+                    equipment.setCode(newCode.get());
+                } else {
+                    return badRequest(new Exception("Wrong code provided after '@'"));
+                }
+            }
+            // Create equipment
 			inforClient.getEquipmentFacadeService().createEquipment(authenticationTools.getInforContext(), equipment);
 			// Read again the equipment
 			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
