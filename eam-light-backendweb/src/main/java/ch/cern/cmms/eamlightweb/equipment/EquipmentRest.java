@@ -22,13 +22,12 @@ import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.InforException;
-
 import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @Path("/equipment")
 @ApplicationScoped
-@Interceptors({RESTLoggingInterceptor.class})
+@Interceptors({ RESTLoggingInterceptor.class })
 public class EquipmentRest extends EAMLightController {
 
 	@Inject
@@ -50,11 +49,10 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response readEquipment(@QueryParam("c") String equipment) {
 		try {
-			return ok(inforClient.getEquipmentFacadeService()
-				.readEquipment(authenticationTools.getInforContext(), equipment));
+			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -65,7 +63,7 @@ public class EquipmentRest extends EAMLightController {
 	public Response createEquipment(Equipment equipment) {
 		try {
 			// Generate new numeric code if the requested code starts with @
-			if (equipment.getCode() != null && codeGeneratorService.isCodePrefix(equipment.getCode())) {
+			if (equipment.getCode()!=null && codeGeneratorService.isCodePrefix(equipment.getCode())) {
 				String newCode = codeGeneratorService.getNextEquipmentCode(equipment.getCode(),
 					authenticationTools.getInforContext(), equipment.getTypeCode());
 				equipment.setCode(newCode);
@@ -73,11 +71,10 @@ public class EquipmentRest extends EAMLightController {
 			// Create equipment
 			inforClient.getEquipmentFacadeService().createEquipment(authenticationTools.getInforContext(), equipment);
 			// Read again the equipment
-			return ok(inforClient.getEquipmentFacadeService()
-				.readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
+			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -89,11 +86,10 @@ public class EquipmentRest extends EAMLightController {
 		try {
 			inforClient.getEquipmentFacadeService().updateEquipment(authenticationTools.getInforContext(), equipment);
 			// Read again the equipment
-			return ok(inforClient.getEquipmentFacadeService()
-				.readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
+			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -108,7 +104,7 @@ public class EquipmentRest extends EAMLightController {
 			return noConent();
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -119,11 +115,10 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response replaceEquipment(EquipmentReplacement eqpReplacement) {
 		try {
-			return ok(
-				equipmentReplacementService.replaceEquipment(authenticationTools.getInforContext(), eqpReplacement));
+			return ok(equipmentReplacementService.replaceEquipment(authenticationTools.getInforContext(), eqpReplacement));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -139,9 +134,9 @@ public class EquipmentRest extends EAMLightController {
 			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
 			gridRequest.sortBy("wocompleted", "DESC");
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(EquipmentHistory.class,
-				null,
-				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
-		} catch (Exception e) {
+					  null,
+					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -152,7 +147,7 @@ public class EquipmentRest extends EAMLightController {
 	public Response getEquipmentWorkOrders(@QueryParam("c") String equipmentCode) {
 		try {
 			return ok(myWorkOrders.getObjectWorkOrders(equipmentCode));
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -162,8 +157,8 @@ public class EquipmentRest extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response initEquipment(@PathParam("entity") String entity, @PathParam("eqpType") String eqpType,
-		@DefaultValue("") @QueryParam("newCode") String newCode,
-		@DefaultValue("") @QueryParam("classcode") String classCode) {
+								  @DefaultValue("") @QueryParam("newCode") String newCode,
+								  @DefaultValue("") @QueryParam("classcode") String classCode) {
 		try {
 			Equipment equipment = new Equipment();
 
@@ -195,13 +190,12 @@ public class EquipmentRest extends EAMLightController {
 			equipment.setUserDefinedFields(new UserDefinedFields());
 
 			String equipmentClass = isNotEmpty(classCode) ? classCode : "*";
-			equipment.setCustomFields(inforClient.getTools().getCustomFieldsTools()
-				.getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipmentClass));
+			equipment.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipmentClass));
 
 			return ok(equipment);
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -212,7 +206,7 @@ public class EquipmentRest extends EAMLightController {
 	public Response getEquipmentChildren(@PathParam("equipment") String equipment) {
 		try {
 			return ok(equipmentEJB.getEquipmentChildren(equipment));
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
@@ -221,23 +215,21 @@ public class EquipmentRest extends EAMLightController {
 	@Path("/partsassociated/{parentScreen}/{equipment}")
 	@Produces("application/json")
 	public Response getPartsAssociated(@PathParam("parentScreen") String parentScreen,
-		@PathParam("equipment") String equipment) {
+			@PathParam("equipment") String equipment) {
 		try {
 			GridRequest gridRequest = new GridRequest("402", "BSPARA", "414");
 
 			gridRequest.addParam("param.entity", "OBJ");
-			gridRequest.addParam("param.valuecode",
-				equipment + "#" + authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.addParam("param.valuecode", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode());
 
-			List<PartAssociated> parts = inforClient.getTools().getGridTools()
-				.convertGridResultToObject(PartAssociated.class,
-					null,
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
+			List<PartAssociated> parts = inforClient.getTools().getGridTools().convertGridResultToObject(PartAssociated.class,
+											null,
+											inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
 			return ok(parts);
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return serverError(e);
 		}
 	}

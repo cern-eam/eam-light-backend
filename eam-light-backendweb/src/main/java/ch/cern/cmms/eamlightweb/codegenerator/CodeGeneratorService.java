@@ -23,16 +23,15 @@ public class CodeGeneratorService {
 	private LoggingService logger;
 
 
-	public String getNextPartCode(String prefixCode, InforContext context) throws InforException {
+	public String getNextPartCode(String prefixCode, InforContext context) throws InforException{
 		return getNextAvailableCode(prefixCode, context, "SSPART", "partcode");
 	}
 
-	public String getNextEquipmentCode(String prefixCode, InforContext context, String type) throws InforException {
+	public String getNextEquipmentCode(String prefixCode, InforContext context, String type) throws InforException{
 		return getNextAvailableCode(prefixCode, context, "OSOBJ" + type, "equipmentno");
 	}
 
-	private String getNextAvailableCode(String prefixCode, InforContext context, String grid, String code)
-		throws InforException {
+	private String getNextAvailableCode(String prefixCode, InforContext context, String grid, String code) throws InforException {
 
 		String prefix = prefixCode.substring(1);
 
