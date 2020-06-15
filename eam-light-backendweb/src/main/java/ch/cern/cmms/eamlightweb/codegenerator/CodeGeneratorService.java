@@ -23,20 +23,18 @@ public class CodeGeneratorService {
 	private LoggingService logger;
 
 
-	public String getNextAvailableCode(String prefixCode, InforContext context, String className,
-		String type) throws InforException {
+	public String getNextPartCode(String prefixCode, InforContext context) throws InforException {
+		return getNextAvailableCode(prefixCode, context, "SSPART", "partcode");
+	}
+
+	public String getNextEquipmentCode(String prefixCode, InforContext context, String type) throws InforException {
+		return getNextAvailableCode(prefixCode, context, "OSOBJ" + type, "equipmentno");
+	}
+
+	private String getNextAvailableCode(String prefixCode, InforContext context, String grid, String code)
+		throws InforException {
 
 		String prefix = prefixCode.substring(1);
-		String grid = null;
-		String code = null;
-
-		if (className.equals("Part")) {
-			grid = "SSPART";
-			code = "partcode";
-		} else if (className.equals("Equipment")) {
-			grid = "OSOBJ" + type;
-			code = "equipmentno";
-		}
 
 		GridRequest gridRequest = new GridRequest(grid, 1);
 		gridRequest.addFilter(code, prefix, "BEGINS");
@@ -80,8 +78,8 @@ public class CodeGeneratorService {
 
 	}
 
-	public boolean isCodePrefix(String code, String prefixSymbol) {
-		return code.startsWith(prefixSymbol);
+	public boolean isCodePrefix(String code) {
+		return code.startsWith("@");
 	}
 
 }

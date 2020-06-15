@@ -22,7 +22,7 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @Path("/parts")
 @ApplicationScoped
-@Interceptors({ RESTLoggingInterceptor.class })
+@Interceptors({RESTLoggingInterceptor.class})
 public class PartController extends EAMLightController {
 
 	@Inject
@@ -44,9 +44,9 @@ public class PartController extends EAMLightController {
 			gridRequest.addParam("partcode", partCode);
 
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(PartStock.class,
-					null,
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
-		} catch(Exception e) {
+				null,
+				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -60,7 +60,7 @@ public class PartController extends EAMLightController {
 			return ok(inforClient.getPartService().readPart(authenticationTools.getInforContext(), number));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -71,10 +71,10 @@ public class PartController extends EAMLightController {
 	public Response createPart(Part part) {
 		try {
 			// Generate new numeric code if the requested code starts with @
-			if (part.getCode()!=null && codeGeneratorService.isCodePrefix(part.getCode(), "@")) {
-				String newCode = codeGeneratorService.getNextAvailableCode(part.getCode(),
-					authenticationTools.getInforContext(), part.getClass().getSimpleName(), null);
-					part.setCode(newCode);
+			if (part.getCode() != null && codeGeneratorService.isCodePrefix(part.getCode())) {
+				String newCode = codeGeneratorService.getNextPartCode(part.getCode(),
+					authenticationTools.getInforContext());
+				part.setCode(newCode);
 			}
 			// create part
 			inforClient.getPartService().createPart(authenticationTools.getInforContext(), part);
@@ -82,7 +82,7 @@ public class PartController extends EAMLightController {
 			return ok(inforClient.getPartService().readPart(authenticationTools.getInforContext(), part.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -97,7 +97,7 @@ public class PartController extends EAMLightController {
 			return ok(inforClient.getPartService().readPart(authenticationTools.getInforContext(), part.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -111,7 +111,7 @@ public class PartController extends EAMLightController {
 			return ok(inforClient.getPartService().deletePart(authenticationTools.getInforContext(), partCode));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -121,8 +121,8 @@ public class PartController extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response initPart(@PathParam("entity") String entity,
-							 @DefaultValue("") @QueryParam("newCode") String newCode,
-							 @DefaultValue("") @QueryParam("classcode") String classCode) {
+		@DefaultValue("") @QueryParam("newCode") String newCode,
+		@DefaultValue("") @QueryParam("classcode") String classCode) {
 		try {
 			Part part = inforClient.getPartService().readPartDefault(authenticationTools.getInforContext(), "");
 
@@ -134,12 +134,13 @@ public class PartController extends EAMLightController {
 
 			// Custom Fields
 			String partClass = isNotEmpty(classCode) ? classCode : "*";
-			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getR5InforContext(), "PART", partClass));
+			part.setCustomFields(inforClient.getTools().getCustomFieldsTools()
+				.getWSHubCustomFields(authenticationTools.getR5InforContext(), "PART", partClass));
 
 			return ok(part);
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
