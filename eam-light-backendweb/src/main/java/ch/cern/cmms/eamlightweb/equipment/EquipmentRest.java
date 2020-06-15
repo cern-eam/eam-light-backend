@@ -37,11 +37,11 @@ public class EquipmentRest extends EAMLightController {
 	@Inject
 	private EquipmentReplacementService equipmentReplacementService;
 	@Inject
-    private AuthenticationTools authenticationTools;
+	private AuthenticationTools authenticationTools;
 	@Inject
 	private MyWorkOrders myWorkOrders;
-    @Inject
-    private CodeGeneratorService codeGeneratorService;
+	@Inject
+	private CodeGeneratorService codeGeneratorService;
 
 	@GET
 	@Path("/")
@@ -61,20 +61,14 @@ public class EquipmentRest extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response createEquipment(Equipment equipment) {
-		Equipment response = null;
 		try {
-            // Generate new numeric code if the requested code starts with @
-            if (equipment.getCode()!=null && equipment.getCode().startsWith("@")) {
-                String prefix = equipment.getCode().substring(1,equipment.getCode().length());
-                Optional<String> newCode = codeGeneratorService.getNextAvailableCode(prefix,
-                    authenticationTools.getInforContext(), "equipmentno", "OSOBJ"+equipment.getTypeCode());
-                if (newCode.isPresent()) {
-                    equipment.setCode(newCode.get());
-                } else {
-                    return badRequest(new Exception("Wrong code provided after '@'"));
-                }
-            }
-            // Create equipment
+			// Generate new numeric code if the requested code starts with @
+			if (equipment.getCode()!=null && codeGeneratorService.isCodePrefix(equipment.getCode(), "@")) {
+				String newCode = codeGeneratorService.getNextAvailableCode(equipment.getCode(),
+					authenticationTools.getInforContext(), equipment.getClass().getSimpleName(), equipment.getTypeCode());
+				equipment.setCode(newCode);
+			}
+			// Create equipment
 			inforClient.getEquipmentFacadeService().createEquipment(authenticationTools.getInforContext(), equipment);
 			// Read again the equipment
 			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));

@@ -5,6 +5,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.tools.InforException;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,57 +23,65 @@ public class CodeGeneratorService {
 	private LoggingService logger;
 
 
-	public Optional<String> getNextAvailableCode(String prefixCode, InforContext context, String code, String grid) {
+	public String getNextAvailableCode(String prefixCode, InforContext context, String className,
+		String type) throws InforException {
 
-		if (prefixCode == null || prefixCode.isEmpty()) {
-			return Optional.ofNullable(null);
+		String prefix = prefixCode.substring(1);
+		String grid = null;
+		String code = null;
+
+		if (className.equals("Part")) {
+			grid = "SSPART";
+			code = "partcode";
+		} else if (className.equals("Equipment")) {
+			grid = "OSOBJ" + type;
+			code = "equipmentno";
 		}
+
 		GridRequest gridRequest = new GridRequest(grid, 1);
-		gridRequest.addFilter(code, prefixCode, "BEGINS");
+		gridRequest.addFilter(code, prefix, "BEGINS");
 		gridRequest.sortBy(code, "DESC");
 
-		try {
-			GridRequestResult grd =
-				inforClient.getGridsService().executeQuery(context,
-					gridRequest);
-			String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
-				code);
-			if (entry == null || entry.isEmpty()) {
-				return Optional.ofNullable(null);
-			}
-			String withoutPrefix = entry.substring(prefixCode.length());
+		GridRequestResult grd =
+			inforClient.getGridsService().executeQuery(context,
+				gridRequest);
+		String entry = inforClient.getTools().getGridTools().extractSingleResult(grd,
+			code);
+		if (entry != null) {
+			String withoutPrefix = entry.substring(prefix.length());
 			if (withoutPrefix.matches("\\d*")) {
 				Integer newCode = Integer.parseInt(withoutPrefix) + 1;
-				String newCodeString = prefixCode + String.format("%0" + withoutPrefix.length() + "d", newCode);
+				String newCodeString = prefix + String.format("%0" + withoutPrefix.length() + "d", newCode);
 				if (!isEquipmentPresent(newCodeString, context)) {
-					return Optional.ofNullable(newCodeString);
+					return newCodeString;
 				}
 			}
-		} catch (NoResultException exception) {
-			logger.log(Level.ERROR, exception.getMessage());
-		} catch (Exception exception) {
-			logger.log(Level.ERROR, exception.getMessage());
 		}
-
-		return Optional.ofNullable(null);
+		throw new InforException("Wrong code provided after '@'", null, null);
 	}
 
-	private boolean isEquipmentPresent(String equipmentCode, InforContext context) throws Exception {
-		boolean asset = gridRequest(equipmentCode, context, "OSOBJA");
-		boolean position = gridRequest(equipmentCode, context, "OSOBJP");
-		boolean system = gridRequest(equipmentCode, context, "OSOBJS");
-		return asset || position || system;
+	private boolean isEquipmentPresent(String itemCode, InforContext context) throws InforException {
+		boolean asset = checkForItem(itemCode, context, "OSOBJA", "equipmentno");
+		boolean position = checkForItem(itemCode, context, "OSOBJP", "equipmentno");
+		boolean system = checkForItem(itemCode, context, "OSOBJS", "equipmentno");
+		boolean part = checkForItem(itemCode, context, "SSPART", "partcode");
+		return asset || position || system || part;
 	}
 
-	private boolean gridRequest(String equipmentCode, InforContext context, String grid) throws Exception {
+	private boolean checkForItem(String itemCode, InforContext context, String grid, String code)
+		throws InforException {
 		GridRequest gridRequest = new GridRequest(grid, 1);
-		gridRequest.addFilter("equipmentno", equipmentCode, "EQUALS");
+		gridRequest.addFilter(code, itemCode, "EQUALS");
 		GridRequestResult grd = inforClient.getGridsService().executeQuery(context, gridRequest);
 		String item = inforClient.getTools().getGridTools().extractSingleResult(grd,
-			"equipmentno");
+			code);
 
 		return item != null;
 
+	}
+
+	public boolean isCodePrefix(String code, String prefixSymbol) {
+		return code.startsWith(prefixSymbol);
 	}
 
 }

@@ -69,19 +69,13 @@ public class PartController extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response createPart(Part part) {
-		Part response = null;
 		try {
 			// Generate new numeric code if the requested code starts with @
-			if (part.getCode()!=null && part.getCode().startsWith("@")) {
-				String prefix = part.getCode().substring(1,part.getCode().length());
-				Optional<String> newCode = codeGeneratorService.getNextAvailableCode(prefix,
-					authenticationTools.getInforContext(), "partCode", "SSPART");
-				if (newCode.isPresent()) {
-					part.setCode(newCode.get());
-				} else {
-					return badRequest(new Exception("Wrong code provided after '@'"));
-				}
-			}			
+			if (part.getCode()!=null && codeGeneratorService.isCodePrefix(part.getCode(), "@")) {
+				String newCode = codeGeneratorService.getNextAvailableCode(part.getCode(),
+					authenticationTools.getInforContext(), part.getClass().getSimpleName(), null);
+					part.setCode(newCode);
+			}
 			// create part
 			inforClient.getPartService().createPart(authenticationTools.getInforContext(), part);
 			// Read again the part
