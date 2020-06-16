@@ -47,7 +47,7 @@ public class CodeGeneratorService {
 			}
 
 		}
-		throw new InforException("Wrong code provided after '@'", null, null);
+		throw inforClient.getTools().generateFault("Wrong code provided after '@'");
 	}
 
 	public boolean isCodePrefix(String code) {
