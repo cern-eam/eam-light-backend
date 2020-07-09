@@ -1,5 +1,6 @@
 package ch.cern.cmms.eamlightweb.parts;
 
+import ch.cern.cmms.eamlightweb.codegenerator.CodeGeneratorService;
 import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,7 +30,7 @@ public class PartController extends EAMLightController {
 	@Inject
 	private AuthenticationTools authenticationTools;
 	@Inject
-	private PartService partService;
+	private CodeGeneratorService codeGeneratorService;
 
 	@GET
 	@Path("/partstock/{part}")
@@ -68,19 +69,13 @@ public class PartController extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response createPart(Part part) {
-		Part response = null;
 		try {
 			// Generate new numeric code if the requested code starts with @
-			if (part.getCode()!=null && part.getCode().startsWith("@")) {
-				String prefix = part.getCode().substring(1,part.getCode().length());
-				Optional<String> newCode = partService.getNextAvailablePartCode(prefix,
+			if (part.getCode()!=null && codeGeneratorService.isCodePrefix(part.getCode())) {
+				String newCode = codeGeneratorService.getNextPartCode(part.getCode(),
 					authenticationTools.getInforContext());
-				if (newCode.isPresent()) {
-					part.setCode(newCode.get());
-				} else {
-					return badRequest(new Exception("Wrong code provided after '@'"));
-				}
-			}			
+					part.setCode(newCode);
+			}
 			// create part
 			inforClient.getPartService().createPart(authenticationTools.getInforContext(), part);
 			// Read again the part
