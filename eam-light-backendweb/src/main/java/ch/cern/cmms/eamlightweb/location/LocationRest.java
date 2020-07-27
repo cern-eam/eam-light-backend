@@ -32,7 +32,7 @@ public class LocationRest extends EAMLightController {
     private InforClient inforClient;
 
     @GET
-    @Path("/{locationCode}")
+    @Path("/{locationCode : .+}")
     @Produces("application/json")
     public Response readLocation(@PathParam("locationCode") String locationCode) {
         try {
@@ -62,7 +62,7 @@ public class LocationRest extends EAMLightController {
     }
 
     @PUT
-    @Path("/{locationCode}")
+    @Path("/{locationCode : .+}")
     @Consumes("application/json")
     @Produces("application/json")
     public Response updateLocation(@PathParam("locationCode") String locationCode, Location location) {
@@ -78,7 +78,7 @@ public class LocationRest extends EAMLightController {
     }
 
     @DELETE
-    @Path("/{locationCode}")
+    @Path("/{locationCode : .+}")
     @Produces("application/json")
     public Response deleteLocation(@PathParam("locationCode") String locationCode) {
         try {
