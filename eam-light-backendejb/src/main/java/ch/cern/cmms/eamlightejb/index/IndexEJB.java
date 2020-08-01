@@ -111,6 +111,8 @@ public class IndexEJB {
 
         sj.add("\'S\'");
 
+        sj.add("\'L\'");
+
         obj_obtypeIN.append(sj.toString());
 
         StringJoiner sjQuery = new StringJoiner(" union ");
