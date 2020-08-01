@@ -87,6 +87,7 @@ public class IndexGrids {
         runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "84", "OSOBJA", "85", "A")));
         runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "113", "OSOBJP", "111", "P")));
         runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "88", "OSOBJS", "89", "S")));
+        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "118", "OSOBJL", "117", "L")));
         runnables.add(() -> result.addAll(searchParts(inforContext, keyword, "BEGINS")));
 
         inforClient.getTools().processRunnables(runnables);
@@ -101,6 +102,7 @@ public class IndexGrids {
         runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "84", "OSOBJA", "85", "A")));
         runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "113", "OSOBJP", "111", "P")));
         runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "88", "OSOBJS", "89", "S")));
+        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "118", "OSOBJL", "117", "L")));
         runnables.add(() -> result.addAll(searchParts(inforContext, keyword, "EQUALS")));
 
         inforClient.getTools().processRunnables(runnables);
