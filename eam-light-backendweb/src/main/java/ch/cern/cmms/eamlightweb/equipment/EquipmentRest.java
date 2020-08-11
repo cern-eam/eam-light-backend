@@ -1,8 +1,10 @@
 package ch.cern.cmms.eamlightweb.equipment;
 
+import ch.cern.cmms.eamlightweb.codegenerator.CodeGeneratorService;
 import java.util.Date;
 import java.util.List;
 
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -35,9 +37,11 @@ public class EquipmentRest extends EAMLightController {
 	@Inject
 	private EquipmentReplacementService equipmentReplacementService;
 	@Inject
-    private AuthenticationTools authenticationTools;
+	private AuthenticationTools authenticationTools;
 	@Inject
 	private MyWorkOrders myWorkOrders;
+	@Inject
+	private CodeGeneratorService codeGeneratorService;
 
 	@GET
 	@Path("/")
@@ -57,8 +61,14 @@ public class EquipmentRest extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response createEquipment(Equipment equipment) {
-		Equipment response = null;
 		try {
+			// Generate new numeric code if the requested code starts with @
+			if (equipment.getCode()!=null && codeGeneratorService.isCodePrefix(equipment.getCode())) {
+				String newCode = codeGeneratorService.getNextEquipmentCode(equipment.getCode(),
+					authenticationTools.getInforContext(), equipment.getTypeCode());
+				equipment.setCode(newCode);
+			}
+			// Create equipment
 			inforClient.getEquipmentFacadeService().createEquipment(authenticationTools.getInforContext(), equipment);
 			// Read again the equipment
 			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
