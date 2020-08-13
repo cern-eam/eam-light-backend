@@ -8,6 +8,39 @@
 	<artifactId>eam-light-backendear</artifactId>
 	<packaging>ear</packaging>
 
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<project.contextRoot>/apis</project.contextRoot>
+			</properties>
+		</profile>
+		<profile>
+			<id>CERN</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<property>
+					<name>profile</name>
+					<value>CERN</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eamtools</artifactId>
+					<version>${ch.cern.cmms.eamtools.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+			<properties>
+				<project.contextRoot>/SSO/eamlightws</project.contextRoot>
+			</properties>
+		</profile>
+	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>ch.cern.cmms</groupId>
@@ -20,12 +53,6 @@
 			<artifactId>eam-light-backendweb</artifactId>
 			<version>${project.version}</version>
 			<type>war</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.cern.cmms</groupId>
-			<artifactId>eamtools</artifactId>
-			<version>${ch.cern.cmms.eamtools.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -59,7 +86,7 @@
 						<webModule>
 							<groupId>ch.cern.cmms</groupId>
 							<artifactId>eam-light-backendweb</artifactId>
-							<contextRoot>/SSO/eamlightws</contextRoot>
+							<contextRoot>${project.contextRoot}</contextRoot>
 						</webModule>
 					</modules>
 					<archive>
