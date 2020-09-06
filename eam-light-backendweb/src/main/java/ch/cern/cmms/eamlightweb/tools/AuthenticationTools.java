@@ -20,6 +20,8 @@ public class AuthenticationTools {
     private InforClient inforClient;
     @Inject
     private ApplicationData applicationData;
+    @Inject
+    private OpenIdTools openIdTools;
 
     public InforContext getInforContext() throws InforException
     {
@@ -40,6 +42,12 @@ public class AuthenticationTools {
             organization = applicationData.getDefaultOrganization();
         } else if ("SSO".equalsIgnoreCase(authenticationMode)) {
             user = request.getHeader("ADFS_LOGIN").toUpperCase();
+            password = applicationData.getAdminPassword();
+            tenant = applicationData.getTenant();
+            organization = applicationData.getDefaultOrganization();
+        } else if ("OPENID".equalsIgnoreCase(authenticationMode)) {
+            String header =  request.getHeader("Authorization");
+            user = openIdTools.getUserName(header);
             password = applicationData.getAdminPassword();
             tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
