@@ -51,8 +51,8 @@ public class AutocompleteEquipmentCategory extends EAMLightController {
 			String[] fields = new String[] {"category", "categorydesc", "categoryclass",
 					"categoryclassdesc", "manufacturer"};
 
-			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(Arrays.asList(fields),
-					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
+			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(inforClient.getGridsService()
+					.executeQuery(authenticationTools.getInforContext(), gridRequest), Arrays.asList(fields)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

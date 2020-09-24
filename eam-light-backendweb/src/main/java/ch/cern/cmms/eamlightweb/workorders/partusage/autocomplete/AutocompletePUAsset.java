@@ -65,8 +65,8 @@ public class AutocompletePUAsset extends EAMLightController {
 			}
 
 			String[] fields = {"equipmentno", "equipmentdesc", "part", "bin", "lot"};
-			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(Arrays.asList(fields),
-					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
+			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(inforClient.getGridsService()
+					.executeQuery(authenticationTools.getInforContext(), gridRequest), Arrays.asList(fields)));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
