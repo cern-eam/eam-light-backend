@@ -82,7 +82,7 @@ public class ScreenLayoutService {
 
         // Fetch boiler texts for given screen
         GridRequest gridRequestLabels = new GridRequest( "ASOBOT");
-        gridRequestLabels.setRowCount(3000);
+        gridRequestLabels.setRowCount(10000);
         gridRequestLabels.setUseNative(false);
         gridRequestLabels.addFilter("bot_function", userFunction, "EQUALS");
         Map<String, String> labels = convertGridResultToMap("bot_fld1", "bot_text", inforClient.getGridsService().executeQuery(context, gridRequestLabels));
