@@ -54,12 +54,12 @@ public class ChecklistController extends EAMLightController {
 	@Path("/esign")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response eSignWorkOrderActivityChecklist(WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature){
+	public Response eSignWorkOrderActivityChecklist(WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature) {
 		try {
 			return ok(inforClient.getChecklistService().eSignWorkOrderActivityChecklist(authenticationTools.getInforContext(), workOrderActivityCheckListSignature));
-		} catch (InforException e){
+		} catch (InforException e) {
 			return badRequest(e);
-		} catch (Exception e){
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
