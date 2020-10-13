@@ -30,7 +30,7 @@ public class ActivitiesRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response readActivities(@QueryParam("workorder") String number, @DefaultValue("true") @QueryParam("includeChecklists") Boolean includeChecklists) {
 		try {
-			return ok(inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), number, includeChecklists));
+			return ok(inforClient.getLaborBookingService().readActivities(authenticationTools.getR5InforContext(), number, includeChecklists));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
