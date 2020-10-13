@@ -18,6 +18,7 @@
         <class>ch.cern.eam.wshub.core.services.equipment.entities.Equipment</class>
         <class>ch.cern.eam.wshub.core.services.documents.entities.InforDocEntity</class>
         <class>ch.cern.eam.wshub.core.services.documents.entities.InforDocument</class>
+        <class>ch.cern.eamtools.core.interceptors.EquipmentInfo</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jboss.entity.manager.factory.jndi.name" value="java:jboss/eamLightEntityManagerFactory" />
