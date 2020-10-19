@@ -66,7 +66,6 @@ public class ScreenLayoutService {
         gridRequestLayout.addFilter("pld_pagename", systemFunction, "=", GridRequestFilter.JOINER.AND);
         List<ElementInfo> elements = inforClient.getTools().getGridTools().convertGridResultToObject(ElementInfo.class, null, inforClient.getGridsService().executeQuery(context, gridRequestLayout));
         Map<String, UserDefinedFieldDescription> udfDetails = getUdfDetails(context, entity);
-//        System.out.println(udfDetails);
         elements.stream()
                 .map(element -> bindUdfDescription(udfDetails.getOrDefault(element.getElementId(), null), element))
                 .filter(element -> element.getXpath() != null)
