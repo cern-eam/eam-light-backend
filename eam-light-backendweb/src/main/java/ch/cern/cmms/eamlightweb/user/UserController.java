@@ -48,7 +48,7 @@ public class UserController extends EAMLightController {
 									 @QueryParam("lang") String language,
 									 @QueryParam("tabname") List<String> tabs) throws InforException {
 		try {
-			return ok(screenLayoutService.getScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup));
+			return ok(screenLayoutService.getScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity));
 		} catch(Exception e) {
 			e.printStackTrace();
 			return serverError(e);

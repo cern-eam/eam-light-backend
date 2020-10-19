@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.base.CustomFieldsController;
+import ch.cern.cmms.eamlightweb.base.UserDefinedFieldsController;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
@@ -69,6 +70,7 @@ public class ApplicationController extends EAMLightController {
 		ChecklistServiceImpl.findingsCache.clear();
 		UserService.userCache.clear();
 		ApplicationService.paramFieldCache.clear();
+		UserDefinedFieldsController.rentityAutocompleteCache.clear();
 		return ok("EAM Light cache has been successfully refreshed.");
 	}
 
