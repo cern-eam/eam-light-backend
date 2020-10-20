@@ -117,10 +117,9 @@ public class UserDefinedFieldsController extends EAMLightController {
 		GridRequest gridRequest = new GridRequest("BSUDLV_HDR");
 		gridRequest.getParams().put("param.fieldid", field);
 		gridRequest.getParams().put("param.rentity", rentity);
-		GridRequestResult req = inforClient.getGridsService().executeQuery(
-				authenticationTools.getInforContext(), gridRequest);
-		List<CodeDescItem> response = inforClient.getTools().getGridTools()
-				.convertGridResultToObject(CodeDescItem.class, null, req);
+		List<CodeDescItem> response = inforClient.getTools().getGridTools().convertGridResultToObject(
+				CodeDescItem.class, null,
+				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
 		return response;
 	}
 
@@ -128,10 +127,9 @@ public class UserDefinedFieldsController extends EAMLightController {
 		GridRequest gridRequest = new GridRequest("LVUDFC");
 		gridRequest.getParams().put("param.field", field);
 		gridRequest.getParams().put("param.rentity", rentity);
-		GridRequestResult req = inforClient.getGridsService().executeQuery(
-				authenticationTools.getInforContext(), gridRequest);
-		List<RentityItem> response = inforClient.getTools().getGridTools()
-				.convertGridResultToObject(RentityItem.class, null, req);
+		List<RentityItem> response = inforClient.getTools().getGridTools().convertGridResultToObject(
+				RentityItem.class, null,
+				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
 		return response;
 	}
 }
