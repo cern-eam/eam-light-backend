@@ -15,7 +15,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<project.contextRoot>/apis</project.contextRoot>
+				<project.contextRoot>/</project.contextRoot>
 			</properties>
 		</profile>
 		<profile>
