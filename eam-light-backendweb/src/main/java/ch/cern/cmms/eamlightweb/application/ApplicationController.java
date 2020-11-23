@@ -22,6 +22,9 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
 import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
+import ch.cern.eam.wshub.core.tools.GridTools;
+
+import java.util.Map;
 
 @Path("/application")
 @ApplicationScoped
@@ -43,8 +46,10 @@ public class ApplicationController extends EAMLightController {
 		try {
 			GridRequest gridRequest = new GridRequest("BSINST");
 			gridRequest.addFilter("installcode", "EL_", "BEGINS");
-			return ok(inforClient.getTools().getGridTools().convertGridResultToMap("installcode", "value",
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
+			Map<String, String> paramsMap = GridTools.convertGridResultToMap("installcode", "value",
+					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
+			paramsMap.put("EAMLIGHT_SERVICE_ACCOUNT", applicationData.getServiceAccount());
+			return ok(paramsMap);
 		} catch(Exception e) {
 			return serverError(e);
 		}

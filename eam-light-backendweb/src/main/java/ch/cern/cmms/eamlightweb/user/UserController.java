@@ -3,6 +3,8 @@ package ch.cern.cmms.eamlightweb.user;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -51,6 +53,18 @@ public class UserController extends EAMLightController {
 			return ok(screenLayoutService.getScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup));
 		} catch(Exception e) {
 			e.printStackTrace();
+			return serverError(e);
+		}
+	}
+
+	@GET
+	@Path("/employee/{employeeCode}")
+	@Produces("application/json")
+	public Response readUserFromEmployeeCode(@PathParam("employeeCode") String employeeCode) {
+		try {
+			Employee employee = userService.getEmployee(authenticationTools.getInforContext(), employeeCode);
+			return ok(userService.readUserSetup(authenticationTools.getInforContext(), employee.getUserCode()));
+		} catch (InforException e) {
 			return serverError(e);
 		}
 	}

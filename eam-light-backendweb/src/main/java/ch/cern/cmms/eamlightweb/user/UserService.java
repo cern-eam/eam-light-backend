@@ -2,15 +2,18 @@ package ch.cern.cmms.eamlightweb.user;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
+import ch.cern.cmms.eamlightejb.equipment.EquipmentTreeNode;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
 import ch.cern.cmms.eamlightweb.user.entities.UserData;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.InforException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -105,4 +108,7 @@ public class UserService {
         return userCache.get(userCode);
     }
 
+    public Employee getEmployee(InforContext inforContext, String employeeCode) throws InforException {
+        return inforClient.getEmployeeService().readEmployee(inforContext, employeeCode);
+    }
 }

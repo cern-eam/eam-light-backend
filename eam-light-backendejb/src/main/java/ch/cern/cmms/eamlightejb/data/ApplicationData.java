@@ -13,6 +13,7 @@ import java.util.jar.Manifest;
 public class ApplicationData {
 
     public static final Integer AUTOCOMPLETE_RESULT_SIZE = 10;
+
     //
     // BASIC SETTINGS
     //
@@ -33,8 +34,9 @@ public class ApplicationData {
 
     public String getAdminUser() { return Tools.getVariableValue("EAMLIGHT_ADMIN_USER"); }
 
+    public String getServiceAccount() { return Tools.getVariableValue("EAMLIGHT_SERVICE_ACCOUNT"); }
+
     public String getVersion() {
         return getClass().getPackage().getImplementationVersion();
     }
-
 }

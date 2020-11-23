@@ -10,6 +10,7 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 
 @RequestScoped
 public class AuthenticationTools {
@@ -37,17 +38,18 @@ public class AuthenticationTools {
             if (user == null) {
                 user = System.getProperty("DEFAULT_USER").toUpperCase();
             }
+            user = getUnderlyingUser(authenticationMode, user);
             password = applicationData.getAdminPassword();
             tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
         } else if ("SSO".equalsIgnoreCase(authenticationMode)) {
-            user = request.getHeader("ADFS_LOGIN").toUpperCase();
+            user = getUnderlyingUser(authenticationMode, request.getHeader("ADFS_LOGIN").toUpperCase());
             password = applicationData.getAdminPassword();
             tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
         } else if ("OPENID".equalsIgnoreCase(authenticationMode)) {
             String header =  request.getHeader("Authorization");
-            user = openIdTools.getUserName(header);
+            user = getUnderlyingUser(authenticationMode, openIdTools.getUserName(header));
             password = applicationData.getAdminPassword();
             tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
@@ -86,6 +88,13 @@ public class AuthenticationTools {
         }
 
         return inforContext;
+    }
+
+    public String getUnderlyingUser(String authenticationMode, String authenticatedUser) {
+        boolean allowImpersonation = Arrays.asList("SSO", "LOCAL", "OPENID").contains(authenticationMode)
+                && applicationData.getServiceAccount().equals(authenticatedUser)
+                && isNotEmpty(request.getHeader("INFOR_USER"));
+        return allowImpersonation ? request.getHeader("INFOR_USER") : authenticatedUser;
     }
 
     public InforContext getR5InforContext() throws InforException {
