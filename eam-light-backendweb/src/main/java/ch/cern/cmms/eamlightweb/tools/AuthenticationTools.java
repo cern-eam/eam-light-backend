@@ -92,6 +92,7 @@ public class AuthenticationTools {
 
     public String getUnderlyingUser(String authenticationMode, String authenticatedUser) {
         boolean allowImpersonation = Arrays.asList("SSO", "LOCAL", "OPENID").contains(authenticationMode)
+                && isNotEmpty(applicationData.getServiceAccount())
                 && applicationData.getServiceAccount().equals(authenticatedUser)
                 && isNotEmpty(request.getHeader("INFOR_USER"));
         return allowImpersonation ? request.getHeader("INFOR_USER") : authenticatedUser;
