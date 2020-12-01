@@ -34,6 +34,12 @@
 					<version>${ch.cern.cmms.eamtools.version}</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>ldaptools</artifactId>
+					<version>${ch.cern.cmms.ldaptools.version}</version>
+					<scope>compile</scope>
+				</dependency>
 			</dependencies>
 			<properties>
 				<project.contextRoot>/SSO/eamlightws</project.contextRoot>

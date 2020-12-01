@@ -18,13 +18,16 @@ import ch.cern.cmms.eamlightweb.user.ScreenLayoutService;
 import ch.cern.cmms.eamlightweb.user.ScreenService;
 import ch.cern.cmms.eamlightweb.user.UserService;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.grids.entities.GridField;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
 import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
 import ch.cern.eam.wshub.core.tools.GridTools;
 
+import java.math.BigInteger;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Path("/application")
 @ApplicationScoped
@@ -37,6 +40,8 @@ public class ApplicationController extends EAMLightController {
 	private InforClient inforClient;
 	@Inject
 	private ApplicationData applicationData;
+	@Inject
+	private ApplicationService applicationService;
 
 	@GET
 	@Path("/applicationdata")
@@ -44,12 +49,7 @@ public class ApplicationController extends EAMLightController {
 	@Consumes("application/json")
 	public Response readApplicationData() {
 		try {
-			GridRequest gridRequest = new GridRequest("BSINST");
-			gridRequest.addFilter("installcode", "EL_", "BEGINS");
-			Map<String, String> paramsMap = GridTools.convertGridResultToMap("installcode", "value",
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
-			paramsMap.put("EAMLIGHT_SERVICE_ACCOUNT", applicationData.getServiceAccount());
-			return ok(paramsMap);
+			return ok(applicationService.getParams());
 		} catch(Exception e) {
 			return serverError(e);
 		}
@@ -68,6 +68,7 @@ public class ApplicationController extends EAMLightController {
 		CustomFieldsController.customFieldsLookupValuesCache.clear();
 		ChecklistServiceImpl.findingsCache.clear();
 		UserService.userCache.clear();
+		ApplicationService.paramFieldCache.clear();
 		return ok("EAM Light cache has been successfully refreshed.");
 	}
 

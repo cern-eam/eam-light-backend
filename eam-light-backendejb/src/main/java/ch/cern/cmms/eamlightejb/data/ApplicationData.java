@@ -1,13 +1,9 @@
 package ch.cern.cmms.eamlightejb.data;
 
 import ch.cern.cmms.eamlightejb.tools.Tools;
+
 import javax.enterprise.context.ApplicationScoped;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Enumeration;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
+import java.util.Objects;
 
 @ApplicationScoped
 public class ApplicationData {
@@ -34,7 +30,9 @@ public class ApplicationData {
 
     public String getAdminUser() { return Tools.getVariableValue("EAMLIGHT_ADMIN_USER"); }
 
-    public String getServiceAccount() { return Tools.getVariableValue("EAMLIGHT_SERVICE_ACCOUNT"); }
+    public String getLDAPServer() { return Tools.getVariableValue("EAMLIGHT_LDAP_SERVER"); }
+
+    public int getLDAPPort() { return Integer.parseInt(Objects.requireNonNull(Tools.getVariableValue("EAMLIGHT_LDAP_PORT"))); }
 
     public String getVersion() {
         return getClass().getPackage().getImplementationVersion();

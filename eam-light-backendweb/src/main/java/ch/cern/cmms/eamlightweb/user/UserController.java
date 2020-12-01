@@ -4,11 +4,9 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
-import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
@@ -58,12 +56,12 @@ public class UserController extends EAMLightController {
 	}
 
 	@GET
-	@Path("/employee/{employeeCode}")
+	@Path("/impersonate")
 	@Produces("application/json")
-	public Response readUserFromEmployeeCode(@PathParam("employeeCode") String employeeCode) {
+	public Response readUserToImpersonate(@QueryParam("userId") String userId) {
 		try {
-			Employee employee = userService.getEmployee(authenticationTools.getInforContext(), employeeCode);
-			return ok(userService.readUserSetup(authenticationTools.getInforContext(), employee.getUserCode()));
+			EAMUser userToImpersonate = authenticationTools.getUserToImpersonate(userId);
+			return ok(userToImpersonate);
 		} catch (InforException e) {
 			return serverError(e);
 		}
