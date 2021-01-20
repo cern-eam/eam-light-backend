@@ -153,6 +153,17 @@ public class EquipmentRest extends EAMLightController {
 	}
 
 	@GET
+	@Path("/events")
+	@Produces("application/json")
+	public Response getEquipmentEvents(@QueryParam("c") String equipmentCode) {
+		try {
+			return ok(myWorkOrders.getObjectEvents(equipmentCode, authenticationTools.getOrganizationCode()));
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
+	@GET
 	@Path("/init/{entity}/{eqpType}")
 	@Produces("application/json")
 	@Consumes("application/json")
