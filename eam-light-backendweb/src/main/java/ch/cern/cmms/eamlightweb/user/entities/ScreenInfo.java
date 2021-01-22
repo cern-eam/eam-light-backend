@@ -6,6 +6,7 @@ public class ScreenInfo {
 
 	@GridField(name="functionname")
 	private String screenCode;
+	private String startupAction;
 	private String parentScreen;
 	@GridField(name="screenname")
 	private String screenDesc;
@@ -77,6 +78,14 @@ public class ScreenInfo {
 
 	public String getTab() { return tab; }
 	public void setTab(String tab) { this.tab = tab; }
+
+	public String getStartupAction() {
+		return startupAction;
+	}
+
+	public void setStartupAction(String startupAction) {
+		this.startupAction = startupAction;
+	}
 
 	@Override
 	public String toString() {
