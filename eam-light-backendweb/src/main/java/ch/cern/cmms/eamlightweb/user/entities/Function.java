@@ -42,9 +42,11 @@ public class Function {
     @GridField(name="screenreport")
     String screenReport;
     @GridField(name="startupmode_display")
-    String startUpModeDisplay;
+    String startUpModeDisplayDescription;
     @GridField(name="startupview_display")
     String startUpViewDisplay;
+
+    String startUpModeDisplayCode;
 
     public Boolean getUserDefinedScreen() {
         return isUserDefinedScreen;
@@ -198,12 +200,20 @@ public class Function {
         this.screenReport = screenReport;
     }
 
-    public String getStartUpModeDisplay() {
-        return startUpModeDisplay;
+    public String getStartUpModeDisplayDescription() {
+        return startUpModeDisplayDescription;
     }
 
-    public void setStartUpModeDisplay(String startUpModeDisplay) {
-        this.startUpModeDisplay = startUpModeDisplay;
+    public void setStartUpModeDisplayDescription(String startUpModeDisplayDescription) {
+        this.startUpModeDisplayDescription = startUpModeDisplayDescription;
+    }
+
+    public String getStartUpModeDisplayCode() {
+        return startUpModeDisplayCode;
+    }
+
+    public void setStartUpModeDisplayCode(String startUpModeDisplayCode) {
+        this.startUpModeDisplayCode = startUpModeDisplayCode;
     }
 
     public String getStartUpViewDisplay() {

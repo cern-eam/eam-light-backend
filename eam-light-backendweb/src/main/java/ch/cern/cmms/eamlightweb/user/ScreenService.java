@@ -59,7 +59,7 @@ public class ScreenService {
         // Populate the parent screen for fetched screens
         screens.values().stream().forEach(screen -> {
             screen.setParentScreen(functions.get(screen.getScreenCode()).getParentScreenCode());
-            screen.setStartupAction(functions.get(screen.getScreenCode()).getStartUpModeDisplay());
+            screen.setStartupAction(functions.get(screen.getScreenCode()).getStartUpModeDisplayCode());
         });
 
         screenCache.put(userGroup, screens);
@@ -76,8 +76,17 @@ public class ScreenService {
                 null,
                 inforClient.getGridsService().executeQuery(context, gridRequestLayout));
 
+        GridRequest startUpActionTypesGridRequest = new GridRequest("BSUCOD_HDR", 300);
+        startUpActionTypesGridRequest.addParam("param.entitycode", "FAQU");
+
+        Map<String, String> startUpActionDescriptionToCode = inforClient.getTools().getGridTools().convertGridResultToMap(
+                "usercodedescription",
+                "systemcode",
+                inforClient.getGridsService().executeQuery(context, startUpActionTypesGridRequest));
+
         screens.forEach(screen -> functions.computeIfPresent(screen, (key, value) -> {
             value.setParentScreenCode(key);
+            value.setStartUpModeDisplayCode(startUpActionDescriptionToCode.get(value.getStartUpModeDisplayDescription()));
             return value;
         }));
 
