@@ -35,4 +35,18 @@ public class AutocompleteWOCostCode extends EAMLightController {
 
 		return getPairListResponse(gridRequest, "costcode", "des_text");
 	}
+
+	@GET
+	@Path("/equipment/costcode/{code}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response completeEquipmentCostCode(@PathParam("code") String code) {
+		GridRequest gridRequest = new GridRequest("LVOBJCOST", GridRequest.GRIDTYPE.LOV);
+		gridRequest.addParam("control.org", authenticationTools.getOrganizationCode());
+		gridRequest.addParam("userfunction", "OSOBJA");
+		gridRequest.setRowCount(10);
+		gridRequest.getGridRequestFilters().add(new GridRequestFilter("costcode", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
+		gridRequest.getGridRequestFilters().add(new GridRequestFilter("costcodedescription", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR ));
+		return getPairListResponse(gridRequest, "costcode", "costcodedescription");
+	}
 }

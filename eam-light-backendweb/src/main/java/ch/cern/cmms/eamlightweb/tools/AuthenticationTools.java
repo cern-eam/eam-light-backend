@@ -18,7 +18,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +26,10 @@ import java.util.Set;
 
 @RequestScoped
 public class AuthenticationTools {
+    public enum Mode {
+        ALL,
+        PERSON
+    }
 
     @Inject
     private HttpServletRequest request;
@@ -134,7 +137,7 @@ public class AuthenticationTools {
         }
     }
 
-    public String getEmployee(String code) throws InforException {
+    public String getEmployee(String code, Mode mode) throws InforException {
         GridRequest gridRequest = new GridRequest("42", "LVPERS", "42");
         gridRequest.setGridType(GridRequest.GRIDTYPE.LOV);
         gridRequest.setRowCount(10);
@@ -144,7 +147,9 @@ public class AuthenticationTools {
         gridRequest.addParam("parameter.noemployees", null);
         gridRequest.addParam("param.shift", null);
 
-        gridRequest.addFilter("personcode", code, "EQUALS", GridRequestFilter.JOINER.OR);
+        if (mode == Mode.ALL) {
+            gridRequest.addFilter("personcode", code, "EQUALS", GridRequestFilter.JOINER.OR);
+        }
         gridRequest.addFilter("udfnum02", code, "EQUALS");
 
         GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(getInforContext(), gridRequest);
@@ -177,12 +182,15 @@ public class AuthenticationTools {
         }
     }
 
-    public EAMUser getUserToImpersonate(String userId) throws InforException {
+    public EAMUser getUserToImpersonate(String userId, Mode mode) throws InforException {
         String code = userId;
-        if (userId != null && userId.matches("^[0-9]*$")) {
-            code = getEmployee(userId);
+        boolean isNumber = userId != null && userId.matches("^[0-9]*$");
+        if (isNumber) {
+            code = getEmployee(userId, mode);
             Employee employee = userService.getEmployee(getInforContext(), code);
             code = employee.getUserCode();
+        } else if (mode == Mode.PERSON) {
+            throw new InforException("You must use Person ID for this feature.", null, null);
         }
         if (DataTypeTools.isEmpty(code)) {
             throw new InforException("Employee " + userId + " does not have associated a user account.", null, null);
