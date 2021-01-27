@@ -58,9 +58,9 @@ public class UserController extends EAMLightController {
 	@GET
 	@Path("/impersonate")
 	@Produces("application/json")
-	public Response readUserToImpersonate(@QueryParam("userId") String userId) {
+	public Response readUserToImpersonate(@QueryParam("userId") String userId, @QueryParam("mode") AuthenticationTools.Mode mode) {
 		try {
-			EAMUser userToImpersonate = authenticationTools.getUserToImpersonate(userId);
+			EAMUser userToImpersonate = authenticationTools.getUserToImpersonate(userId, mode);
 			return ok(userToImpersonate);
 		} catch (InforException e) {
 			return serverError(e);

@@ -8,10 +8,14 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightejb.index.IndexEJB;
+import ch.cern.cmms.eamlightejb.index.IndexResult;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Controller to handle the events related with the home screen of the
@@ -36,17 +40,23 @@ public class SearchController extends EAMLightController {
 	@Path("/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response getSearchResults(@QueryParam("s") String searchKeyWord) {
+	public Response getSearchResults(@QueryParam("s") String searchKeyWord, @QueryParam("entityTypes") String entityTypes) {
 		if (searchKeyWord != null) {
 			searchKeyWord = searchKeyWord.trim();
 		}
 
+		List<IndexResult> indexResults;
 		try {
 			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
-				return ok(indexEJB.getIndexResults(searchKeyWord, authenticationTools.getInforContext().getCredentials().getUsername()));
+				indexResults = (entityTypes == null || entityTypes.trim().length() == 0) ?
+					indexEJB.getIndexResultsFaster(searchKeyWord, authenticationTools.getInforContext().getCredentials().getUsername())
+					: indexEJB.getIndexResultsFaster(searchKeyWord, authenticationTools.getInforContext().getCredentials().getUsername(), Arrays.asList(entityTypes.split(",")))
+					;
+
 			} else {
-				return ok(indexGrids.search(authenticationTools.getInforContext(), searchKeyWord));
+				indexResults = indexGrids.search(authenticationTools.getInforContext(), searchKeyWord);
 			}
+			return ok(indexResults);
 		} catch(Exception e) {
 			return serverError(e);
 		}
