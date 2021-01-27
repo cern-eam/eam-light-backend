@@ -1,6 +1,6 @@
 package ch.cern.cmms.eamlightweb.user;
 
-import ch.cern.cmms.eamlightweb.user.entities.Function;
+import ch.cern.cmms.eamlightweb.user.entities.EamFunction;
 import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
@@ -40,7 +40,7 @@ public class ScreenService {
             return screenCache.get(userGroup);
         }
 
-        Map<String, Function> functions = getFunctions(context);
+        Map<String, EamFunction> functions = getFunctions(context);
 
         GridRequest gridRequestLayout = new GridRequest("BSMESP_HDR", 2000);
         gridRequestLayout.addFilter("usergroup", userGroup, "=", JOINER.AND);
@@ -66,12 +66,12 @@ public class ScreenService {
         return screens;
     }
 
-    public Map<String, Function> getFunctions(InforContext context) throws InforException {
+    public Map<String, EamFunction> getFunctions(InforContext context) throws InforException {
         GridRequest gridRequestLayout = new GridRequest("BSFUNC", 1000);
         gridRequestLayout.addFilter("parentscreencode", String.join(",", screens), "IN", JOINER.OR);
         gridRequestLayout.addFilter("screencode", String.join(",", screens), "IN");
 
-        Map<String, Function> functions =  inforClient.getTools().getGridTools().convertGridResultToMap(Function.class,
+        Map<String, EamFunction> functions =  inforClient.getTools().getGridTools().convertGridResultToMap(EamFunction.class,
                 "screencode",
                 null,
                 inforClient.getGridsService().executeQuery(context, gridRequestLayout));

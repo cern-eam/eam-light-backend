@@ -2,7 +2,7 @@ package ch.cern.cmms.eamlightweb.user.entities;
 
 import ch.cern.eam.wshub.core.annotations.GridField;
 
-public class Function {
+public class EamFunction {
     @GridField(name="isuserdefinedscreen")
     Boolean isUserDefinedScreen;
     @GridField(name="formtype_display")
