@@ -14,7 +14,7 @@
 		<artifact.filename>${project.build.finalName}-${project.version}</artifact.filename>
         <ch.cern.cmms.eamtools.version>2.3.2</ch.cern.cmms.eamtools.version>
 		<ch.cern.cmms.ldaptools.version>0.1.4</ch.cern.cmms.ldaptools.version>
-		<ch.cern.eam.eam-wshub-core.version>11.5-24</ch.cern.eam.eam-wshub-core.version>
+		<ch.cern.eam.eam-wshub-core.version>11.5-28</ch.cern.eam.eam-wshub-core.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
