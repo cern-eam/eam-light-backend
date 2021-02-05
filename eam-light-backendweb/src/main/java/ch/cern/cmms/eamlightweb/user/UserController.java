@@ -32,7 +32,9 @@ public class UserController extends EAMLightController {
 								 @QueryParam("screenCode") String screenCode) {
 		try {
 			return ok(userService.getUserData(currentScreen, screenCode));
-		} catch(Exception e) {
+		} catch (InforException e){
+			return forbidden(e);
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
