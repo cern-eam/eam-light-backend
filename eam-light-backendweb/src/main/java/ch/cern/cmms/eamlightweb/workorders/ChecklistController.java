@@ -5,14 +5,17 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
+import ch.cern.eam.wshub.core.services.workorders.entities.TaskPlan;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckListSignature;
 import ch.cern.eam.wshub.core.tools.InforException;
+import javafx.concurrent.Task;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.math.BigInteger;
 
 @Path("/checklists")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -57,6 +60,22 @@ public class ChecklistController extends EAMLightController {
 	public Response eSignWorkOrderActivityChecklist(WorkOrderActivityCheckListSignature workOrderActivityCheckListSignature) {
 		try {
 			return ok(inforClient.getChecklistService().eSignWorkOrderActivityChecklist(authenticationTools.getInforContext(), workOrderActivityCheckListSignature));
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch (Exception e) {
+			return serverError(e);
+		}
+	}
+
+	@GET
+	@Path("/definition/{taskplanid}/{id}")
+	@Produces("application/json")
+	public Response getChecklistDefinition(@PathParam("taskplanid") String taskPlanCode, @PathParam("id") String id) {
+		try {
+			TaskPlan taskPlan = new TaskPlan();
+			taskPlan.setCode(taskPlanCode);
+			taskPlan.setTaskRevision(BigInteger.ZERO);
+			return ok(inforClient.getChecklistService().getChecklistDefinition(authenticationTools.getInforContext(), taskPlan, id));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch (Exception e) {
