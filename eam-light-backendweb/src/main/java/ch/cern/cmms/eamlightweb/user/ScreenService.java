@@ -84,9 +84,12 @@ public class ScreenService {
                 "systemcode",
                 inforClient.getGridsService().executeQuery(context, startUpActionTypesGridRequest));
 
+        functions.values().forEach(
+                eamFunction -> eamFunction.setStartUpModeDisplayCode(startUpActionDescriptionToCode.get(eamFunction.getStartUpModeDisplayDescription()))
+        );
+
         screens.forEach(screen -> functions.computeIfPresent(screen, (screenCode, eamFunction) -> {
             eamFunction.setParentScreenCode(screenCode);
-            eamFunction.setStartUpModeDisplayCode(startUpActionDescriptionToCode.get(eamFunction.getStartUpModeDisplayDescription()));
             return eamFunction;
         }));
 
