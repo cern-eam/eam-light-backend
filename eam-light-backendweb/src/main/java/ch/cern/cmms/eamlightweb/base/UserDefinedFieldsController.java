@@ -126,7 +126,9 @@ public class UserDefinedFieldsController extends EAMLightController {
 	private List<RentityItem> getCodeList(String rentity, String field) throws InforException {
 		GridRequest gridRequest = new GridRequest("LVUDFC");
 		gridRequest.getParams().put("param.field", field);
+		gridRequest.getParams().put("param.fieldid", field);
 		gridRequest.getParams().put("param.rentity", rentity);
+		gridRequest.getParams().put("param.associatedrentity", rentity);
 		List<RentityItem> response = inforClient.getTools().getGridTools().convertGridResultToObject(
 				RentityItem.class, null,
 				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
