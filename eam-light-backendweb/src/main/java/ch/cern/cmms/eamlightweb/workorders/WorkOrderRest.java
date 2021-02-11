@@ -13,6 +13,8 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 
+import static ch.cern.cmms.eamlightweb.tools.OrganizationTools.assumeEquipmentMonoOrg;
+
 @Path("/workorders")
 @ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -41,6 +43,8 @@ public class WorkOrderRest extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response createWorkOrder(WorkOrder workOrder) {
+
+		assumeEquipmentMonoOrg(workOrder);
 		String woNumber = null;
 		try {
 			woNumber = inforClient.getWorkOrderService().createWorkOrder(authenticationTools.getInforContext(), workOrder);
@@ -58,6 +62,7 @@ public class WorkOrderRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response updateWorkOrder(WorkOrder workOrder) {
 		try {
+			assumeEquipmentMonoOrg(workOrder);
 			inforClient.getWorkOrderService().updateWorkOrder(authenticationTools.getInforContext(), workOrder);
 			// Read again the work order
 			return ok(inforClient.getWorkOrderService().readWorkOrder(authenticationTools.getInforContext(), workOrder.getNumber()));
