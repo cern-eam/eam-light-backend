@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightweb.application;
 
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
+import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Credentials;
@@ -25,20 +26,16 @@ public class ApplicationService {
     @Inject
     private InforClient inforClient;
     @Inject
-    private ApplicationData applicationData;
+    private AuthenticationTools authenticationTools;
+    
     private final ObjectMapper mapper = new ObjectMapper();
-
-    private InforContext getR5InforContext() throws InforException {
-        Credentials credentials = new Credentials(applicationData.getAdminUser(), applicationData.getAdminPassword());
-        return new InforContext(credentials);
-    }
 
     public Map<String, String> getParams() throws InforException {
         if (paramFieldCache.isEmpty()) {
             GridRequest gridRequest = new GridRequest("BSINST");
             gridRequest.addFilter("installcode", "EL_", "BEGINS");
             Map<String, String> paramsMap = GridTools.convertGridResultToMap("installcode", "value",
-                    inforClient.getGridsService().executeQuery(getR5InforContext(), gridRequest));
+                    inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
             //paramsMap.put("EAMLIGHT_SERVICE_ACCOUNT", applicationData.getServiceAccount());
             paramFieldCache.putAll(paramsMap);
         }
