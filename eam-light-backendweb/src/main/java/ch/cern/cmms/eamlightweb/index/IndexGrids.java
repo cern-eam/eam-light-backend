@@ -83,16 +83,21 @@ public class IndexGrids {
         }
     }
 
-    public List<IndexResult> search(InforContext inforContext, String keyword) throws InforException {
+    public List<IndexResult> search(InforContext inforContext, String keyword, List<String> entityTypes) throws InforException {
         List<IndexResult> result = new LinkedList<>();
         List<Runnable> runnables = new LinkedList<>();
 
-        runnables.add(() -> result.addAll(searchWorkOrders(inforContext, keyword,"BEGINS")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "84", "OSOBJA", "85", "A", true)));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "113", "OSOBJP", "111", "P", true)));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "88", "OSOBJS", "89", "S", true)));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "118", "OSOBJL", "117", "L", false)));
-        runnables.add(() -> result.addAll(searchParts(inforContext, keyword, "BEGINS")));
+        Map<String, Runnable> entityTypeRunnableMap = new HashMap();
+        entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword,"BEGINS")));
+        entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "84", "OSOBJA", "85", "A", true)));
+        entityTypeRunnableMap.put("P", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "113", "OSOBJP", "111", "P", true)));
+        entityTypeRunnableMap.put("S", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "88", "OSOBJS", "89", "S", true)));
+        entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "118", "OSOBJL", "117", "L", false)));
+        entityTypeRunnableMap.put("PART", () -> result.addAll(searchParts(inforContext, keyword, "BEGINS")));
+
+        entityTypeRunnableMap.entrySet().stream()
+                .filter(entry -> entityTypes.contains(entry.getKey()))
+                .forEach(entry -> runnables.add(entry.getValue()));
 
         inforClient.getTools().processRunnables(runnables);
         return result;
