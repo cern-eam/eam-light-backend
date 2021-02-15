@@ -40,8 +40,7 @@ public class LocationRest extends EAMLightController {
         try {
             InforContext context = authenticationTools.getInforContext();
             OrganizationTools.assumeMonoOrg(context);
-            return ok(
-                inforClient.getLocationService().readLocation(context, locationCode));
+            return ok(inforClient.getLocationService().readLocation(context, locationCode));
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {
@@ -91,8 +90,9 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response deleteLocation(@PathParam("locationCode") String locationCode) {
         try {
-            return ok(inforClient.getLocationService().deleteLocation(authenticationTools.getInforContext(),
-                locationCode));
+            InforContext context = authenticationTools.getInforContext();
+            OrganizationTools.assumeMonoOrg(context);
+            return ok(inforClient.getLocationService().deleteLocation(context, locationCode));
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {
@@ -105,10 +105,12 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response initLocation() {
         try {
+            InforContext context = authenticationTools.getInforContext();
+            OrganizationTools.assumeMonoOrg(context);
             Location location = new Location();
             location.setUserDefinedFields(new UserDefinedFields());
             location.setCustomFields(inforClient.getTools().getCustomFieldsTools()
-                .getWSHubCustomFields(authenticationTools.getInforContext(), "LOC", "*"));
+                .getWSHubCustomFields(context, "LOC", "*"));
             return ok(location);
         } catch (Exception e) {
             return serverError(e);

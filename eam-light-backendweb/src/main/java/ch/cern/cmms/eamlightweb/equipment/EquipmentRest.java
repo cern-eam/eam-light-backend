@@ -125,7 +125,9 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response replaceEquipment(EquipmentReplacement eqpReplacement) {
 		try {
-			return ok(equipmentReplacementService.replaceEquipment(authenticationTools.getInforContext(), eqpReplacement));
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
+			return ok(equipmentReplacementService.replaceEquipment(context, eqpReplacement));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
