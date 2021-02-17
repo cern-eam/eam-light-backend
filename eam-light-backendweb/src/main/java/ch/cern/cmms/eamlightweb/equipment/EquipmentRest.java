@@ -58,6 +58,19 @@ public class EquipmentRest extends EAMLightController {
 		}
 	}
 
+	@GET
+	@Path("/type")
+	@Produces("application/json")
+	public Response readEquipmentType(@QueryParam("c") String equipmentCode) {
+		try {
+			return ok(inforClient.getEquipmentFacadeService().readEquipmentType(authenticationTools.getInforContext(), equipmentCode));
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
 	@POST
 	@Produces("application/json")
 	@Consumes("application/json")
