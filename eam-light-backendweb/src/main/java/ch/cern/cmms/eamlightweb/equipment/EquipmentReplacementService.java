@@ -5,7 +5,12 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure;
+import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
+import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
+import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionType;
+import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.Tools;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -14,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -39,18 +45,18 @@ public class EquipmentReplacementService {
     public String replaceEquipment(InforContext inforContext, EquipmentReplacement replacement)
             throws InforException {
         // If mode is empty, it will assume the standard one
-        if (inforClient.getTools().getDataTypeTools().isEmpty(replacement.getReplacementMode()))
+        if (DataTypeTools.isEmpty(replacement.getReplacementMode()))
             replacement.setReplacementMode(STANDARD);
         // Validate mode
         if (!STANDARD.equals(replacement.getReplacementMode()) && !SWAPPING.equals(replacement.getReplacementMode()))
-            throw inforClient.getTools().generateFault("Invalid Replacement Mode. Valid values: [Standard, Swapping]");
+            throw Tools.generateFault("Invalid Replacement Mode. Valid values: [Standard, Swapping]");
         // Read both equipments to see that are valid codes
         Equipment oldEquipment = inforClient.getAssetService().readAsset(inforContext, replacement.getOldEquipment());
         Equipment newEquipment = inforClient.getAssetService().readAsset(inforContext, replacement.getNewEquipment());
         // If status is not provided, it will assign the current status
-        if (inforClient.getTools().getDataTypeTools().isEmpty(replacement.getNewEquipmentStatus()))
+        if (DataTypeTools.isEmpty(replacement.getNewEquipmentStatus()))
             replacement.setNewEquipmentStatus(newEquipment.getStatusCode());
-        if (inforClient.getTools().getDataTypeTools().isEmpty(replacement.getOldEquipmentStatus()))
+        if (DataTypeTools.isEmpty(replacement.getOldEquipmentStatus()))
             replacement.setOldEquipmentStatus(oldEquipment.getStatusCode());
         // Perform the replacement according to the case
         if (STANDARD.equals(replacement.getReplacementMode()))
@@ -193,17 +199,21 @@ public class EquipmentReplacementService {
         // Get all the parents from the old equipment
         List<EquipmentStructure> oldEquipmentParents = getDirectParents(oldEquipment);
         // Check that there are some parents
-        if (oldEquipmentParents.isEmpty())
-            throw inforClient.getTools().generateFault("Equipment [" + oldEquipment.getCode() + "] does not belong to any hierarchy.");
+        if (oldEquipmentParents.isEmpty()) {
+            throw Tools.generateFault("Equipment [" + oldEquipment.getCode() + "] does not belong to any hierarchy.");
+        }
 
+        boolean oldAssetIsInStore = "C".equals(newEquipment.getStatusCode());
         /*
-         * 1. Update the status of the new equipment (To installed)
+         * 1. Update the status of the new equipment (To installed) if not in store
          */
         Equipment toUpdate = new Equipment();
-        if (!replacement.getNewEquipmentStatus().equals(newEquipment.getStatusCode())) {
-            toUpdate.setCode(newEquipment.getCode());
-            toUpdate.setStatusCode(replacement.getNewEquipmentStatus());
-            inforClient.getAssetService().updateAsset(inforContext, toUpdate);
+        if (!oldAssetIsInStore) {
+            if (!replacement.getNewEquipmentStatus().equals(newEquipment.getStatusCode())) {
+                toUpdate.setCode(newEquipment.getCode());
+                toUpdate.setStatusCode(replacement.getNewEquipmentStatus());
+                inforClient.getAssetService().updateAsset(inforContext, toUpdate);
+            }
         }
 
         /*
@@ -216,39 +226,63 @@ public class EquipmentReplacementService {
             structure.setParentCode(oldEquipmentParent.getParentCode());
             // Remove the structure
             inforClient.getEquipmentStructureService().removeEquipmentFromStructure(inforContext, structure);
-        }
+         }
 
-        /*
-         * 3. Detach the new equipment from all it's parents (if any)
-         */
-        List<EquipmentStructure> newEquipmentParents = getDirectParents(newEquipment);
-        // Remove one by one
-        for (EquipmentStructure newEquipmentParent : newEquipmentParents) {
-            EquipmentStructure structure = new EquipmentStructure();
-            structure.setChildCode(newEquipment.getCode());
-            structure.setParentCode(newEquipmentParent.getParentCode());
-            // Remove the structure
-            inforClient.getEquipmentStructureService().removeEquipmentFromStructure(inforContext, structure);
-        }
-
-        /*
-         * 4. Attach the new Equipment to all Old Equipment parents
-         */
-        for (EquipmentStructure oldEquipmentParent : oldEquipmentParents) {
-            EquipmentStructure structure = new EquipmentStructure();
-            structure.setChildCode(newEquipment.getCode());
-            structure.setNewParentCode(oldEquipmentParent.getParentCode());
-            // Dependent and cost roll up
-            structure.setDependent(oldEquipmentParent.getDependent());
-            structure.setCostRollUp(oldEquipmentParent.getCostRollUp());
-            // Add the structure
-            inforClient.getEquipmentStructureService().addEquipmentToStructure(inforContext, structure);
+        if (oldAssetIsInStore) {
+            try {
+                IssueReturnPartTransaction transaction = new IssueReturnPartTransaction();
+                transaction.setTransactionOn(IssueReturnPartTransactionType.EQUIPMENT);
+                transaction.setStoreCode(newEquipment.getStoreCode());
+                transaction.setDepartmentCode(newEquipment.getDepartmentCode());
+                transaction.setTransactionType("ISSUE");
+                EquipmentStructure equipmentStructure = oldEquipmentParents.stream().filter(EquipmentStructure::getDependent).findAny().orElse(new EquipmentStructure());
+                transaction.setEquipmentCode(equipmentStructure.getParentCode());
+                IssueReturnPartTransactionLine line = new IssueReturnPartTransactionLine();
+                line.setAssetIDCode(newEquipment.getCode());
+                line.setPartCode(newEquipment.getPartCode());
+                line.setPartOrg(inforContext.getOrganizationCode());
+                line.setBin(newEquipment.getBin());
+                line.setLot(newEquipment.getLot());
+                transaction.setTransactionlines(Collections.singletonList(line));
+                inforClient.getPartMiscService().createIssueReturnTransaction(inforContext, transaction);
+            } catch (Exception e) {
+                for (EquipmentStructure oldEquipmentParent : oldEquipmentParents) {
+                    oldEquipmentParent.setNewParentCode(oldEquipmentParent.getParentCode());
+                    inforClient.getEquipmentStructureService().addEquipmentToStructure(inforContext, oldEquipmentParent);
+                }
+                throw e;
+            }
+        } else {
+            /*
+             * 3. Detach the new equipment from all it's parents (if any) OR issue it
+             */
+            List<EquipmentStructure> newEquipmentParents = getDirectParents(newEquipment);
+            // Remove one by one
+            for (EquipmentStructure newEquipmentParent : newEquipmentParents) {
+                EquipmentStructure structure = new EquipmentStructure();
+                structure.setChildCode(newEquipment.getCode());
+                structure.setParentCode(newEquipmentParent.getParentCode());
+                // Remove the structure
+                inforClient.getEquipmentStructureService().removeEquipmentFromStructure(inforContext, structure);
+            }
+            /*
+             * 4. Attach the new Equipment to all Old Equipment parents
+             */
+            for (EquipmentStructure oldEquipmentParent : oldEquipmentParents) {
+                EquipmentStructure structure = new EquipmentStructure();
+                structure.setChildCode(newEquipment.getCode());
+                structure.setNewParentCode(oldEquipmentParent.getParentCode());
+                // Dependent and cost roll up
+                structure.setDependent(oldEquipmentParent.getDependent());
+                structure.setCostRollUp(oldEquipmentParent.getCostRollUp());
+                // Add the structure
+                inforClient.getEquipmentStructureService().addEquipmentToStructure(inforContext, structure);
+            }
         }
 
         /*
          * 5. Update the statuses of the equipments if necessary
          */
-
         if (!replacement.getOldEquipmentStatus().equals(oldEquipment.getStatusCode())) {
             toUpdate.setCode(oldEquipment.getCode());
             toUpdate.setStatusCode(replacement.getOldEquipmentStatus());
