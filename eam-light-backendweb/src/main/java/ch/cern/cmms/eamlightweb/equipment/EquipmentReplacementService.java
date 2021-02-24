@@ -283,14 +283,13 @@ public class EquipmentReplacementService {
         /*
          * 5. Update the statuses of the equipments if necessary
          */
-        if (!replacement.getOldEquipmentStatus().equals(oldEquipment.getStatusCode())) {
+        if (!replacement.getOldEquipmentStatus().equals(oldEquipment.getStatusCode()) || !replacement.getOldEquipmentState().equals(oldEquipment.getStateCode())) {
             toUpdate.setCode(oldEquipment.getCode());
             toUpdate.setStatusCode(replacement.getOldEquipmentStatus());
+            toUpdate.setStateCode(replacement.getOldEquipmentState());
             System.out.println("Updating status for Equipment: " + toUpdate);
             inforClient.getAssetService().updateAsset(inforContext, toUpdate);
         }
-
-        introduceCernExtensions(inforContext, oldEquipment.getCode(), newEquipment.getCode(), newEquipment.getClassCode());
 
         // Finish ok
         return replacement.getOldEquipment() + " was replaced by " + replacement.getNewEquipment();
@@ -360,27 +359,6 @@ public class EquipmentReplacementService {
         }
         // Return result
         return relations;
-    }
-
-    private void introduceCernExtensions(InforContext inforContext, String oldEquipmentCode, String newEquipmentCode, String newEquipmentClass) {
-        //if (Arrays.stream(applicationData.getCryoEqpReplacementClasses()).noneMatch( cl -> cl.equals(newEquipmentClass))) {
-        //    return;
-        //}
-
-        Equipment newEquipment = new Equipment();
-        newEquipment.setCode(newEquipmentCode);
-        newEquipment.setStateCode("GOOD");
-        newEquipment.setStatusCode("I");
-
-        Equipment oldEquipment = new Equipment();
-        oldEquipment.setCode(oldEquipmentCode);
-        oldEquipment.setStateCode("DEF");
-        oldEquipment.setStatusCode("IRP");
-        try {
-            inforClient.getEquipmentFacadeService().updateEquipmentBatch(inforContext, Arrays.asList(oldEquipment, newEquipment));
-        } catch (InforException inforException) {
-
-        }
     }
 
 }
