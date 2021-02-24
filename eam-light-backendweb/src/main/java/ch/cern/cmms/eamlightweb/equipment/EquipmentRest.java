@@ -17,6 +17,7 @@ import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
@@ -84,6 +85,11 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response updateEquipment(Equipment equipment) {
 		try {
+			if (equipment.getStatusCode().equals("D")) {
+				equipment.setStatusCode("I");
+				equipment = EquipmentTools.clearHierarchy(authenticationTools.getInforContext(), inforClient, equipment);
+				equipment.setStatusCode("D");
+			}
 			inforClient.getEquipmentFacadeService().updateEquipment(authenticationTools.getInforContext(), equipment);
 			// Read again the equipment
 			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
