@@ -10,40 +10,38 @@
 
 	<profiles>
 		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
+			<id>OPEN</id>
 			<properties>
 				<project.contextRoot>/</project.contextRoot>
 			</properties>
-		</profile>
-		<profile>
-			<id>CERN</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>profile</name>
-					<value>CERN</value>
-				</property>
-			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>ch.cern.cmms</groupId>
-					<artifactId>eamtools</artifactId>
-					<version>${ch.cern.cmms.eamtools.version}</version>
+					<artifactId>eam-light-opensource</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>CERN</id>
+			<properties>
+				<project.contextRoot>/SSO/eamlightws</project.contextRoot>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>ldaptools</artifactId>
+					<version>0.1.4</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>ch.cern.cmms</groupId>
-					<artifactId>ldaptools</artifactId>
-					<version>${ch.cern.cmms.ldaptools.version}</version>
+					<artifactId>eam-light-cern</artifactId>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-			<properties>
-				<project.contextRoot>/SSO/eamlightws</project.contextRoot>
-			</properties>
 		</profile>
 	</profiles>
 
@@ -65,6 +63,12 @@
 			<groupId>ch.cern.eam</groupId>
 			<artifactId>eam-wshub-core</artifactId>
 			<version>${ch.cern.eam.eam-wshub-core.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.cern.cmms</groupId>
+			<artifactId>eam-light-shared</artifactId>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -105,5 +109,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

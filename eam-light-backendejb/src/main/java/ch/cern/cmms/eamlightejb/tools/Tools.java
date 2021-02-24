@@ -11,4 +11,13 @@ public class Tools {
         }
     }
 
+    public static Integer getVariableIntegerValue(String variableName) {
+        try {
+            String value = Tools.getVariableValue(variableName);
+            return Integer.parseInt(value);
+        } catch(NumberFormatException e) {
+            return null;
+        }
+    }
+
 }

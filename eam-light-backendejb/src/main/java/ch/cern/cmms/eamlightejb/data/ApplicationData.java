@@ -32,7 +32,7 @@ public class ApplicationData {
 
     public String getLDAPServer() { return Tools.getVariableValue("EAMLIGHT_LDAP_SERVER"); }
 
-    public int getLDAPPort() { return Integer.parseInt(Objects.requireNonNull(Tools.getVariableValue("EAMLIGHT_LDAP_PORT"))); }
+    public Integer getLDAPPort() { return Tools.getVariableIntegerValue("EAMLIGHT_LDAP_PORT"); }
 
     public String getVersion() {
         return getClass().getPackage().getImplementationVersion();

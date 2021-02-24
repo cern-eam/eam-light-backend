@@ -3,6 +3,7 @@ package ch.cern.cmms.eamlightweb.tools;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.application.ApplicationService;
 import ch.cern.cmms.eamlightweb.user.UserService;
+import ch.cern.cmms.plugins.LDAPPlugin;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
@@ -41,6 +42,8 @@ public class AuthenticationTools {
     private ApplicationService applicationService;
     @Inject
     private UserService userService;
+    @Inject
+    private LDAPPlugin ldapPlugin;
 
     public InforContext getInforContext() throws InforException
     {
@@ -124,7 +127,13 @@ public class AuthenticationTools {
     }
 
     private boolean userIsAllowed(String authenticatedUser, String impersonatedUser) throws InforException {
-        return false;
+        try {
+            Set<String> egroupMembers = ldapPlugin.readEgroupMembers(applicationService.getServiceAccounts().get(authenticatedUser));
+            return egroupMembers.contains(impersonatedUser);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public String getEmployee(String code, Mode mode) throws InforException {
