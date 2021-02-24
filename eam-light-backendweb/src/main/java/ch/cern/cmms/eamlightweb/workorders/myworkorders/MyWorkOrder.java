@@ -6,18 +6,19 @@ import java.util.Date;
 
 public class MyWorkOrder implements Serializable {
 
-	@GridField(name="workordernum")
+	@GridField(name="workordernum", alternativeNames = { "eventno" })
 	private String number;
 
 	@GridField(name="description")
 	private String desc;
 
-	@GridField(name="workorderstatus_display")
+	@GridField(name="workorderstatus_display", alternativeNames = { "statusdisplay" })
 	private String status;
 
 	@GridField(name="workorderstatus")
 	private String statusCode;
 
+	@GridField(name="jobtype")
 	private String jobType;
 
 	@GridField(name="equipment")
@@ -43,6 +44,9 @@ public class MyWorkOrder implements Serializable {
 
 	@GridField(name="datecompleted")
 	private Date completedDate;
+
+	@GridField(name="equipmenttype")
+	private String equipmentType;
 
 	public MyWorkOrder() {}
 
@@ -164,6 +168,14 @@ public class MyWorkOrder implements Serializable {
 		this.priority = priority;
 	}
 
+	public String getEquipmentType() {
+		return equipmentType;
+	}
+
+	public void setEquipmentType(String equipmentType) {
+		this.equipmentType = equipmentType;
+	}
+
 	@Override
 	public String toString() {
 		return "MyWorkOrder{" +
@@ -180,6 +192,7 @@ public class MyWorkOrder implements Serializable {
 				", status='" + status + '\'' +
 				", statusCode='" + statusCode + '\'' +
 				", type='" + type + '\'' +
+				", equipmentType='" + equipmentType + '\'' +
 				'}';
 	}
 }

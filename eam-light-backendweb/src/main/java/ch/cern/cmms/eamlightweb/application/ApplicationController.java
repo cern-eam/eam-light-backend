@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.base.CustomFieldsController;
+import ch.cern.cmms.eamlightweb.base.UserDefinedFieldsController;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
@@ -18,10 +19,16 @@ import ch.cern.cmms.eamlightweb.user.ScreenLayoutService;
 import ch.cern.cmms.eamlightweb.user.ScreenService;
 import ch.cern.cmms.eamlightweb.user.UserService;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.grids.entities.GridField;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
 import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
+import ch.cern.eam.wshub.core.tools.GridTools;
+
+import java.math.BigInteger;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Path("/application")
 @ApplicationScoped
@@ -34,6 +41,8 @@ public class ApplicationController extends EAMLightController {
 	private InforClient inforClient;
 	@Inject
 	private ApplicationData applicationData;
+	@Inject
+	private ApplicationService applicationService;
 
 	@GET
 	@Path("/applicationdata")
@@ -41,10 +50,7 @@ public class ApplicationController extends EAMLightController {
 	@Consumes("application/json")
 	public Response readApplicationData() {
 		try {
-			GridRequest gridRequest = new GridRequest("BSINST");
-			gridRequest.addFilter("installcode", "EL_", "BEGINS");
-			return ok(inforClient.getTools().getGridTools().convertGridResultToMap("installcode", "value",
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
+			return ok(applicationService.getParams());
 		} catch(Exception e) {
 			return serverError(e);
 		}
@@ -63,6 +69,8 @@ public class ApplicationController extends EAMLightController {
 		CustomFieldsController.customFieldsLookupValuesCache.clear();
 		ChecklistServiceImpl.findingsCache.clear();
 		UserService.userCache.clear();
+		ApplicationService.paramFieldCache.clear();
+		UserDefinedFieldsController.rentityAutocompleteCache.clear();
 		return ok("EAM Light cache has been successfully refreshed.");
 	}
 

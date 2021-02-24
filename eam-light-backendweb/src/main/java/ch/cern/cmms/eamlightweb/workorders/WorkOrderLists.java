@@ -68,6 +68,7 @@ public class WorkOrderLists extends EAMLightController {
 	@Consumes("application/json")
 	public Response readPriorityCodes() {
 		GridRequest gridRequest = new GridRequest("LVJBPR", GridRequest.GRIDTYPE.LOV);
+		gridRequest.addFilter("description", "Tou", "NOTCONTAINS");
 		return getPairListResponse(gridRequest, "priority", "description");
 	}
 

@@ -3,10 +3,31 @@
 	<parent>
 		<groupId>ch.cern.cmms</groupId>
 		<artifactId>eam-light-backend</artifactId>
-		<version>3.5.2-SNAPSHOT</version>
+		<version>3.5.27-SNAPSHOT</version>
 	</parent>
 	<artifactId>eam-light-backendweb</artifactId>
 	<packaging>war</packaging>
+
+	<profiles>
+		<profile>
+			<id>CERN</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+				<property>
+					<name>profile</name>
+					<value>CERN</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>ldaptools</artifactId>
+					<version>${ch.cern.cmms.ldaptools.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -46,6 +67,12 @@
 			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
 			<version>0.11.2</version>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.10.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

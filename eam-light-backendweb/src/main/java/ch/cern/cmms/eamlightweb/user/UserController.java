@@ -3,10 +3,10 @@ package ch.cern.cmms.eamlightweb.user;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
@@ -32,7 +32,9 @@ public class UserController extends EAMLightController {
 								 @QueryParam("screenCode") String screenCode) {
 		try {
 			return ok(userService.getUserData(currentScreen, screenCode));
-		} catch(Exception e) {
+		} catch (InforException e){
+			return forbidden(e);
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -48,9 +50,21 @@ public class UserController extends EAMLightController {
 									 @QueryParam("lang") String language,
 									 @QueryParam("tabname") List<String> tabs) throws InforException {
 		try {
-			return ok(screenLayoutService.getScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup));
+			return ok(screenLayoutService.getScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity));
 		} catch(Exception e) {
 			e.printStackTrace();
+			return serverError(e);
+		}
+	}
+
+	@GET
+	@Path("/impersonate")
+	@Produces("application/json")
+	public Response readUserToImpersonate(@QueryParam("userId") String userId, @QueryParam("mode") AuthenticationTools.Mode mode) {
+		try {
+			EAMUser userToImpersonate = authenticationTools.getUserToImpersonate(userId, mode);
+			return ok(userToImpersonate);
+		} catch (InforException e) {
 			return serverError(e);
 		}
 	}

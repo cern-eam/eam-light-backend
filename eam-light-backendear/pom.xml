@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.cern.cmms</groupId>
 		<artifactId>eam-light-backend</artifactId>
-		<version>3.5.2-SNAPSHOT</version>
+		<version>3.5.27-SNAPSHOT</version>
 	</parent>
 	<artifactId>eam-light-backendear</artifactId>
 	<packaging>ear</packaging>
@@ -32,6 +32,12 @@
 					<groupId>ch.cern.cmms</groupId>
 					<artifactId>eamtools</artifactId>
 					<version>${ch.cern.cmms.eamtools.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>ldaptools</artifactId>
+					<version>${ch.cern.cmms.ldaptools.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>

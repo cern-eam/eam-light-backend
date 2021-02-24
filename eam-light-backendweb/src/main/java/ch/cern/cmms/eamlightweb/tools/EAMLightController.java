@@ -65,6 +65,13 @@ public class EAMLightController {
                 .build();
     }
 
+    public Response forbidden(Exception exception) {
+        return Response
+                .status(Response.Status.FORBIDDEN)
+                .entity(EAMResponse.fromException(exception))
+                .build();
+    }
+
     public Response getPairListResponse(GridRequest gridRequest, String codeKey, String descKey) {
         try {
             return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,

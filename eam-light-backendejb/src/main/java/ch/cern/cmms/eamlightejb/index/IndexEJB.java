@@ -2,6 +2,7 @@ package ch.cern.cmms.eamlightejb.index;
 
 import ch.cern.eam.wshub.core.client.InforClient;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.logging.Level;
@@ -53,6 +54,61 @@ public class IndexEJB {
             // No result found
             return null;
         }
+    }
+
+    private static final List<String> ALL_TYPES = Arrays.asList("A", "P", "S", "L", "PART", "JOB");
+
+    private static final String INDEX_QUERY_LIMIT_PER_TYPE = "41";
+
+    private static final String INDEX_QUERY = "SELECT * " +
+            " FROM ( " +
+            " SELECT 'PART' ENTTYPE, PAR_CODE CODE, PAR_DESC DESCRIPTION, NULL MRC, NULL SERIAL, NULL ALIAS " +
+            " FROM r5parts " +
+            " WHERE par_code LIKE :hint ESCAPE '\\' " +
+            "    AND ROWNUM < " + INDEX_QUERY_LIMIT_PER_TYPE +
+            " UNION ALL " +
+            "    SELECT OBJ_OBRTYPE ENTTYPE, OBJ_CODE CODE, OBJ_DESC DESCRIPTION, OBJ_MRC MRC, OBJ_SERIALNO SERIAL, OBJ_ALIAS ALIAS " +
+            "    FROM r5objects " +
+            "        INNER JOIN R5DEPARTMENTSECURITY " +
+            "            ON DSE_USER = :activeUser " +
+            "            AND DSE_MRC = OBJ_MRC " +
+            "    WHERE obj_obrtype NOT IN ('*', 'C', 'I') " +
+            "        AND ( " +
+            "            obj_code LIKE :hint ESCAPE '\\' " +
+            "            OR obj_alias LIKE :hint ESCAPE '\\' " +
+            "            OR upper(obj_serialno) LIKE upper(:hint) ESCAPE '\\' " +
+            "            OR obj_udfchar45 LIKE :hint ESCAPE '\\' " +
+            "        ) " +
+            "        AND ROWNUM < " + INDEX_QUERY_LIMIT_PER_TYPE +
+            " UNION ALL " +
+            " SELECT 'JOB' ENTTYPE, EVT_CODE CODE, EVT_DESC DESCRIPTION, EVT_MRC MRC, NULL SERIAL, NULL ALIAS " +
+            " FROM r5events " +
+            "        INNER JOIN R5DEPARTMENTSECURITY " +
+            "            ON DSE_USER = :activeUser " +
+            "            AND DSE_MRC = EVT_MRC " +
+            " WHERE EVT_TYPE in ('JOB','PPM') " +
+            "    AND EVT_STATUS <> 'A' " +
+            "    AND EVT_CODE like :hint ESCAPE '\\' " +
+            "    AND ROWNUM < " + INDEX_QUERY_LIMIT_PER_TYPE +
+            " ) " +
+            " WHERE ENTTYPE IN :allowedEntityTypes "
+            ;
+
+    public List<IndexResult> getIndexResultsFaster(String hint, String userCode) {
+        return getIndexResultsFaster(hint, userCode, ALL_TYPES);
+    }
+
+    public List<IndexResult> getIndexResultsFaster(String hint, String userCode, List<String> allowedEntityTypes) {
+        inforClient.getTools().log(Level.INFO, "SEARCH FASTER / " + userCode + " / " + hint + " / ");
+        @SuppressWarnings("unchecked")
+        List<IndexResult> results = inforClient.getTools().getEntityManager()
+                .createNativeQuery(INDEX_QUERY, IndexResult.class)
+                .setParameter("hint", hint + "%")
+                .setParameter("activeUser", userCode)
+                .setParameter("allowedEntityTypes", allowedEntityTypes)
+                .getResultList()
+                ;
+        return results;
     }
 
     /*
