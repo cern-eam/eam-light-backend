@@ -58,8 +58,8 @@ public class MyWorkOrders {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.setUserFunctionName("WSJOBS");
         gridRequest.setRowCount(2000);
-        gridRequest.addFilter("equipment", equipmentCode, "=", GridRequestFilter.JOINER.AND);
-        gridRequest.setGridRequestSorts(new GridRequestSort[0]);
+        gridRequest.setUseNative(false);
+        gridRequest.addFilter("equipment", equipmentCode, "=");
         gridRequest.sortBy("datecreated", "DESC");
 
         return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
@@ -68,7 +68,7 @@ public class MyWorkOrders {
     }
 
     public List<MyWorkOrder> getObjectEvents(String equipmentCode, String equipmentType) throws InforException {
-        Map<String, String> typeToUserFunctionMap = new HashMap<>();
+        final Map<String, String> typeToUserFunctionMap = new HashMap<>();
         typeToUserFunctionMap.put("A", "OSOBJA");
         typeToUserFunctionMap.put("P", "OSOBJP");
         typeToUserFunctionMap.put("L", "OSOBJL");
