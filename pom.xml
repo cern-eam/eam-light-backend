@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.cern.cmms</groupId>
 	<artifactId>eam-light-backend</artifactId>
-	<version>3.5.26hotfix</version>
+	<version>3.5.27hotfix-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>eam-light-backendear</module>
