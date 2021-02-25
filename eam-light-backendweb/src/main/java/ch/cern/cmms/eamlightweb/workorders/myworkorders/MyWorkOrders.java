@@ -67,13 +67,15 @@ public class MyWorkOrders {
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
-    public List<MyWorkOrder> getObjectEvents(String equipmentCode, String equipmentType) throws InforException {
-        final Map<String, String> typeToUserFunctionMap = new HashMap<>();
+    private static final Map<String, String> typeToUserFunctionMap = new HashMap<>();
+    static {
         typeToUserFunctionMap.put("A", "OSOBJA");
         typeToUserFunctionMap.put("P", "OSOBJP");
         typeToUserFunctionMap.put("L", "OSOBJL");
         typeToUserFunctionMap.put("S", "OSOBJS");
+    }
 
+    public List<MyWorkOrder> getObjectEvents(String equipmentCode, String equipmentType) throws InforException {
         GridsService gridsService = inforClient.getGridsService();
         GridTools gridTools = inforClient.getTools().getGridTools();
 
