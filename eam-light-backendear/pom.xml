@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.cern.cmms</groupId>
 		<artifactId>eam-light-backend</artifactId>
-		<version>3.5.27b-SNAPSHOT</version>
+		<version>3.5.26c</version>
 	</parent>
 	<artifactId>eam-light-backendear</artifactId>
 	<packaging>ear</packaging>
