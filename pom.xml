@@ -16,7 +16,7 @@
 
 	<properties>
 		<artifact.filename>${project.build.finalName}-${project.version}</artifact.filename>
-		<ch.cern.eam.eam-wshub-core.version>11.5-29-SNAPSHOT</ch.cern.eam.eam-wshub-core.version>
+		<ch.cern.eam.eam-wshub-core.version>11.6-2</ch.cern.eam.eam-wshub-core.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
