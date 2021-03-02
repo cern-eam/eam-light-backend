@@ -3,8 +3,7 @@ package ch.cern.cmms.eamlightweb.tools;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.application.ApplicationService;
 import ch.cern.cmms.eamlightweb.user.UserService;
-import ch.cern.cmms.ldaptools.LDAPTools;
-import ch.cern.cmms.ldaptools.exceptions.LDAPException;
+import ch.cern.cmms.plugins.LDAPPlugin;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
@@ -43,8 +42,8 @@ public class AuthenticationTools {
     private ApplicationService applicationService;
     @Inject
     private UserService userService;
-
-    private static LDAPTools ldapTools;
+    @Inject
+    private LDAPPlugin ldapPlugin;
 
     public InforContext getInforContext() throws InforException
     {
@@ -129,9 +128,9 @@ public class AuthenticationTools {
 
     private boolean userIsAllowed(String authenticatedUser, String impersonatedUser) throws InforException {
         try {
-            Set<String> egroupMembers = getLDAPTools().readEgroupMembers(applicationService.getServiceAccounts().get(authenticatedUser));
+            Set<String> egroupMembers = ldapPlugin.readEgroupMembers(applicationService.getServiceAccounts().get(authenticatedUser));
             return egroupMembers.contains(impersonatedUser);
-        } catch (LDAPException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
@@ -166,13 +165,6 @@ public class AuthenticationTools {
                 .orElseThrow(() -> new InforException("Multiple employees matched the code " + code, null, null))
                 .getContent();
         return content;
-    }
-
-    private LDAPTools getLDAPTools() {
-        if (ldapTools == null) {
-            ldapTools = new LDAPTools(applicationData.getLDAPServer(), applicationData.getLDAPPort());
-        }
-        return ldapTools;
     }
 
     private void checkCanImpersonateUser(String userCode) throws InforException {

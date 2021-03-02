@@ -47,14 +47,15 @@ public class SearchController extends EAMLightController {
 
 		List<IndexResult> indexResults;
 		try {
+			List<String> entityTypesList = Arrays.asList(entityTypes.split(","));
 			if (inforClient.getTools().isDatabaseConnectionConfigured()) {
 				indexResults = (entityTypes == null || entityTypes.trim().length() == 0) ?
 					indexEJB.getIndexResultsFaster(searchKeyWord, authenticationTools.getInforContext().getCredentials().getUsername())
-					: indexEJB.getIndexResultsFaster(searchKeyWord, authenticationTools.getInforContext().getCredentials().getUsername(), Arrays.asList(entityTypes.split(",")))
+					: indexEJB.getIndexResultsFaster(searchKeyWord, authenticationTools.getInforContext().getCredentials().getUsername(), entityTypesList)
 					;
 
 			} else {
-				indexResults = indexGrids.search(authenticationTools.getInforContext(), searchKeyWord);
+				indexResults = indexGrids.search(authenticationTools.getInforContext(), searchKeyWord, entityTypesList);
 			}
 			return ok(indexResults);
 		} catch(Exception e) {

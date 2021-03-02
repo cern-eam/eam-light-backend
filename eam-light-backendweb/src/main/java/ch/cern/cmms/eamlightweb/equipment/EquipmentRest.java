@@ -14,9 +14,11 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
+import ch.cern.cmms.eamlightweb.tools.OrganizationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
@@ -49,7 +51,9 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response readEquipment(@QueryParam("c") String equipment) {
 		try {
-			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment));
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
+			return ok(inforClient.getEquipmentFacadeService().readEquipment(context, equipment));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -68,10 +72,12 @@ public class EquipmentRest extends EAMLightController {
 					authenticationTools.getInforContext(), equipment.getTypeCode());
 				equipment.setCode(newCode);
 			}
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
 			// Create equipment
-			inforClient.getEquipmentFacadeService().createEquipment(authenticationTools.getInforContext(), equipment);
+			inforClient.getEquipmentFacadeService().createEquipment(context, equipment);
 			// Read again the equipment
-			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
+			return ok(inforClient.getEquipmentFacadeService().readEquipment(context, equipment.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -84,9 +90,11 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response updateEquipment(Equipment equipment) {
 		try {
-			inforClient.getEquipmentFacadeService().updateEquipment(authenticationTools.getInforContext(), equipment);
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
+			inforClient.getEquipmentFacadeService().updateEquipment(context, equipment);
 			// Read again the equipment
-			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment.getCode()));
+			return ok(inforClient.getEquipmentFacadeService().readEquipment(context, equipment.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -100,7 +108,9 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response deleteEquipment(@PathParam("equipment") String equipment) {
 		try {
-			inforClient.getEquipmentFacadeService().deleteEquipment(authenticationTools.getInforContext(), equipment);
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
+			inforClient.getEquipmentFacadeService().deleteEquipment(context, equipment);
 			return noConent();
 		} catch (InforException e) {
 			return badRequest(e);
@@ -155,9 +165,9 @@ public class EquipmentRest extends EAMLightController {
 	@GET
 	@Path("/events")
 	@Produces("application/json")
-	public Response getEquipmentEvents(@QueryParam("c") String equipmentCode) {
+	public Response getEquipmentEvents(@QueryParam("c") String equipmentCode, @QueryParam("t") String equipmentType) {
 		try {
-			return ok(myWorkOrders.getObjectEvents(equipmentCode, authenticationTools.getOrganizationCode()));
+			return ok(myWorkOrders.getObjectEvents(equipmentCode, equipmentType));
 		} catch(Exception e) {
 			return serverError(e);
 		}

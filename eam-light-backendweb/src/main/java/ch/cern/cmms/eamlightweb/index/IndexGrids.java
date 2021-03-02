@@ -39,7 +39,7 @@ public class IndexGrids {
         }
     }
 
-    private List<IndexResult> searchEquipment(InforContext inforContext,String keyword, String operator, String gridId, String gridName, String dataspy, String type) {
+    private List<IndexResult> searchEquipment(InforContext inforContext,String keyword, String operator, String gridId, String gridName, String dataspy, String type, boolean searchExtraColumns) {
         try {
             Map<String, String> map = new HashMap<>();
             map.put("equipmentno", "code");
@@ -49,8 +49,12 @@ public class IndexGrids {
             map.put("serialnumber", "serial");
             GridRequest gridRequest = new GridRequest(gridId, gridName, dataspy);
             gridRequest.addFilter("equipmentno", keyword, operator, GridRequestFilter.JOINER.OR);
-            gridRequest.addFilter("alias", keyword, operator, GridRequestFilter.JOINER.OR);
-            gridRequest.addFilter("serialnumber", keyword, operator, GridRequestFilter.JOINER.OR);
+
+            if (searchExtraColumns) {
+                gridRequest.addFilter("alias", keyword, operator, GridRequestFilter.JOINER.OR);
+                gridRequest.addFilter("serialnumber", keyword, operator, GridRequestFilter.JOINER.OR);
+            }
+
             //gridRequest.addFilter("udfchar45", keyword, operator, GridRequestFilter.JOINER.OR);
             List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
                     map,
@@ -79,16 +83,21 @@ public class IndexGrids {
         }
     }
 
-    public List<IndexResult> search(InforContext inforContext, String keyword) throws InforException {
+    public List<IndexResult> search(InforContext inforContext, String keyword, List<String> entityTypes) throws InforException {
         List<IndexResult> result = new LinkedList<>();
         List<Runnable> runnables = new LinkedList<>();
 
-        runnables.add(() -> result.addAll(searchWorkOrders(inforContext, keyword,"BEGINS")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "84", "OSOBJA", "85", "A")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "113", "OSOBJP", "111", "P")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "88", "OSOBJS", "89", "S")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "118", "OSOBJL", "117", "L")));
-        runnables.add(() -> result.addAll(searchParts(inforContext, keyword, "BEGINS")));
+        Map<String, Runnable> entityTypeRunnableMap = new HashMap();
+        entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword,"BEGINS")));
+        entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "84", "OSOBJA", "85", "A", true)));
+        entityTypeRunnableMap.put("P", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "113", "OSOBJP", "111", "P", true)));
+        entityTypeRunnableMap.put("S", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "88", "OSOBJS", "89", "S", true)));
+        entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword,"BEGINS", "118", "OSOBJL", "117", "L", false)));
+        entityTypeRunnableMap.put("PART", () -> result.addAll(searchParts(inforContext, keyword, "BEGINS")));
+
+        entityTypeRunnableMap.entrySet().stream()
+                .filter(entry -> entityTypes.contains(entry.getKey()))
+                .forEach(entry -> runnables.add(entry.getValue()));
 
         inforClient.getTools().processRunnables(runnables);
         return result;
@@ -99,10 +108,10 @@ public class IndexGrids {
         List<Runnable> runnables = new LinkedList<>();
 
         runnables.add(() -> result.addAll(searchWorkOrders(inforContext, keyword,"EQUALS")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "84", "OSOBJA", "85", "A")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "113", "OSOBJP", "111", "P")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "88", "OSOBJS", "89", "S")));
-        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "118", "OSOBJL", "117", "L")));
+        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "84", "OSOBJA", "85", "A", true)));
+        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "113", "OSOBJP", "111", "P", true)));
+        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "88", "OSOBJS", "89", "S", true)));
+        runnables.add(() -> result.addAll(searchEquipment(inforContext, keyword,"EQUALS", "118", "OSOBJL", "117", "L", false)));
         runnables.add(() -> result.addAll(searchParts(inforContext, keyword, "EQUALS")));
 
         inforClient.getTools().processRunnables(runnables);

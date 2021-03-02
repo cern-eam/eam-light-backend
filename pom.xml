@@ -4,17 +4,19 @@
 	<artifactId>eam-light-backend</artifactId>
 	<version>3.5.27-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
 	<modules>
 		<module>eam-light-backendear</module>
 		<module>eam-light-backendweb</module>
 		<module>eam-light-backendejb</module>
+		<module>eam-light-cern</module>
+		<module>eam-light-opensource</module>
+		<module>eam-light-shared</module>
 	</modules>
 
 	<properties>
 		<artifact.filename>${project.build.finalName}-${project.version}</artifact.filename>
-        <ch.cern.cmms.eamtools.version>2.3.2</ch.cern.cmms.eamtools.version>
-		<ch.cern.cmms.ldaptools.version>0.1.4</ch.cern.cmms.ldaptools.version>
-		<ch.cern.eam.eam-wshub-core.version>11.5-28</ch.cern.eam.eam-wshub-core.version>
+		<ch.cern.eam.eam-wshub-core.version>11.6-2</ch.cern.eam.eam-wshub-core.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -31,7 +33,6 @@
 			<artifactId>jboss-logging</artifactId>
 			<version>3.1.4.GA</version>
 			<scope>provided</scope>
-
 		</dependency>
 		<dependency>
 			<groupId>ch.cern.eam</groupId>
@@ -53,7 +54,39 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M3</version>
+				<executions>
+					<execution>
+						<id>enforce-first-or-second-profile-is-active</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireActiveProfile>
+									<message>Please specify one of the profiles: -POPEN (open source) or -PCERN (CERN mode)</message>
+									<profiles>CERN,OPEN</profiles>
+									<all>false</all>
+								</requireActiveProfile>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>CERN</id>
+		</profile>
+		<profile>
+			<id>OPEN</id>
+		</profile>
+	</profiles>
 
 </project>

@@ -1,12 +1,15 @@
 package ch.cern.cmms.eamlightweb.workorders.myworkorders;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
+import ch.cern.cmms.eamlightweb.tools.OrganizationTools;
 import ch.cern.cmms.eamlightweb.user.UserService;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestSort;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -53,24 +56,38 @@ public class MyWorkOrders {
 
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
+        gridRequest.setUserFunctionName("WSJOBS");
         gridRequest.setRowCount(2000);
         gridRequest.setUseNative(false);
         gridRequest.addFilter("equipment", equipmentCode, "=");
         gridRequest.sortBy("datecreated", "DESC");
+
         return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
                 null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
 
-    public List<MyWorkOrder> getObjectEvents(String equipmentCode, String organization) throws InforException {
+    private static final Map<String, String> typeToUserFunctionMap = new HashMap<>();
+    static {
+        typeToUserFunctionMap.put("A", "OSOBJA");
+        typeToUserFunctionMap.put("P", "OSOBJP");
+        typeToUserFunctionMap.put("L", "OSOBJL");
+        typeToUserFunctionMap.put("S", "OSOBJS");
+    }
+
+    public List<MyWorkOrder> getObjectEvents(String equipmentCode, String equipmentType) throws InforException {
         GridsService gridsService = inforClient.getGridsService();
         GridTools gridTools = inforClient.getTools().getGridTools();
 
         // get the work orders that correspond to the events of the object (in the Events tab in Extended)
         GridRequest workOrdersGridRequest = new GridRequest("OSVEVT");
+        workOrdersGridRequest.setUserFunctionName(typeToUserFunctionMap.getOrDefault(equipmentType, "OSOBJA"));
         workOrdersGridRequest.setRowCount(2000);
         workOrdersGridRequest.addParam("parameter.object", equipmentCode);
-        workOrdersGridRequest.addParam("control.org", organization);
+
+        // use star organization to get all work orders, independently of organization
+        workOrdersGridRequest.addParam("parameter.objorganization", "*");
+
         workOrdersGridRequest.addFilter("eventtype", "JOB", "=", GridRequestFilter.JOINER.OR);
         workOrdersGridRequest.addFilter("eventtype", "PPM", "=");
         workOrdersGridRequest.sortBy("datecreated", "DESC");

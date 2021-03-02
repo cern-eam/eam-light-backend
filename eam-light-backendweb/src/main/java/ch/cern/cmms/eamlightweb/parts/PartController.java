@@ -12,11 +12,14 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
 import ch.cern.eam.wshub.core.services.material.entities.PartStock;
 import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.cmms.eamlightweb.tools.OrganizationTools;
+import com.sun.org.apache.xpath.internal.operations.Or;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
@@ -57,7 +60,9 @@ public class PartController extends EAMLightController {
 	@Consumes("application/json")
 	public Response readPart(@PathParam("part") String number) {
 		try {
-			return ok(inforClient.getPartService().readPart(authenticationTools.getInforContext(), number));
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
+			return ok(inforClient.getPartService().readPart(context, number));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -71,15 +76,17 @@ public class PartController extends EAMLightController {
 	public Response createPart(Part part) {
 		try {
 			// Generate new numeric code if the requested code starts with @
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
 			if (part.getCode()!=null && codeGeneratorService.isCodePrefix(part.getCode())) {
 				String newCode = codeGeneratorService.getNextPartCode(part.getCode(),
-					authenticationTools.getInforContext());
+					context);
 					part.setCode(newCode);
 			}
 			// create part
-			inforClient.getPartService().createPart(authenticationTools.getInforContext(), part);
+			inforClient.getPartService().createPart(context, part);
 			// Read again the part
-			return ok(inforClient.getPartService().readPart(authenticationTools.getInforContext(), part.getCode()));
+			return ok(inforClient.getPartService().readPart(context, part.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -92,9 +99,12 @@ public class PartController extends EAMLightController {
 	@Consumes("application/json")
 	public Response updatePart(Part part) {
 		try {
-			inforClient.getPartService().updatePart(authenticationTools.getInforContext(), part);
+			OrganizationTools.assumeMonoOrg(part);
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
+			inforClient.getPartService().updatePart(context, part);
 			// Read again the part
-			return ok(inforClient.getPartService().readPart(authenticationTools.getInforContext(), part.getCode()));
+			return ok(inforClient.getPartService().readPart(context, part.getCode()));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -108,7 +118,9 @@ public class PartController extends EAMLightController {
 	@Consumes("application/json")
 	public Response deletePart(@PathParam("part") String partCode) {
 		try {
-			return ok(inforClient.getPartService().deletePart(authenticationTools.getInforContext(), partCode));
+			InforContext context = authenticationTools.getInforContext();
+			OrganizationTools.assumeMonoOrg(context);
+			return ok(inforClient.getPartService().deletePart(context, partCode));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
