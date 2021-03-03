@@ -61,6 +61,19 @@ public class EquipmentRest extends EAMLightController {
 		}
 	}
 
+	@GET
+	@Path("/type")
+	@Produces("application/json")
+	public Response readEquipmentType(@QueryParam("c") String equipmentCode) {
+		try {
+			return ok(inforClient.getEquipmentFacadeService().readEquipmentType(authenticationTools.getInforContext(), equipmentCode));
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
 	@POST
 	@Produces("application/json")
 	@Consumes("application/json")
@@ -92,7 +105,15 @@ public class EquipmentRest extends EAMLightController {
 		try {
 			InforContext context = authenticationTools.getInforContext();
 			OrganizationTools.assumeMonoOrg(context);
+
+			if (equipment.getStatusCode().equals("D")) {
+				equipment.setStatusCode("I");
+				equipment = EquipmentTools.clearHierarchy(context, inforClient, equipment);
+				equipment.setStatusCode("D");
+			}
+
 			inforClient.getEquipmentFacadeService().updateEquipment(context, equipment);
+
 			// Read again the equipment
 			return ok(inforClient.getEquipmentFacadeService().readEquipment(context, equipment.getCode()));
 		} catch (InforException e) {
