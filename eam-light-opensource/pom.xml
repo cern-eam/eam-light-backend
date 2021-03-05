@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>ch.cern.cmms</groupId>
-            <artifactId>eam-light-shared</artifactId>
+            <artifactId>eam-light-interfaces</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
