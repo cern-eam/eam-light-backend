@@ -21,9 +21,9 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Interceptors({ RESTLoggingInterceptor.class })
 public class AutocompleteEquipment extends EAMLightController {
 
-	private GridRequest prepareGridRequest()  {
+	private GridRequest prepareGridRequest(GridRequest.GRIDTYPE gridType)  {
 		GridRequest gridRequest = new GridRequest("67", "LVOBJL", "59");
-		gridRequest.setGridType(GridRequest.GRIDTYPE.LIST);
+		gridRequest.setGridType(gridType);
 		gridRequest.setRowCount(10);
 		gridRequest.addParam("param.objectrtype", null);
 		gridRequest.addParam("param.loantodept", true);
@@ -41,7 +41,7 @@ public class AutocompleteEquipment extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@QueryParam("s") String code) {
-		GridRequest gridRequest = prepareGridRequest();
+		GridRequest gridRequest = prepareGridRequest(GridRequest.GRIDTYPE.LOV);
 		gridRequest.addFilter("equipmentcode", code.toUpperCase(), "BEGINS");
 		return getPairListResponse(gridRequest, "equipmentcode", "equipmentdesc");
 	}
@@ -53,7 +53,7 @@ public class AutocompleteEquipment extends EAMLightController {
 	public Response getValuesSelectedEquipment(@QueryParam("code") String code) {
 		try {
 
-			GridRequest gridRequest = prepareGridRequest();
+			GridRequest gridRequest = prepareGridRequest(GridRequest.GRIDTYPE.LIST);
 			gridRequest.addFilter("equipmentcode", code.trim(), "EQUALS");
 
 			String[] fields = new String[] {"equipmentcode", "equipmentdesc", "department",
