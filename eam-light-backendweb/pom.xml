@@ -11,9 +11,25 @@
 	<profiles>
 		<profile>
 			<id>CERN</id>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eam-light-cern</artifactId>
+					<version>${project.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
 		</profile>
 		<profile>
 			<id>OPEN</id>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eam-light-opensource</artifactId>
+					<version>${project.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 
@@ -21,18 +37,6 @@
 		<dependency>
 			<groupId>ch.cern.cmms</groupId>
 			<artifactId>eam-light-backendejb</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.cern.cmms</groupId>
-			<artifactId>eam-light-cern</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>ch.cern.cmms</groupId>
-			<artifactId>eam-light-opensource</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>

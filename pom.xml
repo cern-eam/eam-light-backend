@@ -9,7 +9,6 @@
 		<module>eam-light-backendear</module>
 		<module>eam-light-backendweb</module>
 		<module>eam-light-backendejb</module>
-		<module>eam-light-opensource</module>
 		<module>eam-light-shared</module>
 	</modules>
 
@@ -88,6 +87,9 @@
 		</profile>
 		<profile>
 			<id>OPEN</id>
+			<modules>
+				<module>eam-light-opensource</module>
+			</modules>
 		</profile>
 	</profiles>
 
