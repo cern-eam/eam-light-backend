@@ -27,8 +27,8 @@ eam-light-backendweb/src/main/webapp/WEB-INF/.faces-config.xml.jsfdia
 eam-light-backendweb/eam-light-backendweb.iml
 
 # shared
-eam-light-shared/eam-light-shared.iml
-eam-light-shared/target
+eam-light-interfaces/eam-light-interfaces.iml
+eam-light-interfaces/target
 
 # opensource
 eam-light-opensource/eam-light-opensource.iml

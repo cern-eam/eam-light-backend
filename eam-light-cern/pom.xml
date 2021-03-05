@@ -20,7 +20,7 @@
         <dependency>
             <groupId>ch.cern.cmms</groupId>
             <artifactId>ldaptools</artifactId>
-            <version>0.1.4</version>
+            <version>${ch.cern.cmms.ldaptools.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

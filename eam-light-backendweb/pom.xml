@@ -22,6 +22,9 @@
 		</profile>
 		<profile>
 			<id>OPEN</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>ch.cern.cmms</groupId>
