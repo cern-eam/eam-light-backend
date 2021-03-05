@@ -10,7 +10,7 @@
         <version>3.5.29-SNAPSHOT</version>
     </parent>
 
-    <artifactId>eam-light-shared</artifactId>
+    <artifactId>eam-light-interfaces</artifactId>
 
     <profiles>
         <profile>
