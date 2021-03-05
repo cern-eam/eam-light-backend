@@ -9,7 +9,6 @@ import ch.cern.eam.wshub.core.services.workorders.entities.TaskPlan;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckList;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityCheckListSignature;
 import ch.cern.eam.wshub.core.tools.InforException;
-import javafx.concurrent.Task;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;

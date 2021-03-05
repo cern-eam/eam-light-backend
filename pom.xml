@@ -9,7 +9,6 @@
 		<module>eam-light-backendear</module>
 		<module>eam-light-backendweb</module>
 		<module>eam-light-backendejb</module>
-		<module>eam-light-cern</module>
 		<module>eam-light-opensource</module>
 		<module>eam-light-shared</module>
 	</modules>
@@ -83,6 +82,9 @@
 	<profiles>
 		<profile>
 			<id>CERN</id>
+			<modules>
+				<module>eam-light-cern</module>
+			</modules>
 		</profile>
 		<profile>
 			<id>OPEN</id>
