@@ -23,7 +23,7 @@ public class AutocompleteEquipment extends EAMLightController {
 
 	private GridRequest prepareGridRequest()  {
 		GridRequest gridRequest = new GridRequest("67", "LVOBJL", "59");
-		gridRequest.setGridType(GridRequest.GRIDTYPE.LOV);
+		gridRequest.setGridType(GridRequest.GRIDTYPE.LIST);
 		gridRequest.setRowCount(10);
 		gridRequest.addParam("param.objectrtype", null);
 		gridRequest.addParam("param.loantodept", true);
