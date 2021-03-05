@@ -1,40 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>ch.cern.cmms</groupId>
 		<artifactId>eam-light-backend</artifactId>
 		<version>3.5.29-SNAPSHOT</version>
 	</parent>
+
 	<artifactId>eam-light-backendweb</artifactId>
 	<packaging>war</packaging>
-
-	<profiles>
-		<profile>
-			<id>CERN</id>
-			<dependencies>
-				<dependency>
-					<groupId>ch.cern.cmms</groupId>
-					<artifactId>eam-light-cern</artifactId>
-					<version>${project.version}</version>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>OPEN</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>ch.cern.cmms</groupId>
-					<artifactId>eam-light-opensource</artifactId>
-					<version>${project.version}</version>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -88,4 +62,32 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>CERN</id>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eam-light-cern</artifactId>
+					<version>${project.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>OPEN</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eam-light-opensource</artifactId>
+					<version>${project.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>

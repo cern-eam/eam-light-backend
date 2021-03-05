@@ -1,58 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>ch.cern.cmms</groupId>
 		<artifactId>eam-light-backend</artifactId>
 		<version>3.5.29-SNAPSHOT</version>
 	</parent>
+
 	<artifactId>eam-light-backendear</artifactId>
 	<packaging>ear</packaging>
-
-	<profiles>
-		<profile>
-			<id>OPEN</id>
-			<properties>
-				<project.contextRoot>/</project.contextRoot>
-			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>ch.cern.cmms</groupId>
-					<artifactId>eam-light-opensource</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>CERN</id>
-			<properties>
-				<project.contextRoot>/SSO/eamlightws</project.contextRoot>
-			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>ch.cern.cmms</groupId>
-					<artifactId>eamtools</artifactId>
-					<version>${ch.cern.cmms.eamtools.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>ch.cern.cmms</groupId>
-					<artifactId>ldaptools</artifactId>
-					<version>${ch.cern.cmms.ldaptools.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-					<groupId>ch.cern.cmms</groupId>
-					<artifactId>eam-light-cern</artifactId>
-					<version>${project.version}</version>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -118,4 +74,50 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>OPEN</id>
+			<properties>
+				<project.contextRoot>/</project.contextRoot>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eam-light-opensource</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>CERN</id>
+			<properties>
+				<project.contextRoot>/SSO/eamlightws</project.contextRoot>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eamtools</artifactId>
+					<version>${ch.cern.cmms.eamtools.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>ldaptools</artifactId>
+					<version>${ch.cern.cmms.ldaptools.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>ch.cern.cmms</groupId>
+					<artifactId>eam-light-cern</artifactId>
+					<version>${project.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>
