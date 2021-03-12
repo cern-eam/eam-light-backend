@@ -66,6 +66,7 @@ public class CustomFieldsController extends EAMLightController {
 		map.put("461", "code");
 
 		GridRequest gridRequest = new GridRequest("104", "LVCFV", "105");
+		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
 
@@ -74,6 +75,7 @@ public class CustomFieldsController extends EAMLightController {
 		map.put("462", "code");
 
 		GridRequest gridRequest = new GridRequest("105", "LVCFN", "106");
+		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
 
@@ -82,6 +84,7 @@ public class CustomFieldsController extends EAMLightController {
 		map.put("463", "code");
 
 		GridRequest gridRequest = new GridRequest("106", "LVCFD", "107");
+		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
 
@@ -90,6 +93,7 @@ public class CustomFieldsController extends EAMLightController {
 		map.put("464", "code");
 
 		GridRequest gridRequest = new GridRequest("107", "LVCFD", "108");
+		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
 
@@ -99,6 +103,7 @@ public class CustomFieldsController extends EAMLightController {
 		map.put("465", "desc");
 
 		GridRequest gridRequest = new GridRequest("108", "LVCFCD", "109");
+		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
 
