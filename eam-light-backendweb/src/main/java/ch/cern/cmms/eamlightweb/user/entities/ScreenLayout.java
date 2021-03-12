@@ -6,7 +6,7 @@ import java.util.Map;
 public class ScreenLayout {
 
 	private Map<String, ElementInfo> fields;
-	private Map<String, Map<String, ElementInfo>> tabs;
+	private Map<String, Tab> tabs;
 
 	public Map<String, ElementInfo> getFields() {
 		return fields;
@@ -15,13 +15,13 @@ public class ScreenLayout {
 		this.fields = fields;
 	}
 
-	public Map<String, Map<String, ElementInfo>> getTabs() {
+	public Map<String, Tab> getTabs() {
 		if (tabs == null) {
 			tabs = new HashMap<>();
 		}
 		return tabs;
 	}
-	public void setTabs(Map<String, Map<String, ElementInfo>> tabs) {
+	public void setTabs(Map<String, Tab> tabs) {
 		this.tabs = tabs;
 	}
 

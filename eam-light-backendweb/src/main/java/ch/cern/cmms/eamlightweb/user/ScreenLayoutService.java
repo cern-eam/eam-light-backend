@@ -2,14 +2,16 @@ package ch.cern.cmms.eamlightweb.user;
 
 import ch.cern.cmms.eamlightweb.user.entities.ElementInfo;
 import ch.cern.cmms.eamlightweb.user.entities.ScreenLayout;
+import ch.cern.cmms.eamlightweb.user.entities.Tab;
 import ch.cern.cmms.eamlightweb.user.entities.UserDefinedFieldDescription;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.GridsService;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.*;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -37,17 +39,14 @@ public class ScreenLayoutService {
         // Add the record view
         screenLayout.setFields(getTabLayout(context, userGroup, systemFunction, userFunction, entity));
         // Add other tabs
-        for (String tab : tabs) {
-            screenLayout.getTabs().put(tab, getTabLayout(context, userGroup, systemFunction + "_" + tab, userFunction + "_" + tab, entity));
-        }
-
+        screenLayout.setTabs(getTabs(context, tabs, userGroup, systemFunction, userFunction, entity));
         // Get layout labels first
         Map<String, String> labels = getTabLayoutLabels(context, userFunction);
         // For all fields for the record view the bot_fld1 matches the upper-cased elementId
         screenLayout.getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(elementInfo.getElementId().toUpperCase())));
         // For all tab fields bot_fld1 matches upper-cased tab code + '_' + elementId
         screenLayout.getTabs().keySet().forEach(tab -> {
-            screenLayout.getTabs().get(tab).values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase())));
+            screenLayout.getTabs().get(tab).getFields().values().forEach(elementInfo -> elementInfo.setText(labels.get(tab + "_" + elementInfo.getElementId().toUpperCase())));
         });
 
         // Cache it before returning
@@ -56,6 +55,20 @@ public class ScreenLayoutService {
         return  screenLayout;
     }
 
+    public  Map<String, Tab> getTabs(InforContext context, List<String> tabCodes, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
+        Map<String, Tab> result = new HashMap<>();
+        tabCodes.stream().forEach(tabCode -> {
+            Tab tab = new Tab();
+            try {
+                tab.setFields(getTabLayout(context, userGroup, systemFunction + "_" + tabCode, userFunction + "_" + tabCode, entity));
+                result.put(tabCode, tab);
+            } catch (InforException e) {
+                e.printStackTrace();
+            }
+        });
+        getTabScreenPermissions(context, result, tabCodes, userGroup, userFunction);
+        return result;
+    }
 
     private Map<String, ElementInfo> getTabLayout(InforContext context, String userGroup, String systemFunction, String userFunction, String entity) throws InforException {
         GridRequest gridRequestLayout = new GridRequest( "EULLAY");
@@ -117,6 +130,22 @@ public class ScreenLayoutService {
         return result;
     }
 
+    private void getTabScreenPermissions(InforContext context, Map<String, Tab> tabs, List<String> tabCodes, String userGroup, String userFunction) throws InforException {
+        GridRequest gridRequest = new GridRequest("BSGROU_PRM");
+        gridRequest.getParams().put("param.usergroupcode", userGroup);
+        gridRequest.getParams().put("param.userfunction", userFunction);
+        gridRequest.addFilter("tabcode", String.join(",", tabCodes), "IN", GridRequestFilter.JOINER.OR);
+        GridRequestResult result = inforClient.getGridsService().executeQuery(context, gridRequest);
+        for (GridRequestRow row : result.getRows()) {
+            String tabCode = GridTools.getCellContent("tabcode", row);
+            Boolean tabAvailable = GridTools.getCellContent("tabavailable", row).equals("true");
+            Boolean tabAlwaysDisplayed = GridTools.getCellContent("tabalwaysdisp", row).equals("true");
+            String tabDescription = GridTools.getCellContent("tabcodetext", row);
+            tabs.get(tabCode).setTabAvailable(tabAvailable);
+            tabs.get(tabCode).setAlwaysDisplayed(tabAlwaysDisplayed);
+            tabs.get(tabCode).setTabDescription(tabDescription);
+        }
+    }
     private ElementInfo bindUdfDescription(UserDefinedFieldDescription description, ElementInfo elementInfo) {
         if(description != null) {
             elementInfo.setUdfLookupEntity(description.getLookupREntity());
