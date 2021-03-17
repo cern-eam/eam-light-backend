@@ -48,14 +48,6 @@ public class ApplicationController extends EAMLightController {
 	}
 
 	@GET
-	@Path("/members")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response getEgroups(@QueryParam("egroup") String egroup) {
-		return ok(ldapPlugin.readEgroupMembers(egroup));
-	}
-
-	@GET
 	@Path("/applicationdata")
 	@Produces("application/json")
 	@Consumes("application/json")
