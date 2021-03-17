@@ -10,6 +10,8 @@ import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.annotation.PostConstruct;
@@ -18,11 +20,10 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * To obtain the values of the UDFs when they are of type: CODE CODEDESC and
@@ -114,12 +115,19 @@ public class UserDefinedFieldsController extends EAMLightController {
 	 */
 	private List<CodeDescItem> getUDFCodeDescList(String rentity, String field) throws InforException {
 
-		GridRequest gridRequest = new GridRequest("BSUDLV_HDR");
+		GridRequest gridRequest = new GridRequest("LVUDFCD");
+		gridRequest.setGridType(GridRequest.GRIDTYPE.LOV);
+		gridRequest.getParams().put("param.field", field);
 		gridRequest.getParams().put("param.fieldid", field);
 		gridRequest.getParams().put("param.rentity", rentity);
-		List<CodeDescItem> response = inforClient.getTools().getGridTools().convertGridResultToObject(
-				CodeDescItem.class, null,
-				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+		gridRequest.getParams().put("param.associatedrentity", rentity);
+		GridRequestRow[] rows = inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest).getRows();
+		List<CodeDescItem> response = Arrays.stream(rows).map(row -> {
+			CodeDescItem entry = new CodeDescItem();
+			entry.setCode(GridTools.getCellContent("userdefinedfieldvalue", row));
+			entry.setDesc(GridTools.getCellContent("description", row));
+			return entry;
+		}).collect(Collectors.toList());
 		return response;
 	}
 
