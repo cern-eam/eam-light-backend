@@ -13,7 +13,6 @@ import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.InforException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +40,9 @@ public class UserService {
         userData.setWorkOrderScreen(getScreenCode("WSJOBS", "workorder", currentScreen, screenCode, userData));
         userData.setPartScreen(getScreenCode("SSPART", "part", currentScreen, screenCode, userData));
         userData.setLocationScreen(getScreenCode("OSOBJL", "location", currentScreen, screenCode, userData));
+
+
+        userData.setReports(screenService.getReports(authenticationTools.getInforContext(), userData.getEamAccount().getUserGroup()));
 
         return userData;
     }
@@ -111,4 +113,7 @@ public class UserService {
     public Employee getEmployee(InforContext inforContext, String employeeCode) throws InforException {
         return inforClient.getEmployeeService().readEmployee(inforContext, employeeCode);
     }
+
+
+
 }

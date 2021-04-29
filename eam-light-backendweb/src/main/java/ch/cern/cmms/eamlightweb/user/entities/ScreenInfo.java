@@ -25,6 +25,8 @@ public class ScreenInfo {
 	@GridField(name="tabavailable")
 	private boolean tabAvailable;
 
+
+
 	public String getScreenCode() {
 		return screenCode;
 	}

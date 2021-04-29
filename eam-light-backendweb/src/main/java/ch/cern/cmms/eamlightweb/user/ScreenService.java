@@ -4,6 +4,9 @@ import ch.cern.cmms.eamlightweb.user.entities.EamFunction;
 import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.administration.entities.MenuEntryNode;
+import ch.cern.eam.wshub.core.services.administration.entities.MenuRequestType;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter.JOINER;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -11,10 +14,13 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.security.cert.CollectionCertStoreParameters;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class ScreenService {
@@ -94,6 +100,14 @@ public class ScreenService {
         }));
 
         return functions;
+    }
+
+    public List<Pair> getReports(InforContext context, String userGroup) throws InforException {
+        MenuEntryNode menu = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(context, userGroup, MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS);
+        return menu.getChildren().stream()
+                .filter(m -> m.getDescription().equals("EAM Light Reports"))
+                .map(m -> m.getChildren().stream().map(ch -> new Pair(ch.getFunctionId(), ch.getDescription())).collect(Collectors.toList()))
+                .findFirst().orElse(null);
     }
 
 }
