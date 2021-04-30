@@ -4,11 +4,7 @@ import java.util.Arrays;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.interceptor.Interceptors;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
@@ -25,10 +21,10 @@ public class AutocompleteEquipmentCategory extends EAMLightController {
 	@Path("/eqp/category/{code}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response complete(@PathParam("code") String code)  {
+	public Response complete(@PathParam("code") String code, @QueryParam("class") @DefaultValue("") String eqpClass)  {
 		GridRequest gridRequest = new GridRequest( "LVCAT", GridRequest.GRIDTYPE.LOV, 10);
 
-		gridRequest.addParam("parameter.class", "");
+		gridRequest.addParam("parameter.class", eqpClass);
 		gridRequest.addParam("parameter.onlymatchclass", "");
 
 		gridRequest.sortBy("category");
