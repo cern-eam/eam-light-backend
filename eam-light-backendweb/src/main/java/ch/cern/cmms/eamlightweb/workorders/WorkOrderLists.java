@@ -16,20 +16,23 @@ import ch.cern.eam.wshub.core.tools.InforException;
 @Path("/wolists")
 @Interceptors({ RESTLoggingInterceptor.class })
 public class WorkOrderLists extends EAMLightController {
-
 	@GET
 	@Path("/problemcodes")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readProblemCodes(@QueryParam("woclass") String woclass, @QueryParam("objclass") String objclass) {
+	public Response readProblemCodes(
+			@QueryParam("woclass") String woclass,
+			@QueryParam("objclass") String objclass,
+			@QueryParam("equipment") String equipment) {
 		GridRequest gridRequest = new GridRequest("LVRECO", GridRequest.GRIDTYPE.LOV);
+		gridRequest.setUserFunctionName("WSJOBS");
 		//
 		gridRequest.addParam("param.objclass", objclass);
-		gridRequest.addParam("param.objclassorg", null);
+		gridRequest.addParam("param.objclassorg", authenticationTools.getOrganizationCode());
 		gridRequest.addParam("param.clgroup", null);
-		gridRequest.addParam("parameter.equipmentorg", null);
-		gridRequest.addParam("parameter.equipment", null);
-		return getPairListResponse(gridRequest, "101", "103");
+		gridRequest.addParam("parameter.equipmentorg", authenticationTools.getOrganizationCode());
+		gridRequest.addParam("parameter.equipment", equipment);
+		return getCodesResponse(gridRequest);
 	}
 
 	@GET
@@ -48,6 +51,10 @@ public class WorkOrderLists extends EAMLightController {
 			gridRequest.addParam("param.pexcclause", "A");
 		}
 		gridRequest.addParam("param.pfunrentity", "EVNT");
+
+		// This is the only exception where the numeric ids differ (See WorkOrderLists::getCodesResponse)
+		// 118=code
+		// 629=description
 		return getPairListResponse(gridRequest, "118", "629");
 	}
 
@@ -59,7 +66,7 @@ public class WorkOrderLists extends EAMLightController {
 		GridRequest gridRequest = new GridRequest("LVGROUPWOTYPE", GridRequest.GRIDTYPE.LOV);
 		gridRequest.addParam("parameter.pagemode", null);
 		gridRequest.addParam("parameter.usergroup", userGroup);
-		return getPairListResponse(gridRequest, "101", "103");
+		return getCodesResponse(gridRequest);
 	}
 
 	@GET
@@ -69,7 +76,7 @@ public class WorkOrderLists extends EAMLightController {
 	public Response readPriorityCodes() {
 		GridRequest gridRequest = new GridRequest("LVJBPR", GridRequest.GRIDTYPE.LOV);
 		gridRequest.addFilter("description", "Tou", "NOTCONTAINS");
-		return getPairListResponse(gridRequest, "priority", "description");
+		return getCodesResponse(gridRequest);
 	}
 
 	/**
@@ -84,17 +91,19 @@ public class WorkOrderLists extends EAMLightController {
 	@Path("/failurecodes")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readFailureCodes(@QueryParam("objclass") String objclass,
-			@QueryParam("problemcode") String problemCode) {
+	public Response readFailureCodes(
+			@QueryParam("objclass") String objclass,
+			@QueryParam("problemcode") String problemCode,
+			@QueryParam("equipment") String equipment) {
 		GridRequest gridRequest = new GridRequest("LVFAILURE", GridRequest.GRIDTYPE.LOV);
+		gridRequest.setUserFunctionName("WSJOBS");
 		gridRequest.addParam("param.objclass", objclass);
 		gridRequest.addParam("param.problemcod", problemCode);
-		gridRequest.addParam("param.objclassorg", null);
+		gridRequest.addParam("param.objclassorg", authenticationTools.getOrganizationCode());
 		gridRequest.addParam("param.clgroup", null);
-		gridRequest.addParam("userfunction", "WSJOBS");
-		gridRequest.addParam("parameter.equipmentorg", null);
-		gridRequest.addParam("parameter.equipment", null);
-		return getPairListResponse(gridRequest, "101", "103");
+		gridRequest.addParam("parameter.equipmentorg", authenticationTools.getOrganizationCode());
+		gridRequest.addParam("parameter.equipment", equipment);
+		return getCodesResponse(gridRequest);
 	}
 
 	/**
@@ -104,19 +113,22 @@ public class WorkOrderLists extends EAMLightController {
 	@Path("/causecodes")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readCauseCodes(@QueryParam("objclass") String objclass,
-			@QueryParam("failurecode") String failurecode, @QueryParam("problemcode") String problemcode) {
-			GridRequest gridRequest = new GridRequest("LVCAUSE", GridRequest.GRIDTYPE.LOV);
-			// objclassorg, clgroup, failurecode, problemcode, objclass
-			gridRequest.addParam("param.objclass", objclass);
-			gridRequest.addParam("param.failurecode", failurecode);
-			gridRequest.addParam("param.problemcode", problemcode);
-			gridRequest.addParam("param.objclassorg", null);
-			gridRequest.addParam("param.clgroup", null);
-			gridRequest.addParam("parameter.equipmentorg", null);
-			gridRequest.addParam("parameter.equipment", null);
-
-			return getPairListResponse(gridRequest, "101", "103");
+	public Response readCauseCodes(
+			@QueryParam("objclass") String objclass,
+			@QueryParam("failurecode") String failurecode,
+			@QueryParam("problemcode") String problemcode,
+			@QueryParam("equipment") String equipment) {
+		GridRequest gridRequest = new GridRequest("LVCAUSE", GridRequest.GRIDTYPE.LOV);
+		gridRequest.setUserFunctionName("WSJOBS");
+		// objclassorg, clgroup, failurecode, problemcode, objclass
+		gridRequest.addParam("param.objclass", objclass);
+		gridRequest.addParam("param.objclassorg", authenticationTools.getOrganizationCode());
+		gridRequest.addParam("param.failurecode", failurecode);
+		gridRequest.addParam("param.problemcode", problemcode);
+		gridRequest.addParam("param.clgroup", null);
+		gridRequest.addParam("parameter.equipmentorg", authenticationTools.getOrganizationCode());
+		gridRequest.addParam("parameter.equipment", equipment);
+		return getCodesResponse(gridRequest);
 	}
 
 	@GET
@@ -124,19 +136,30 @@ public class WorkOrderLists extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response readActionCodes(@QueryParam("objclass") String objclass,
-			@QueryParam("failurecode") String failurecode, @QueryParam("problemcode") String problemcode,
-			@QueryParam("causecode") String causecode) {
-			GridRequest gridRequest = new GridRequest("LVACTION", GridRequest.GRIDTYPE.LOV);
+			@QueryParam("failurecode") String failurecode,
+			@QueryParam("problemcode") String problemcode,
+			@QueryParam("causecode") String causecode,
+			@QueryParam("equipment") String equipment) {
+		GridRequest gridRequest = new GridRequest("LVACTION", GridRequest.GRIDTYPE.LOV);
 
-			gridRequest.addParam("param.objclass", objclass);
-			gridRequest.addParam("param.failurecode", failurecode);
-			gridRequest.addParam("param.problemcode", problemcode);
-			gridRequest.addParam("param.causecode", causecode);
-			gridRequest.addParam("param.objclassorg", null);
-			gridRequest.addParam("param.clgroup", null);
-			gridRequest.addParam("parameter.equipmentorg", null);
-			gridRequest.addParam("parameter.equipment", null);
+		gridRequest.addParam("param.objclass", objclass);
+		gridRequest.addParam("param.objclassorg", authenticationTools.getOrganizationCode());
+		gridRequest.addParam("param.failurecode", failurecode);
+		gridRequest.addParam("param.problemcode", problemcode);
+		gridRequest.addParam("param.causecode", causecode);
+		gridRequest.addParam("param.clgroup", null);
+		gridRequest.addParam("parameter.equipment", equipment);
+		gridRequest.addParam("parameter.equipmentorg", authenticationTools.getOrganizationCode());
+		return getCodesResponse(gridRequest);
+	}
 
-			return getPairListResponse(gridRequest, "101", "103");
+	private Response getCodesResponse(GridRequest gridRequest) {
+		// For the codes used in the work order, Infor EAM commonly uses:
+		// Column id 101 for the code cell
+		// Column id 103 for the description cell
+		// In the GridRequestResult, these are named, and this name could also be used
+		// However, since 101 and 103 are used in most requests, whereas the name differs per request,
+		// we have opted to use these numeric ids here
+		return getPairListResponse(gridRequest, "101", "103");
 	}
 }
