@@ -24,10 +24,10 @@ public class AutocompleteEquipmentParent extends EAMLightController {
 	private InforClient inforClient;
 
 	@GET
-	@Path("/eqp/parent/{type}/{code}")
+	@Path("/eqp/parent/{type}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response complete(@PathParam("type") String type, @PathParam("code") String code) {
+	public Response complete(@PathParam("type") String type, @QueryParam("code") String code) {
 			GridRequest gridRequest = new GridRequest( "LVOBJL_EQ", GridRequest.GRIDTYPE.LIST, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
 			gridRequest.setUseNative(false);
 
