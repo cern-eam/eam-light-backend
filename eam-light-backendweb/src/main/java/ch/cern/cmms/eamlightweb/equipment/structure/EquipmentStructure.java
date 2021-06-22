@@ -4,6 +4,7 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.OrganizationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.tools.InforException;
 import javax.ejb.EJB;
 import javax.inject.Inject;
@@ -48,12 +49,15 @@ public class EquipmentStructure extends EAMLightController {
     @Produces("application/json")
     @Consumes("application/json")
     public Response attachEquipment(ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure equipmentStructure){
-
-        try{
+        try {
             InforContext context = authenticationTools.getInforContext();
             OrganizationTools.assumeMonoOrg(context);
-            return ok(inforClient.getEquipmentStructureService().addEquipmentToStructure(context, equipmentStructure));
-        }catch (InforException ie){
+            inforClient.getEquipmentStructureService().addEquipmentToStructure(context, equipmentStructure);
+            Equipment childEquipment = inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipmentStructure.getChildCode());
+            equipmentStructure.setChildDesc(childEquipment.getDescription());
+            equipmentStructure.setChildType(childEquipment.getTypeCode());
+            return ok(equipmentStructure);
+        } catch (InforException ie){
             return serverError(ie);
         }
     }

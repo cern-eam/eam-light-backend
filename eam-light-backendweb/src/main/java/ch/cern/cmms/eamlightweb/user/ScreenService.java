@@ -29,6 +29,8 @@ public class ScreenService {
     private InforClient inforClient;
     private List<String> screens;
     public static final Map<String, Map<String, ScreenInfo>> screenCache = new ConcurrentHashMap<>();
+    public static final Map<String, List<Pair>> reportsCache = new ConcurrentHashMap<>();
+    public static final String REPORTS_MENU = "EAM Light Reports";
 
     @PostConstruct
     private void init() {
@@ -103,11 +105,14 @@ public class ScreenService {
     }
 
     public List<Pair> getReports(InforContext context, String userGroup) throws InforException {
-        MenuEntryNode menu = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(context, userGroup, MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS);
-        return menu.getChildren().stream()
-                .filter(m -> m.getDescription().equals("EAM Light Reports"))
-                .map(m -> m.getChildren().stream().map(ch -> new Pair(ch.getFunctionId(), ch.getDescription())).collect(Collectors.toList()))
-                .findFirst().orElse(null);
+        if (!reportsCache.containsKey(userGroup)) {
+            MenuEntryNode menu = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(context, userGroup, MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS);
+            reportsCache.put(userGroup,menu.getChildren().stream()
+                    .filter(m -> m.getDescription().equals(REPORTS_MENU))
+                    .map(m -> m.getChildren().stream().map(ch -> new Pair(ch.getFunctionId(), ch.getDescription())).collect(Collectors.toList()))
+                    .findFirst().orElse(null));
+        }
+        return reportsCache.get(userGroup);
     }
 
 }

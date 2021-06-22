@@ -53,8 +53,8 @@ public class ActivitiesLists extends EAMLightController {
 	 * 
 	 * @return Map with Infor parameters.
 	 */
-	private Map<String, Object> produceInforParamsForTaskDropdown() {
-		Map<String, Object> inforParams = new HashMap<String, Object>();
+	private Map<String, String> produceInforParamsForTaskDropdown() {
+		Map<String, String> inforParams = new HashMap<>();
 		inforParams.put("eventno", null);
 		inforParams.put("act", "20");
 		inforParams.put("personsreq", null);

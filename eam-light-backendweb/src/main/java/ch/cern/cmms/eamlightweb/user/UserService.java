@@ -41,7 +41,6 @@ public class UserService {
         userData.setPartScreen(getScreenCode("SSPART", "part", currentScreen, screenCode, userData));
         userData.setLocationScreen(getScreenCode("OSOBJL", "location", currentScreen, screenCode, userData));
 
-
         userData.setReports(screenService.getReports(authenticationTools.getInforContext(), userData.getEamAccount().getUserGroup()));
 
         return userData;

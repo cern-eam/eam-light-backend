@@ -26,8 +26,8 @@ public class AutocompleteEquipment extends EAMLightController {
 		gridRequest.setGridType(gridType);
 		gridRequest.setRowCount(10);
 		gridRequest.addParam("param.objectrtype", null);
-		gridRequest.addParam("param.loantodept", true);
-		gridRequest.addParam("param.bypassdeptsecurity", false);
+		gridRequest.addParam("param.loantodept", "true");
+		gridRequest.addParam("param.bypassdeptsecurity", "false");
 		gridRequest.addParam("parameter.filterutilitybill", null);
 		gridRequest.addParam("control.org", authenticationTools.getOrganizationCode());
 		gridRequest.addParam("param.cctrspcvalidation", "D");

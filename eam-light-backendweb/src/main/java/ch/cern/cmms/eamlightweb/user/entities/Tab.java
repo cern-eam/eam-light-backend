@@ -15,6 +15,12 @@ public class Tab {
         tabAvailable = false;
     }
 
+    public Tab(Map<String, ElementInfo> fields) {
+        this.fields = fields;
+        alwaysDisplayed = false;
+        tabAvailable = false;
+    }
+
     public Map<String, ElementInfo> getFields() {
         return fields;
     }
