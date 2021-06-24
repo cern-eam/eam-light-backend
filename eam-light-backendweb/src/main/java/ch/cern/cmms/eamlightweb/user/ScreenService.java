@@ -105,14 +105,16 @@ public class ScreenService {
     }
 
     public List<Pair> getReports(InforContext context, String userGroup) throws InforException {
-        if (!reportsCache.containsKey(userGroup)) {
-            MenuEntryNode menu = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(context, userGroup, MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS);
-            reportsCache.put(userGroup,menu.getChildren().stream()
-                    .filter(m -> m.getDescription().equals(REPORTS_MENU))
-                    .map(m -> m.getChildren().stream().map(ch -> new Pair(ch.getFunctionId(), ch.getDescription())).collect(Collectors.toList()))
-                    .findFirst().orElse(null));
-        }
-        return reportsCache.get(userGroup);
+
+            if (!reportsCache.containsKey(userGroup)) {
+                MenuEntryNode menu = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(context, userGroup, MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS);
+                reportsCache.put(userGroup, menu.getChildren().stream()
+                        .filter(m -> m.getDescription().equals(REPORTS_MENU))
+                        .map(m -> m.getChildren().stream().map(ch -> new Pair(ch.getFunctionId(), ch.getDescription())).collect(Collectors.toList()))
+                        .findFirst().orElse(new LinkedList<Pair>() {
+                        }));
+            }
+            return reportsCache.get(userGroup);
     }
 
 }
