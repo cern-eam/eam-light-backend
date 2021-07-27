@@ -31,11 +31,16 @@ public class MyWorkOrders {
     public List<MyWorkOrder> getMyOpenWorkOrders() throws InforException {
         String userCode = authenticationTools.getInforContext().getCredentials().getUsername();
         EAMUser eamUser = userService.readUserSetup(authenticationTools.getInforContext(), userCode);
+
+        // If EAM User has no associated employee, return an empty list
+        if (eamUser.getEmployeeCode() == null || "".equals(eamUser.getEmployeeCode().trim())) {
+            return new ArrayList<>();
+        }
         //
         GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
         gridRequest.addFilter("assignedto", eamUser.getEmployeeCode(), "=", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
-        return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
+        return GridTools.convertGridResultToObject(MyWorkOrder.class,
                 null,
                 inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
     }
