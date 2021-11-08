@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -214,7 +215,7 @@ public class PartUsageRest extends EAMLightController {
 						null,
 						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
-				partUsageList.stream().forEach(partUsage -> setPartUsageTransType(partUsage));
+				partUsageList = transformPartUsageList(partUsageList);
 			}
 			return ok(partUsageList);
 		} catch (InforException e) {
@@ -224,21 +225,38 @@ public class PartUsageRest extends EAMLightController {
 		}
 	}
 
-	private void setPartUsageTransType(WorkOrderPart workOrderPartUsage) {
-		try {
-			if (workOrderPartUsage.getPlannedQty().compareTo(BigDecimal.ZERO) == 1) {
-				workOrderPartUsage.setTransType("Planned");
-				workOrderPartUsage.setQuantity(workOrderPartUsage.getPlannedQty());
-			} else if (workOrderPartUsage.getUsedQty().compareTo(BigDecimal.ZERO) < 0) {
-				workOrderPartUsage.setTransType("Return");
-				workOrderPartUsage.setQuantity(workOrderPartUsage.getUsedQty().abs());
-			} else {
-				workOrderPartUsage.setTransType("Issue");
-				workOrderPartUsage.setQuantity(workOrderPartUsage.getUsedQty());
+	private List<WorkOrderPart> transformPartUsageList(List<WorkOrderPart> list) {
+		List<WorkOrderPart> rows = new ArrayList<>();
+
+		Function<WorkOrderPart, WorkOrderPart> cloneWoPart = woPart -> {
+			try {
+				return (WorkOrderPart) woPart.clone();
+			} catch(CloneNotSupportedException e) {
+				throw new RuntimeException("Failed to clone WorkOrderPart");
 			}
-		} catch (Exception e) {
-			workOrderPartUsage.setTransType("Issue");
-		}
+		};
+
+		list.stream().forEach(woPart -> {
+			if (woPart.getPlannedQty() != null && woPart.getPlannedQty().compareTo(BigDecimal.ZERO) == 1) {
+				WorkOrderPart clone = cloneWoPart.apply(woPart);
+				clone.setTransType("Planned");
+				clone.setQuantity(clone.getPlannedQty());
+				rows.add(clone);
+			}
+
+			if (woPart.getUsedQty() != null) {
+				int usedQtyCompareToZero = woPart.getUsedQty().compareTo(BigDecimal.ZERO);
+				if (usedQtyCompareToZero != 0) {
+					WorkOrderPart clone = cloneWoPart.apply(woPart);
+					boolean issue = usedQtyCompareToZero > 0;
+					clone.setTransType(issue ? "Issue" : "Return");
+					clone.setQuantity(clone.getUsedQty().abs());
+					rows.add(clone);
+				}
+			}
+		});
+
+		return rows;
 	}
 
 }
