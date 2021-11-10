@@ -9,6 +9,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
@@ -24,7 +25,7 @@ public class AutocompleteACTTask extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@PathParam("code") String code) {
-		GridRequest gridRequest = new GridRequest("LVWTSK", GridRequest.GRIDTYPE.LOV);
+		GridRequest gridRequest = new GridRequest("LVWTSK", GridRequest.GRIDTYPE.LOV, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
 
 		gridRequest.addParam("param.isolationmethod", null);
 		gridRequest.addParam("param.excludemultipletrades", null);
@@ -38,6 +39,9 @@ public class AutocompleteACTTask extends EAMLightController {
 		gridRequest.addParam("param.esthrs", null);
 		gridRequest.addParam("param.manufacturer", null);
 		gridRequest.addParam("param.personsreq", null);
+		gridRequest.addParam("param.act", null);
+		gridRequest.addParam("param.esthrs", null);
+		gridRequest.addParam("param.manufacturer", null);
 		gridRequest.addParam("param.reasonforrepair", null);
 		gridRequest.addParam("param.syslevel", null);
 		gridRequest.addParam("param.taskuom", null);
