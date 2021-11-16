@@ -10,6 +10,9 @@ public class UserDefinedFieldDescription {
     @GridField(name="udf_lookuptype")
     private String lookupType;
 
+    @GridField(name="udf_uom")
+    private String uom;
+
     public String getLookupREntity() {
         return lookupREntity;
     }
@@ -24,5 +27,13 @@ public class UserDefinedFieldDescription {
 
     public void setLookupType(String lookupType) {
         this.lookupType = lookupType;
+    }
+
+    public String getUom() {
+        return uom;
+    }
+
+    public void setUom(String uom) {
+        this.uom = uom;
     }
 }
