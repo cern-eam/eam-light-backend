@@ -34,7 +34,7 @@ public class OpenIdTools {
                     // Remove the 'Bearer ' from the Authorization header.
                     .parseClaimsJws(authorizationHeader.substring(7));
             String userName = (String) jwt.getBody().get(Tools.getVariableValue("OPENID_INFOR_USER_TOKEN"));
-            return userName;
+            return userName.toUpperCase();
         } catch (ExpiredJwtException expiredException) {
            throw new InforException("Expired.", null, null);
         }
