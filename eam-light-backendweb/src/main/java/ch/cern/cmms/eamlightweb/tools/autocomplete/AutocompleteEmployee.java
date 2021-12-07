@@ -13,8 +13,11 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Path("/autocomplete")
 @ApplicationScoped
@@ -47,6 +50,6 @@ public class AutocompleteEmployee extends EAMLightController {
 
 		gridRequest.sortBy("description");
 
-		return getPairListResponse(gridRequest,"personcode", "description");
+		return getMapListResponse(gridRequest, "personcode", "description");
 	}
 }
