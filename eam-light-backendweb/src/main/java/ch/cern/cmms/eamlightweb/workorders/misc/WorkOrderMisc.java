@@ -19,6 +19,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
+import net.datastream.schemas.mp_results.mp7336_001.AdditionalWOEquipDetails;
 
 @Path("/workordersmisc")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -80,4 +81,17 @@ public class WorkOrderMisc extends EAMLightController {
 		}
 	}
 
+	@GET
+	@Path("/equipment/{eqCode}/details")
+	@Produces("application/json")
+	public Response getWOEquipLinearDetails(@PathParam("eqCode") String eqCode) throws InforException {
+		try {
+			final AdditionalWOEquipDetails woEquipLinearDetails = inforClient.getWorkOrderMiscService().getWOEquipLinearDetails(authenticationTools.getR5InforContext(), eqCode);
+			return ok(woEquipLinearDetails);
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
 }
