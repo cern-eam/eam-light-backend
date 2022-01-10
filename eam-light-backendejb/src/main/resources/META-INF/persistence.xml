@@ -14,6 +14,7 @@
         <class>ch.cern.eam.wshub.core.services.grids.entities.GridMetadataRequestResult</class>
         <class>ch.cern.eam.wshub.core.services.grids.entities.DataspyField</class>
         <class>ch.cern.eam.wshub.core.services.grids.customfields.DataspyCustomField</class>
+        <class>ch.cern.eam.wshub.core.services.entities.LocaleInfo</class>
         <class>ch.cern.eam.wshub.core.services.material.entities.Part</class>
         <class>ch.cern.eam.wshub.core.services.equipment.entities.Equipment</class>
         <class>ch.cern.eam.wshub.core.services.documents.entities.InforDocEntity</class>
