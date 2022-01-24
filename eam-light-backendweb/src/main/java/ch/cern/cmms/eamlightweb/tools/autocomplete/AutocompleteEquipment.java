@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/autocomplete")
@@ -42,7 +43,9 @@ public class AutocompleteEquipment extends EAMLightController {
 	@Consumes("application/json")
 	public Response complete(@QueryParam("s") String code) {
 		GridRequest gridRequest = prepareGridRequest(GridRequest.GRIDTYPE.LOV);
-		gridRequest.addFilter("equipmentcode", code.toUpperCase(), "BEGINS");
+		gridRequest.addFilter("equipmentno", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR);
+		gridRequest.addFilter("alias", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR);
+		gridRequest.addFilter("serialnumber", code.toUpperCase(), "BEGINS");
 		return getPairListResponse(gridRequest, "equipmentcode", "equipmentdesc");
 	}
 
