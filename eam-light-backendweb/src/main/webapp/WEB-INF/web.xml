@@ -4,4 +4,26 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
 
+	<module-name>application-eamlight</module-name>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Application</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>default-role</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+
+	<login-config>
+		<auth-method>KEYCLOAK</auth-method>
+		<realm-name>this is ignored currently</realm-name>
+	</login-config>
+
+
+	<security-role>
+		<role-name>default-role</role-name>
+	</security-role>
+
 </web-app>

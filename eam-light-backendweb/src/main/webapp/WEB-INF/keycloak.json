@@ -1,0 +1,9 @@
+{
+  "realm": "${env.KEYCLOAK_REALM}",
+  "auth-server-url": "${env.KEYCLOAK_SERVER}",
+  "ssl-required": "none",
+  "resource": "eam-light",
+  "bearer-only" : true,
+  "principal-attribute": "cern_upn",
+  "use-resource-role-mappings": true
+}

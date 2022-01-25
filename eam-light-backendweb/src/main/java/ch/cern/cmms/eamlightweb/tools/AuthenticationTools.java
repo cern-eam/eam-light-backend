@@ -14,14 +14,17 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.DataTypeTools;
 import ch.cern.eam.wshub.core.tools.InforException;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Set;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @RequestScoped
 public class AuthenticationTools {
@@ -54,24 +57,34 @@ public class AuthenticationTools {
         String sessionid = null;
         String authenticationMode = applicationData.getAuthenticationMode();
         String headerUser = request.getHeader("INFOR_USER");
-
         if ("LOCAL".equalsIgnoreCase(authenticationMode)) {
             user = applicationData.getDefaultUser();
             if (user == null) {
-                user = System.getProperty("DEFAULT_USER").toUpperCase();
+                user = System.getProperty("DEFAULT_USER");
             }
             user = getUnderlyingUser(user);
             password = applicationData.getAdminPassword();
             tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
         } else if ("SSO".equalsIgnoreCase(authenticationMode)) {
-            user = getUnderlyingUser(request.getHeader("ADFS_LOGIN").toUpperCase());
+            user = getUnderlyingUser(request.getHeader("ADFS_LOGIN"));
             password = applicationData.getAdminPassword();
             tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
         } else if ("OPENID".equalsIgnoreCase(authenticationMode)) {
-            String header =  request.getHeader("Authorization");
+            String header = request.getHeader("Authorization");
             user = getUnderlyingUser(openIdTools.getUserName(header));
+            password = applicationData.getAdminPassword();
+            tenant = applicationData.getTenant();
+            organization = applicationData.getDefaultOrganization();
+        } else if ("KEYCLOAK".equalsIgnoreCase(authenticationMode)) {
+            try {
+                KeycloakPrincipal<KeycloakSecurityContext> kp = (KeycloakPrincipal<KeycloakSecurityContext>) request.getUserPrincipal();
+                String username = kp.getKeycloakSecurityContext().getToken().getPreferredUsername();
+                user = getUnderlyingUser(username);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             password = applicationData.getAdminPassword();
             tenant = applicationData.getTenant();
             organization = applicationData.getDefaultOrganization();
@@ -100,7 +113,7 @@ public class AuthenticationTools {
         // Credentials, Session ID
         if (isNotEmpty(user) && isNotEmpty(password)) {
             Credentials credentials = new Credentials();
-            credentials.setUsername(user);
+            credentials.setUsername(user.toUpperCase());
             credentials.setPassword(password);
             inforContext.setCredentials(credentials);
         } else if (isNotEmpty(sessionid)) {

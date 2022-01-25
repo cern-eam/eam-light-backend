@@ -96,7 +96,7 @@
 		<profile>
 			<id>CERN</id>
 			<properties>
-				<project.contextRoot>/SSO/eamlightws</project.contextRoot>
+				<project.contextRoot>/apis/eamlightws</project.contextRoot>
 			</properties>
 			<dependencies>
 				<dependency>
