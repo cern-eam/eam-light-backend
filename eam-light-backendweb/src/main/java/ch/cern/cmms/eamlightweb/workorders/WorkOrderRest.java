@@ -70,6 +70,8 @@ public class WorkOrderRest extends EAMLightController {
 	public Response updateWorkOrder(WorkOrder workOrder) {
 		try {
 			assumeEquipmentMonoOrg(workOrder);
+			// We confirm the following on the front-end
+			workOrder.setConfirmedIncompleteChecklist(true);
 			inforClient.getWorkOrderService().updateWorkOrder(authenticationTools.getInforContext(), workOrder);
 			// Read again the work order
 			return ok(inforClient.getWorkOrderService().readWorkOrder(authenticationTools.getInforContext(), workOrder.getNumber()));
