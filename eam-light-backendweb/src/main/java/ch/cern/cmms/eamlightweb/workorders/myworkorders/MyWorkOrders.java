@@ -93,8 +93,9 @@ public class MyWorkOrders {
         // use star organization to get all work orders, independently of organization
         workOrdersGridRequest.addParam("parameter.objorganization", "*");
 
-        workOrdersGridRequest.addFilter("eventtype", "JOB", "=", GridRequestFilter.JOINER.OR);
-        workOrdersGridRequest.addFilter("eventtype", "PPM", "=");
+        workOrdersGridRequest.addFilter("eventtype", "JOB", "=", GridRequestFilter.JOINER.OR, true, false);
+        workOrdersGridRequest.addFilter("eventtype", "PPM", "=", GridRequestFilter.JOINER.AND , false, true);
+        workOrdersGridRequest.addFilter("wotype", "IS - ", "NOTCONTAINS");
         workOrdersGridRequest.sortBy("datecreated", "DESC");
 
         List<MyWorkOrder> workOrders = gridTools.convertGridResultToObject(MyWorkOrder.class, null,

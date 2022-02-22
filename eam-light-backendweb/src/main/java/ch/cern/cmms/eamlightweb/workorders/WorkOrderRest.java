@@ -12,6 +12,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
+import ch.cern.eam.wshub.core.tools.Tools;
 
 import static ch.cern.cmms.eamlightweb.tools.OrganizationTools.assumeEquipmentMonoOrg;
 
@@ -31,7 +32,13 @@ public class WorkOrderRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response readWorkOrder(@PathParam("workorder") String number) {
 		try {
-			return ok(inforClient.getWorkOrderService().readWorkOrder(authenticationTools.getInforContext(), number));
+			WorkOrder workOrder = inforClient.getWorkOrderService().readWorkOrder(authenticationTools.getInforContext(), number);
+
+			if ("IS".equals(workOrder.getTypeCode())) {
+				throw Tools.generateFault("Invalid work order");
+			}
+
+			return ok(workOrder);
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
