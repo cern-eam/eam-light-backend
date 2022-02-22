@@ -86,7 +86,7 @@ public class WorkOrderMisc extends EAMLightController {
 	@Produces("application/json")
 	public Response getWOEquipLinearDetails(@PathParam("eqCode") String eqCode) throws InforException {
 		try {
-			final AdditionalWOEquipDetails woEquipLinearDetails = inforClient.getWorkOrderMiscService().getWOEquipLinearDetails(authenticationTools.getR5InforContext(), eqCode);
+			final AdditionalWOEquipDetails woEquipLinearDetails = inforClient.getWorkOrderMiscService().getEquipLinearDetails(authenticationTools.getR5InforContext(), eqCode);
 			return ok(woEquipLinearDetails);
 		} catch (InforException e) {
 			return badRequest(e);
