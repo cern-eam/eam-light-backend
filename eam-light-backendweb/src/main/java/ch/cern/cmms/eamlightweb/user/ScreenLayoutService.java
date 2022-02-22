@@ -150,6 +150,7 @@ public class ScreenLayoutService {
         if(description != null) {
             elementInfo.setUdfLookupEntity(description.getLookupREntity());
             elementInfo.setUdfLookupType(description.getLookupType());
+            elementInfo.setUdfUom(description.getUom());
         }
         return elementInfo;
     }
