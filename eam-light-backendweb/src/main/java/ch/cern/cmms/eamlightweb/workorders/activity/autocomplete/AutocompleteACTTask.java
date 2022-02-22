@@ -39,9 +39,6 @@ public class AutocompleteACTTask extends EAMLightController {
 		gridRequest.addParam("param.esthrs", null);
 		gridRequest.addParam("param.manufacturer", null);
 		gridRequest.addParam("param.personsreq", null);
-		gridRequest.addParam("param.act", null);
-		gridRequest.addParam("param.esthrs", null);
-		gridRequest.addParam("param.manufacturer", null);
 		gridRequest.addParam("param.reasonforrepair", null);
 		gridRequest.addParam("param.syslevel", null);
 		gridRequest.addParam("param.taskuom", null);
