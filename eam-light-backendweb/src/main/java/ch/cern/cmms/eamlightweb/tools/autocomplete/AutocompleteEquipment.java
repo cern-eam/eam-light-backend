@@ -41,11 +41,15 @@ public class AutocompleteEquipment extends EAMLightController {
 	@Path("/eqp")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response complete(@QueryParam("s") String code) {
+	public Response complete(@QueryParam("s") String code, @QueryParam("a") String alias, @QueryParam("n") String serialNo) {
 		GridRequest gridRequest = prepareGridRequest(GridRequest.GRIDTYPE.LOV);
 		gridRequest.addFilter("equipmentno", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR);
-		gridRequest.addFilter("alias", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR);
-		gridRequest.addFilter("serialnumber", code.toUpperCase(), "BEGINS");
+		if (alias != null) {
+			gridRequest.addFilter("alias", alias.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR);
+		}
+		if (serialNo != null) {
+			gridRequest.addFilter("serialnumber", serialNo.toUpperCase(), "BEGINS");
+		}
 		return getPairListResponse(gridRequest, "equipmentcode", "equipmentdesc");
 	}
 
