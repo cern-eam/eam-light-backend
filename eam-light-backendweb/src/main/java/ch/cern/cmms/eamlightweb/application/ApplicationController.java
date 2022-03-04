@@ -67,6 +67,7 @@ public class ApplicationController extends EAMLightController {
 		ScreenLayoutService.screenLayoutCache.clear();
 		ScreenLayoutService.screenLayoutLabelCache.clear();
 		ScreenService.screenCache.clear();
+		ScreenService.reportsCache.clear();
 		InforGrids.gridFieldCache.clear();
 		GridsServiceImpl.gridIdCache.clear();
 		CustomFieldsController.customFieldsLookupValuesCache.clear();

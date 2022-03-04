@@ -1,6 +1,9 @@
 package ch.cern.cmms.eamlightweb.user.entities;
 
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.entities.Pair;
+
+import java.util.List;
 import java.util.Map;
 
 public class UserData {
@@ -13,6 +16,7 @@ public class UserData {
 	private String workOrderScreen;
 	private String partScreen;
 	private String locationScreen;
+	private List<Pair> reports;
 
 	public EAMUser getEamAccount() {
 		return eamAccount;
@@ -82,6 +86,13 @@ public class UserData {
 		return "EN";
 	}
 
+	public List<Pair> getReports() {
+		return reports;
+	}
+
+	public void setReports(List<Pair> reports) {
+		this.reports = reports;
+	}
 
 	@Override
 	public String toString() {
