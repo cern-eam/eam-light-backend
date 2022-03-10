@@ -8,7 +8,7 @@
         <class>ch.cern.cmms.eamlightejb.index.IndexResult</class>
         <class>ch.cern.cmms.eamlightejb.equipment.EquipmentChildren</class>
         <class>ch.cern.cmms.eamlightejb.equipment.EquipmentTreeNode</class>
-        <class>ch.cern.cmms.watchers.WatcherInfo</class>
+        <class>ch.cern.cmms.eamlightejb.watchers.WatcherInfo</class>
         <class>ch.cern.eam.wshub.core.services.entities.InstallParameters</class>
         <class>ch.cern.eam.wshub.core.services.grids.entities.GridField</class>
         <class>ch.cern.eam.wshub.core.services.grids.entities.GridDataspy</class>

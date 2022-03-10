@@ -2,11 +2,8 @@ package ch.cern.cmms.eamlightweb.tools.autocomplete;
 
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.watchers.WatcherInfo;
-import ch.cern.cmms.watchers.WatchersService;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
-import ch.cern.eam.wshub.core.tools.GridTools;
+import ch.cern.cmms.eamlightejb.watchers.WatcherInfo;
+import ch.cern.cmms.eamlightejb.watchers.WatchersService;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,9 +11,7 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Path("/autocomplete")
 @ApplicationScoped
@@ -38,7 +33,17 @@ public class AutocompleteUser extends EAMLightController {
     @Path("/workorders/{wo}/users/")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response completeFilteredByWOAccess(@QueryParam("hint") String hint, @PathParam("wo") String woCode) throws InforException {
+    public Response completeFilteredByWOAccess(@QueryParam("hint") String hint, @PathParam("wo") String woCode) {
+        final List<WatcherInfo> filteredWatcherInfo = watchersService.getFilteredWatcherInfo(woCode, hint);
+        return ok(filteredWatcherInfo);
+    }
+
+    @GET
+    @Path("/workorders/{wo}/users/search")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response completeFilteredByWOAccessSearch(@QueryParam("hint") String hint,
+                                                      @PathParam("wo") String woCode) {
         final List<WatcherInfo> filteredWatcherInfo = watchersService.getFilteredWatcherInfo(woCode, hint);
         return ok(filteredWatcherInfo);
     }

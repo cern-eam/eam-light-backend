@@ -1,4 +1,4 @@
-package ch.cern.cmms.watchers;
+package ch.cern.cmms.eamlightejb.watchers;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,7 +13,16 @@ import java.io.Serializable;
                         "     INNER JOIN R5DEPARTMENTSECURITY " +
                         "        ON DSE_MRC = (SELECT EVT_MRC FROM R5EVENTS WHERE EVT_CODE = :evtCode ) " +
                         "        AND DSE_USER = USR_CODE " +
-                        " WHERE USR_CODE LIKE :hint ",
+                        " WHERE USR_CODE LIKE :hint " +
+                        " OR  REGEXP_LIKE(( " +
+                        "         SELECT LISTAGG(TRIM(TRIM(CHR(9) FROM UPPER(NAME))), ',') WITHIN GROUP ( ORDER BY NAME) " +
+                            " FROM ( " +
+                            "         SELECT regexp_substr(USR_DESC, '[^ ]+', 1, level) AS NAME " +
+                            "         FROM DUAL " +
+                            "         CONNECT BY regexp_substr(USR_DESC, '[^ ]+', 1, level) IS NOT NULL " +
+                            " ) " +
+                        " ) " +
+                        "     , :regex )",
                 resultClass = WatcherInfo.class
         ),
         @NamedNativeQuery(

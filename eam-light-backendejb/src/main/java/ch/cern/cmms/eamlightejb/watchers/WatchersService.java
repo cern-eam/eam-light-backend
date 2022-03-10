@@ -1,4 +1,4 @@
-package ch.cern.cmms.watchers;
+package ch.cern.cmms.eamlightejb.watchers;
 
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
@@ -156,10 +156,20 @@ public class WatchersService {
         if (hint == null) {
             return new ArrayList<>();
         }
+
+        final String orderedNames = Arrays.stream(hint.split(" "))
+                .map(String::toUpperCase)
+                .map(String::trim)
+                .sorted()
+                .map(str -> str + ".*")
+                .collect(Collectors.joining(","));
+        final String regex = "(^|,)" + orderedNames;
+
         return inforClient.getTools().getEntityManager()
                 .createNamedQuery(WatcherInfo.FILTER_WATCHERS_BY_WO_ACCESS_HINT, WatcherInfo.class)
                 .setParameter("evtCode", woCode)
                 .setParameter("hint", hint.trim().toUpperCase() + "%")
+                .setParameter("regex", regex)
                 .setMaxResults(30)
                 .getResultList();
     }

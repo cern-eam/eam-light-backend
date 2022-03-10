@@ -1,6 +1,6 @@
 package ch.cern.cmms.eamlightweb.watchers;
 
-import ch.cern.cmms.watchers.WatchersService;
+import ch.cern.cmms.eamlightejb.watchers.WatchersService;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -12,7 +12,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/")
+@Path("/workorders")
 @ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
 public class WatchersController extends EAMLightController {
@@ -21,7 +21,7 @@ public class WatchersController extends EAMLightController {
     private WatchersService watchersService;
 
     @GET
-    @Path("/workorders/{woCode}/watchers")
+    @Path("/{woCode}/watchers")
     @Produces("application/json")
     public Response getWatchersForWorkOrder(@PathParam("woCode") String woCode) {
         try {
@@ -34,7 +34,7 @@ public class WatchersController extends EAMLightController {
     }
 
     @POST
-    @Path("/workorders/{woCode}/watchers")
+    @Path("/{woCode}/watchers")
     @Consumes("application/json")
     @Produces("application/json")
     public Response addWatchersToWorkOrder(@PathParam("woCode") String woCode, List<String> users) {
@@ -49,7 +49,7 @@ public class WatchersController extends EAMLightController {
     }
 
     @PUT
-    @Path("/workorders/{woCode}/watchers/remove")
+    @Path("/{woCode}/watchers/remove")
     @Consumes("application/json")
     @Produces("application/json")
     public Response removeWatchersFromWorkOrder(@PathParam("woCode") String woCode, List<String> users) {
