@@ -13,6 +13,7 @@ import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 
 
 @Path("/autocomplete")
@@ -26,7 +27,9 @@ public class AutocompleteEquipmentReplacement extends EAMLightController {
 	@Consumes("application/json")
 	public Response complete(@PathParam("code") String code) {
 		GridRequest gridRequest = new GridRequest( "OSOBJA", GridRequest.GRIDTYPE.LIST, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
-		gridRequest.addFilter("equipmentno", code.toUpperCase(), "BEGINS");
+		gridRequest.addFilter("equipmentno", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR);
+		gridRequest.addFilter("alias", code.toUpperCase(), "BEGINS", GridRequestFilter.JOINER.OR);
+		gridRequest.addFilter("serialnumber", code.toUpperCase(), "BEGINS");
 		return getPairListResponse(gridRequest, "equipmentno", "equipmentdesc");
 	}
 
