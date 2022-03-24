@@ -4,6 +4,9 @@ import ch.cern.cmms.eamlightweb.user.entities.EamFunction;
 import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.administration.entities.MenuEntryNode;
+import ch.cern.eam.wshub.core.services.administration.entities.MenuRequestType;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter.JOINER;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -15,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class ScreenService {
@@ -23,6 +28,8 @@ public class ScreenService {
     private InforClient inforClient;
     private List<String> screens;
     public static final Map<String, Map<String, ScreenInfo>> screenCache = new ConcurrentHashMap<>();
+    public static final Map<String, List<Pair>> reportsCache = new ConcurrentHashMap<>();
+    public static final String EAM_REPORTS_MENU = "EAM Light Reports";
 
     @PostConstruct
     private void init() {
@@ -57,7 +64,7 @@ public class ScreenService {
                                             inforClient.getGridsService().executeQuery(context, gridRequestLayout));
 
         // Populate the parent screen for fetched screens
-        screens.values().stream().forEach(screen -> {
+        screens.values().forEach(screen -> {
             screen.setParentScreen(functions.get(screen.getScreenCode()).getParentScreenCode());
             screen.setStartupAction(functions.get(screen.getScreenCode()).getStartUpModeDisplayCode());
         });
@@ -94,6 +101,30 @@ public class ScreenService {
         }));
 
         return functions;
+    }
+
+    public List<Pair> getReports(InforContext context, String userGroup) throws InforException {
+        if (!reportsCache.containsKey(userGroup)) {
+            MenuEntryNode menu = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(
+                    context,
+                    userGroup,
+                    MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS
+            );
+
+            List<Pair> reports = menu.getChildren().stream()
+                    .flatMap(ScreenService::flattenMenuTree)
+                    .filter(option -> option.getParentMenuEntry().getDescription().equals(EAM_REPORTS_MENU))
+                    .map(report -> new Pair(report.getFunctionId(), report.getDescription()))
+                    .collect(Collectors.toList());
+
+            reportsCache.put(userGroup, reports);
+        }
+
+        return reportsCache.get(userGroup);
+    }
+
+    private static Stream<MenuEntryNode> flattenMenuTree(MenuEntryNode n) {
+        return Stream.concat(Stream.of(n), n.getChildren().stream().flatMap(ScreenService::flattenMenuTree));
     }
 
 }
