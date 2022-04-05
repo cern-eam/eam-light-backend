@@ -23,6 +23,7 @@ import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
 import ch.cern.eam.wshub.core.services.grids.entities.*;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
@@ -163,7 +164,8 @@ public class EquipmentRest extends EAMLightController {
 			gridRequest.setRowCount(2000);
 			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
 			gridRequest.sortBy("wocompleted", "DESC");
-			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(EquipmentHistory.class,
+			gridRequest.setLocalizeResults(false);
+			return ok(GridTools.convertGridResultToObject(EquipmentHistory.class,
 					  null,
 					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
 		} catch(Exception e) {
