@@ -69,9 +69,22 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.3.2</version>
+			</plugin>
+		</plugins>
+	</build>
+
 	<profiles>
 		<profile>
 			<id>CERN</id>
+			<properties>
+				<maven.war.webxml>src/main/webapp/WEB-INF/cern/web.xml</maven.war.webxml>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>ch.cern.cmms</groupId>
@@ -83,6 +96,9 @@
 		</profile>
 		<profile>
 			<id>OPEN</id>
+			<properties>
+				<maven.war.webxml>src/main/webapp/WEB-INF/open/web.xml</maven.war.webxml>
+			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
