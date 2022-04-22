@@ -53,7 +53,7 @@ public class AutocompleteEquipment extends EAMLightController {
 			gridFilters.add(new Pair("alias", alias));
 		}
 		if (serialNo != null && serialNo.trim().length() > 0) {
-			gridFilters.add(new Pair("serialno", serialNo));
+			gridFilters.add(new Pair("serialnumber", serialNo));
 		}
 
 		for (Pair column: gridFilters) {
