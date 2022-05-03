@@ -29,7 +29,7 @@ public class ScreenService {
     private List<String> screens;
     public static final Map<String, Map<String, ScreenInfo>> screenCache = new ConcurrentHashMap<>();
     public static final Map<String, List<Pair>> reportsCache = new ConcurrentHashMap<>();
-    public static final String EAM_REPORTS_MENU = "EAM Light Reports";
+    public static final String EAM_REPORTS_MENU = "Grids for EAM Light";
 
     @PostConstruct
     private void init() {
