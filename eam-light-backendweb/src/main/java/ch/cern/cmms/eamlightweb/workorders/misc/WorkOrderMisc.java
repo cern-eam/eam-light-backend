@@ -18,6 +18,7 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.schemas.mp_results.mp7336_001.AdditionalWOEquipDetails;
 
@@ -88,6 +89,23 @@ public class WorkOrderMisc extends EAMLightController {
 		try {
 			final AdditionalWOEquipDetails woEquipLinearDetails = inforClient.getWorkOrderMiscService().getEquipLinearDetails(authenticationTools.getR5InforContext(), eqCode);
 			return ok(woEquipLinearDetails);
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
+	@GET
+	@Path("/otherid/{workorder}")
+	@Produces("application/json")
+	public Response getWOEqOtherIds(@PathParam("workorder") String workorder) {
+		try {
+			GridRequest gridRequestWoEqOi = new GridRequest("UUOIEQ", 1000);
+			gridRequestWoEqOi.addFilter("workorder", workorder, "EQUALS", GridRequestFilter.JOINER.AND);
+			Map<String, String> eqToOtherId = inforClient.getTools().getGridTools().convertGridResultToMap("equipment", "otherid",
+									inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequestWoEqOi));
+			return ok(eqToOtherId);
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
