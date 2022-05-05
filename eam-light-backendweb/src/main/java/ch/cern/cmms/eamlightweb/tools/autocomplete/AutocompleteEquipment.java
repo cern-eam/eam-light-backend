@@ -1,6 +1,6 @@
 package ch.cern.cmms.eamlightweb.tools.autocomplete;
 
-import ch.cern.cmms.eamlightejb.equipment.tools.EquipmentSearch;
+import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class AutocompleteEquipment extends EAMLightController {
 
 	@Inject
-	private EquipmentSearch equipmentSearch;
+	private EquipmentEJB equipmentEJB;
 
 	private GridRequest prepareGridRequest(GridRequest.GRIDTYPE gridType)  {
 		GridRequest gridRequest = new GridRequest("67", "LVOBJL", "59");
@@ -41,28 +41,8 @@ public class AutocompleteEquipment extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response complete(@QueryParam("s") String code) {
-//		GridRequest gridRequest = prepareGridRequest(GridRequest.GRIDTYPE.LOV);
-//
-//		List<Pair> gridFilters = new ArrayList<>(Collections.singletonList(new Pair("equipmentcode", code)));
-//		if (alias != null && alias.trim().length() > 0) {
-//			gridFilters.add(new Pair("alias", alias));
-//		}
-//		if (serialNo != null && serialNo.trim().length() > 0) {
-//			gridFilters.add(new Pair("serialnumber", serialNo));
-//		}
-//
-//		for (Pair column: gridFilters) {
-//			boolean first = column.getCode().equals(gridFilters.get(0).getCode());
-//			boolean last = column.getCode().equals(gridFilters.get(gridFilters.size() - 1).getCode());
-//
-//			gridRequest.addFilter(column.getCode(), column.getDesc().toUpperCase(), "BEGINS",
-//					last ? GridRequestFilter.JOINER.AND : GridRequestFilter.JOINER.OR,
-//					first, last);
-//		}
-//
-//		return getPairListResponse(gridRequest, "equipmentcode", "equipmentdesc");
 		try {
-			return ok(equipmentSearch.getEquipmentSearchResults(code, authenticationTools.getInforContext()));
+			return ok(equipmentEJB.getEquipmentSearchResults(code, null, authenticationTools.getInforContext()));
 		} catch(Exception e) {
 			return serverError(e);
 		}
