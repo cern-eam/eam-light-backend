@@ -1,13 +1,20 @@
 package ch.cern.cmms.eamlightejb.equipment;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import ch.cern.cmms.eamlightejb.equipment.tools.GraphNode;
+import ch.cern.cmms.eamlightejb.index.IndexEJB;
+import ch.cern.cmms.eamlightejb.index.IndexGrids;
+import ch.cern.cmms.eamlightejb.index.IndexResult;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.entities.Pair;
+import ch.cern.eam.wshub.core.tools.InforException;
 
 
 @Stateless
@@ -16,6 +23,12 @@ public class EquipmentEJB {
 
 	@Inject
 	private InforClient inforClient;
+
+	@Inject
+	private IndexEJB indexEJB;
+
+	@Inject
+	private IndexGrids indexGrids;
 
 	/**
 	 * Default constructor.
@@ -27,6 +40,30 @@ public class EquipmentEJB {
 	public List<EquipmentChildren> getEquipmentChildren(String equipment) {
 		return inforClient.getTools().getEntityManager().createNamedQuery(EquipmentChildren.GET_EQUIPMENT_CHILDREN, EquipmentChildren.class)
 				.setParameter("equipment", equipment).getResultList();
+	}
+
+
+
+	public List<Pair> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext) throws InforException {
+		if (customEntityTypes == null) {
+			customEntityTypes = Arrays.asList("A", "P", "S");
+		}
+
+		List<IndexResult> indexResults;
+		if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+			indexResults = indexEJB.getIndexResultsFaster(
+					code,
+					inforContext.getCredentials().getUsername(),
+					customEntityTypes
+			);
+
+		} else {
+			indexResults = indexGrids.search(inforContext, code, customEntityTypes);
+		}
+		if (indexResults.size() > 10) {
+			indexResults = indexResults.subList(0, 9);
+		}
+		return indexResults.stream().map(r -> new Pair(r.getCode(), r.getDescription())).collect(Collectors.toList());
 	}
 
 	public List<GraphNode> getEquipmentStructureTree(String equipment) {
