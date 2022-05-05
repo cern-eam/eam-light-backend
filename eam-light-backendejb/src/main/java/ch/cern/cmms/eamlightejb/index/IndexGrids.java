@@ -1,6 +1,5 @@
-package ch.cern.cmms.eamlightweb.index;
+package ch.cern.cmms.eamlightejb.index;
 
-import ch.cern.cmms.eamlightejb.index.IndexResult;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
@@ -8,7 +7,6 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.LinkedList;

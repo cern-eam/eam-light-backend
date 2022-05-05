@@ -1,13 +1,13 @@
 package ch.cern.cmms.eamlightweb.index;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightejb.index.IndexEJB;
+import ch.cern.cmms.eamlightejb.index.IndexGrids;
 import ch.cern.cmms.eamlightejb.index.IndexResult;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
