@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 
 
 @Path("/autocomplete")
@@ -23,9 +24,9 @@ public class AutocompleteEquipmentReplacement extends EAMLightController {
 	@Path("/eqp/eqpreplace/{code}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response complete(@PathParam("code") String code) {
+	public Response complete(@PathParam("code") String code, @QueryParam("filterL") Boolean excludeLocations) {
 		try {
-			return ok(equipmentEJB.getEquipmentSearchResults(code, null, authenticationTools.getInforContext()));
+			return ok(equipmentEJB.getEquipmentSearchResults(code, excludeLocations ? Arrays.asList("A", "P", "S") : null, authenticationTools.getInforContext()));
 		} catch(Exception e) {
 			return serverError(e);
 		}
