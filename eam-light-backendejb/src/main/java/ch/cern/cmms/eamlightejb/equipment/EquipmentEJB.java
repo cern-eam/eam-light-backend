@@ -42,11 +42,9 @@ public class EquipmentEJB {
 				.setParameter("equipment", equipment).getResultList();
 	}
 
-
-
 	public List<Pair> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext) throws InforException {
 		if (customEntityTypes == null) {
-			customEntityTypes = Arrays.asList("A", "P", "S");
+			customEntityTypes = Arrays.asList("A", "P", "S", "L");
 		}
 
 		List<IndexResult> indexResults;

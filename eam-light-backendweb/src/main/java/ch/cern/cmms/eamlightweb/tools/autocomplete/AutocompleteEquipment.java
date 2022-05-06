@@ -40,9 +40,9 @@ public class AutocompleteEquipment extends EAMLightController {
 	@Path("/eqp")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response complete(@QueryParam("s") String code) {
+	public Response complete(@QueryParam("s") String code, @QueryParam("filterL") Boolean excludeLocations) {
 		try {
-			return ok(equipmentEJB.getEquipmentSearchResults(code, null, authenticationTools.getInforContext()));
+			return ok(equipmentEJB.getEquipmentSearchResults(code, excludeLocations ? Arrays.asList("A", "P", "S") : null, authenticationTools.getInforContext()));
 		} catch(Exception e) {
 			return serverError(e);
 		}
