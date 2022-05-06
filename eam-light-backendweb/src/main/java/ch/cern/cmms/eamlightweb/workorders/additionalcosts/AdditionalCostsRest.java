@@ -39,6 +39,7 @@ public class AdditionalCostsRest extends EAMLightController {
             List<Map<String, String>> additionalCostsList = new ArrayList<>();
             if (workorder != null) {
                 GridRequest gridRequest = new GridRequest("WSJOBS_ACO");
+                gridRequest.setUserFunctionName("WSJOBS");
                 gridRequest.addParam("param.workordernum", workorder);
                 gridRequest.addParam("param.headeractivity", "0");
                 gridRequest.addParam("param.headerjob", "0");
