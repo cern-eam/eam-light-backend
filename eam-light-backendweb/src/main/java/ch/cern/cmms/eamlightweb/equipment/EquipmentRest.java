@@ -4,7 +4,6 @@ import ch.cern.cmms.eamlightweb.codegenerator.CodeGeneratorService;
 import java.util.Date;
 import java.util.List;
 
-import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -17,6 +16,7 @@ import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
 import ch.cern.cmms.eamlightweb.tools.OrganizationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
+import ch.cern.cmms.standardworkorders.MTFWorkOrderServiceImpl;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -45,6 +45,8 @@ public class EquipmentRest extends EAMLightController {
 	private MyWorkOrders myWorkOrders;
 	@Inject
 	private CodeGeneratorService codeGeneratorService;
+	@Inject
+	private MTFWorkOrderServiceImpl mtfStandardWorkOrderService;
 
 	@GET
 	@Path("/")
@@ -272,6 +274,17 @@ public class EquipmentRest extends EAMLightController {
 			return ok(parts);
 		} catch (InforException e) {
 			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
+	@GET
+	@Path("/{eqCode}/mtfsteps/maxstep")
+	@Produces("application/json")
+	public Response getEquipmentStandardWOMaxStep(@PathParam("eqCode") String eqCode, @QueryParam("swo") String swo) {
+		try {
+			return ok(mtfStandardWorkOrderService.getEquipmentStandardWOMaxStep(eqCode, swo));
 		} catch(Exception e) {
 			return serverError(e);
 		}
