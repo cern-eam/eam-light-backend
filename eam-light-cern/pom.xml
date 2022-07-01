@@ -7,7 +7,7 @@
     <parent>
         <groupId>ch.cern.cmms</groupId>
         <artifactId>eam-light-backend</artifactId>
-        <version>3.10-1-SNAPSHOT</version>
+        <version>3.11.0</version>
     </parent>
 
     <artifactId>eam-light-cern</artifactId>
