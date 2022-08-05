@@ -26,8 +26,8 @@ public class AutocompleteEquipmentBin extends EAMLightController {
 	public Response complete(@QueryParam("code") String code, @QueryParam("store") String store) {
 		GridRequest gridRequest = new GridRequest( "LVSTRBIN", GridRequest.GRIDTYPE.LOV, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
 		gridRequest.sortBy("bincode");
-		gridRequest.addParam("bincodetohide", null);
-		gridRequest.addParam("bisstore", store);
+		gridRequest.addParam("param.bincodetohide", null);
+		gridRequest.addParam("param.bisstore", store);
 		gridRequest.addFilter("bincode", code.toUpperCase(), "BEGINS");
 		return getPairListResponse(gridRequest, "bincode", "bindescription");
 	}
