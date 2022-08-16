@@ -49,32 +49,4 @@ public class AutocompletePUAsset extends EAMLightController {
 		return getPairListResponse(gridRequest, "equipmentno", "equipmentdesc");
 	}
 
-	@GET
-	@Path("/partusage/asset/complete/{workOrder}/{issuereturn}/{store}/{assetCode}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response completeData(@PathParam("workOrder") String workOrder, @PathParam("issuereturn") String issuereturn,
-								 @PathParam("store") String store, @PathParam("assetCode") String assetCode) {
-		try {
-			GridRequest gridRequest = new GridRequest( "OSOBJA", GridRequest.GRIDTYPE.LIST, 1);
-			gridRequest.addFilter("equipmentno", assetCode.toUpperCase(), "=", GridRequestFilter.JOINER.AND);
-
-			if (issuereturn.startsWith("I")) {
-				// ISSUE
-				gridRequest.addFilter("store", store.toUpperCase(), "EQUALS");
-			} else {
-				// RETURN
-				gridRequest.addFilter("store", store.toUpperCase(), "IS EMPTY");
-			}
-
-			String[] fields = {"equipmentno", "equipmentdesc", "part", "bin", "lot"};
-			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(inforClient.getGridsService()
-					.executeQuery(authenticationTools.getInforContext(), gridRequest), Arrays.asList(fields)));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
 }
