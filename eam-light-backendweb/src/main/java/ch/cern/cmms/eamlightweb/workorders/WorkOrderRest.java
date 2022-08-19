@@ -95,10 +95,10 @@ public class WorkOrderRest extends EAMLightController {
 	}
 
 	@GET
-	@Path("/init/{entity}")
+	@Path("/init")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response initWorkOrder(@PathParam("entity") String entity) {
+	public Response initWorkOrder() {
 		try {
 			WorkOrder workOrder = inforClient.getWorkOrderService()
 					.readWorkOrderDefault(authenticationTools.getInforContext(), "");

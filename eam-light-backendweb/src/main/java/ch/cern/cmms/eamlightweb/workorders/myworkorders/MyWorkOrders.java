@@ -37,7 +37,7 @@ public class MyWorkOrders {
             return new ArrayList<>();
         }
         //
-        GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
+        GridRequest gridRequest = new GridRequest("WSJOBS");
         gridRequest.addFilter("assignedto", eamUser.getEmployeeCode(), "=", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
         return GridTools.convertGridResultToObject(MyWorkOrder.class,
@@ -51,7 +51,7 @@ public class MyWorkOrders {
             return new LinkedList<>();
         }
 
-        GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
+        GridRequest gridRequest = new GridRequest("WSJOBS");
         gridRequest.addFilter("department", userDepartments, "IN", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
         return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
@@ -60,7 +60,7 @@ public class MyWorkOrders {
     }
 
     public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
-        GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
+        GridRequest gridRequest = new GridRequest("WSJOBS");
         gridRequest.setUserFunctionName("WSJOBS");
         gridRequest.setRowCount(2000);
         gridRequest.setUseNative(false);

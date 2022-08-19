@@ -129,25 +129,14 @@ public class PartController extends EAMLightController {
 	}
 
 	@GET
-	@Path("/init/{entity}")
+	@Path("/init")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response initPart(@PathParam("entity") String entity,
-							 @DefaultValue("") @QueryParam("newCode") String newCode,
-							 @DefaultValue("") @QueryParam("classcode") String classCode) {
+	public Response initPart() {
 		try {
 			Part part = inforClient.getPartService().readPartDefault(authenticationTools.getInforContext(), "");
-
 			part.setUserDefinedFields(new UserDefinedFields());
-
-			if (isNotEmpty(newCode)) {
-				part.setCode(newCode);
-			}
-
-			// Custom Fields
-			String partClass = isNotEmpty(classCode) ? classCode : "*";
-			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getR5InforContext(), "PART", partClass));
-
+			part.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getR5InforContext(), "PART", "*"));
 			return ok(part);
 		} catch (InforException e) {
 			return badRequest(e);

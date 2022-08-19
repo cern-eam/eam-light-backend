@@ -53,6 +53,7 @@ public class InforClientProducer {
                     .withExecutorService(executorService)
                     .withInforInterceptor(inforInterceptor)
                     .withLogger(Logger.getLogger("wshublogger"))
+                    .localizeResults(false)
                     .build();
 
             // Avoid 'Chunked transfer encoding is currently not supported' error which might be thrown by some web servers

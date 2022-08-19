@@ -196,12 +196,10 @@ public class EquipmentRest extends EAMLightController {
 	}
 
 	@GET
-	@Path("/init/{entity}/{eqpType}")
+	@Path("/init/{eqpType}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response initEquipment(@PathParam("entity") String entity, @PathParam("eqpType") String eqpType,
-								  @DefaultValue("") @QueryParam("newCode") String newCode,
-								  @DefaultValue("") @QueryParam("classcode") String classCode) {
+	public Response initEquipment(@PathParam("eqpType") String eqpType) {
 		try {
 			Equipment equipment = new Equipment();
 
@@ -226,14 +224,8 @@ public class EquipmentRest extends EAMLightController {
 			equipment.setStateCode("GOOD");
 			equipment.setStatusCode("I");
 			equipment.setComissionDate(new Date());
-			if (isNotEmpty(newCode)) {
-				equipment.setCode(newCode);
-			}
-
 			equipment.setUserDefinedFields(new UserDefinedFields());
-
-			String equipmentClass = isNotEmpty(classCode) ? classCode : "*";
-			equipment.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), entity, equipmentClass));
+			equipment.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "OBJ", "*"));
 
 			return ok(equipment);
 		} catch (InforException e) {

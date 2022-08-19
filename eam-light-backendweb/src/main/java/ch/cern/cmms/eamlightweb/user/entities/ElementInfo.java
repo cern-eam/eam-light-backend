@@ -2,6 +2,8 @@ package ch.cern.cmms.eamlightweb.user.entities;
 
 import ch.cern.eam.wshub.core.annotations.GridField;
 
+import java.math.BigInteger;
+
 public class ElementInfo {
 
 
@@ -12,7 +14,7 @@ public class ElementInfo {
 	@GridField(name="pld_xpath")
 	private String xpath;
 	@GridField(name="pld_maxlength")
-	private String maxLength;
+	private BigInteger maxLength;
 	@GridField(name="pld_case")
 	private String characterCase;
 	// H = Hidden, O = Optional, R = Required, S = System Required,
@@ -25,6 +27,15 @@ public class ElementInfo {
 	//
 	@GridField(name="plo_defaultvalue")
 	private String defaultValue;
+
+	@GridField(name="plo_presentinjsp")
+	private String presentInJSP;
+
+	@GridField(name="plo_fieldcontainer")
+	private String fieldContainer;
+
+	@GridField(name="plo_fieldgroup")
+	private BigInteger fieldGroup;
 	// Label
 	private String text;
 	// Lookup type for UDFs
@@ -60,11 +71,11 @@ public class ElementInfo {
 		this.xpath = xpath;
 	}
 
-	public String getMaxLength() {
+	public BigInteger getMaxLength() {
 		return maxLength;
 	}
 
-	public void setMaxLength(String maxLength) {
+	public void setMaxLength(BigInteger maxLength) {
 		this.maxLength = maxLength;
 	}
 
@@ -182,6 +193,30 @@ public class ElementInfo {
 	 */
 	public void setUdfUom(String udfUom) {
 		this.udfUom = udfUom;
+	}
+
+	public String getPresentInJSP() {
+		return presentInJSP;
+	}
+
+	public void setPresentInJSP(String presentInJSP) {
+		this.presentInJSP = presentInJSP;
+	}
+
+	public BigInteger getFieldGroup() {
+		return fieldGroup;
+	}
+
+	public void setFieldGroup(BigInteger fieldGroup) {
+		this.fieldGroup = fieldGroup;
+	}
+
+	public String getFieldContainer() {
+		return fieldContainer;
+	}
+
+	public void setFieldContainer(String fieldContainer) {
+		this.fieldContainer = fieldContainer;
 	}
 
 	/*
