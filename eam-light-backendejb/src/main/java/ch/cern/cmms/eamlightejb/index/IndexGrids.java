@@ -25,7 +25,7 @@ public class IndexGrids {
             map.put("workordernum", "code");
             map.put("description", "description");
             map.put("department", "mrc");
-            GridRequest gridRequest = new GridRequest("93", "WSJOBS", "2005");
+            GridRequest gridRequest = new GridRequest(null, "WSJOBS", null);
             gridRequest.addFilter("workordernum", keyword, operator);
             List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
                     map,

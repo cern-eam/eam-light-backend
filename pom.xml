@@ -3,7 +3,7 @@
 	
 	<groupId>ch.cern.cmms</groupId>
 	<artifactId>eam-light-backend</artifactId>
-	<version>3.10-1-SNAPSHOT</version>
+	<version>3.11.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -16,7 +16,7 @@
 	<properties>
 		<artifact.filename>${project.build.finalName}-${project.version}</artifact.filename>
 		<ch.cern.eam.eam-wshub-core.version>11.7-4-SNAPSHOT</ch.cern.eam.eam-wshub-core.version>
-		<ch.cern.cmms.eamtools.version>2.3.10</ch.cern.cmms.eamtools.version>
+		<ch.cern.cmms.eamtools.version>2.4.0</ch.cern.cmms.eamtools.version>
 		<ch.cern.cmms.ldaptools.version>0.1.4</ch.cern.cmms.ldaptools.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

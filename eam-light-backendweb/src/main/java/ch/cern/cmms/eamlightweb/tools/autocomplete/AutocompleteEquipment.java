@@ -22,7 +22,8 @@ public class AutocompleteEquipment extends EAMLightController {
 	private EquipmentEJB equipmentEJB;
 
 	private GridRequest prepareGridRequest(GridRequest.GRIDTYPE gridType)  {
-		GridRequest gridRequest = new GridRequest("67", "LVOBJL", "59");
+		// Dataspy changed from 59 to nothing, to select default dataspy. To be reviewed after next PROD-to-TEST
+		GridRequest gridRequest = new GridRequest("LVOBJL");
 		gridRequest.setGridType(gridType);
 		gridRequest.setRowCount(10);
 		gridRequest.addParam("param.objectrtype", null);
