@@ -1,7 +1,5 @@
 package ch.cern.cmms.eamlightweb.equipment.autocomplete;
 
-import java.util.Arrays;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
@@ -39,16 +37,7 @@ public class AutocompleteEquipmentCategory extends EAMLightController {
 	@Consumes("application/json")
 	public Response getCategoryData(@PathParam("code") String code) {
 		try {
-			GridRequest gridRequest = new GridRequest( "LVCAT", GridRequest.GRIDTYPE.LOV, 10);
-			gridRequest.addParam("parameter.class", "");
-			gridRequest.addParam("parameter.onlymatchclass", "");
-			gridRequest.addFilter("category", code.toUpperCase(), "EQUALS");
-
-			String[] fields = new String[] {"category", "categorydesc", "categoryclass",
-					"categoryclassdesc", "manufacturer"};
-
-			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(inforClient.getGridsService()
-					.executeQuery(authenticationTools.getInforContext(), gridRequest), Arrays.asList(fields)));
+			return ok(inforClient.getCategoryService().readCategory(authenticationTools.getInforContext(), code));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
