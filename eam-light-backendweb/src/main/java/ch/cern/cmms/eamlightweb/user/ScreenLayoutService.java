@@ -13,6 +13,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -151,6 +152,14 @@ public class ScreenLayoutService {
             elementInfo.setUdfLookupEntity(description.getLookupREntity());
             elementInfo.setUdfLookupType(description.getLookupType());
             elementInfo.setUdfUom(description.getUom());
+            if (isNotEmpty(description.getDateType())) {
+                if (description.getDateType().equals("DATE")) {
+                    elementInfo.setFieldType("date");
+                }
+                if (description.getDateType().equals("DATI")) {
+                    elementInfo.setFieldType("datetime");
+                }
+            }
         }
         return elementInfo;
     }

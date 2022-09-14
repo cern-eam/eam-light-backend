@@ -13,6 +13,9 @@ public class UserDefinedFieldDescription {
     @GridField(name="udf_uom")
     private String uom;
 
+    @GridField(name="udf_datetype")
+    private String dateType;
+
     public String getLookupREntity() {
         return lookupREntity;
     }
@@ -36,4 +39,8 @@ public class UserDefinedFieldDescription {
     public void setUom(String uom) {
         this.uom = uom;
     }
+
+    public String getDateType() { return dateType; }
+
+    public void setDateType(String dateType) { this.dateType = dateType; }
 }
