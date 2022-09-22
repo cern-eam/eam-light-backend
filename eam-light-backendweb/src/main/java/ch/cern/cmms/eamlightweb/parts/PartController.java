@@ -86,7 +86,7 @@ public class PartController extends EAMLightController {
 			// create part
 			inforClient.getPartService().createPart(context, part);
 			// Read again the part
-			return ok(inforClient.getPartService().readPart(context, part.getCode()));
+			return ok(part.getCode());
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

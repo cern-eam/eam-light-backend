@@ -93,7 +93,7 @@ public class EquipmentRest extends EAMLightController {
 			// Create equipment
 			inforClient.getEquipmentFacadeService().createEquipment(context, equipment);
 			// Read again the equipment
-			return ok(inforClient.getEquipmentFacadeService().readEquipment(context, equipment.getCode()));
+			return ok(equipment.getCode());
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

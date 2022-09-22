@@ -54,9 +54,7 @@ public class WorkOrderRest extends EAMLightController {
 		assumeEquipmentMonoOrg(workOrder);
 		String woNumber = null;
 		try {
-			woNumber = inforClient.getWorkOrderService().createWorkOrder(authenticationTools.getInforContext(), workOrder);
-			// Read again the work order
-			return ok(inforClient.getWorkOrderService().readWorkOrder(authenticationTools.getInforContext(), woNumber));
+			return ok(inforClient.getWorkOrderService().createWorkOrder(authenticationTools.getInforContext(), workOrder));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

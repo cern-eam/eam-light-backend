@@ -55,10 +55,7 @@ public class LocationRest extends EAMLightController {
         try {
             InforContext context = authenticationTools.getInforContext();
             OrganizationTools.assumeMonoOrg(context);
-            String locationCode = inforClient.getLocationService().createLocation(context,
-                location);
-            return ok(
-                inforClient.getLocationService().readLocation(context, locationCode));
+            return ok(inforClient.getLocationService().createLocation(context, location));
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {
