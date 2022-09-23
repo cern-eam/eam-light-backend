@@ -27,7 +27,7 @@ public class LDAPPluginImpl implements LDAPPlugin {
     @Override
     public Set<Pair> readEgroups(String key) {
         try {
-            return ldapTools.getEgroupsStartsWith(key).stream().map(egroup -> new Pair(egroup.getName(), egroup.getDescription())).collect(toSet());
+            return ldapTools.getEgroupsContains(key).stream().map(egroup -> new Pair(egroup.getName(), egroup.getDescription())).collect(toSet());
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
