@@ -13,7 +13,6 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
-import ch.cern.cmms.eamlightweb.tools.OrganizationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.cmms.standardworkorders.MTFWorkOrderServiceImpl;
@@ -26,7 +25,6 @@ import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.Tools.generateFault;
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @Path("/equipment")
 @ApplicationScoped
@@ -52,11 +50,9 @@ public class EquipmentRest extends EAMLightController {
 	@Path("/")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readEquipment(@QueryParam("c") String equipment) {
+	public Response readEquipment(@QueryParam(value = "c") String equipment) {
 		try {
-			InforContext context = authenticationTools.getInforContext();
-			OrganizationTools.assumeMonoOrg(context);
-			return ok(inforClient.getEquipmentFacadeService().readEquipment(context, equipment));
+			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -88,12 +84,8 @@ public class EquipmentRest extends EAMLightController {
 					authenticationTools.getInforContext(), equipment.getTypeCode());
 				equipment.setCode(newCode);
 			}
-			InforContext context = authenticationTools.getInforContext();
-			OrganizationTools.assumeMonoOrg(context);
-			// Create equipment
-			inforClient.getEquipmentFacadeService().createEquipment(context, equipment);
-			// Read again the equipment
-			return ok(equipment.getCode());
+
+			return ok(inforClient.getEquipmentFacadeService().createEquipment(authenticationTools.getInforContext(), equipment));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -107,7 +99,6 @@ public class EquipmentRest extends EAMLightController {
 	public Response updateEquipment(Equipment equipment) {
 		try {
 			InforContext context = authenticationTools.getInforContext();
-			OrganizationTools.assumeMonoOrg(context);
 
 			if (equipment.getStatusCode().equals("D")) {
 				equipment.setStatusCode("I");
@@ -115,10 +106,7 @@ public class EquipmentRest extends EAMLightController {
 				equipment.setStatusCode("D");
 			}
 
-			inforClient.getEquipmentFacadeService().updateEquipment(context, equipment);
-
-			// Read again the equipment
-			return ok(inforClient.getEquipmentFacadeService().readEquipment(context, equipment.getCode()));
+			return ok(inforClient.getEquipmentFacadeService().updateEquipment(context, equipment));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -132,9 +120,7 @@ public class EquipmentRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response deleteEquipment(@PathParam("equipment") String equipment) {
 		try {
-			InforContext context = authenticationTools.getInforContext();
-			OrganizationTools.assumeMonoOrg(context);
-			inforClient.getEquipmentFacadeService().deleteEquipment(context, equipment);
+			inforClient.getEquipmentFacadeService().deleteEquipment(authenticationTools.getInforContext(), equipment);
 			return noConent();
 		} catch (InforException e) {
 			return badRequest(e);

@@ -51,8 +51,8 @@ public class EquipmentReplacementService {
         if (!STANDARD.equals(replacement.getReplacementMode()) && !SWAPPING.equals(replacement.getReplacementMode()))
             throw Tools.generateFault("Invalid Replacement Mode. Valid values: [Standard, Swapping]");
         // Read both equipments to see that are valid codes
-        Equipment oldEquipment = inforClient.getAssetService().readAsset(inforContext, replacement.getOldEquipment());
-        Equipment newEquipment = inforClient.getAssetService().readAsset(inforContext, replacement.getNewEquipment());
+        Equipment oldEquipment = inforClient.getAssetService().readAsset(inforContext, replacement.getOldEquipment(), null);
+        Equipment newEquipment = inforClient.getAssetService().readAsset(inforContext, replacement.getNewEquipment(), null);
         // If status is not provided, it will assign the current status
         if (DataTypeTools.isEmpty(replacement.getNewEquipmentStatus()))
             replacement.setNewEquipmentStatus(newEquipment.getStatusCode());

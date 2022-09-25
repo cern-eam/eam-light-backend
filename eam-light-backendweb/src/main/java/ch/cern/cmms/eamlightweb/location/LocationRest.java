@@ -2,10 +2,8 @@ package ch.cern.cmms.eamlightweb.location;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
-import ch.cern.cmms.eamlightweb.tools.OrganizationTools;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -38,9 +36,7 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response readLocation(@PathParam("locationCode") String locationCode) {
         try {
-            InforContext context = authenticationTools.getInforContext();
-            OrganizationTools.assumeMonoOrg(context);
-            return ok(inforClient.getLocationService().readLocation(context, locationCode));
+            return ok(inforClient.getLocationService().readLocation(authenticationTools.getInforContext(), locationCode));
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {
@@ -53,9 +49,7 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response createLocation(Location location) {
         try {
-            InforContext context = authenticationTools.getInforContext();
-            OrganizationTools.assumeMonoOrg(context);
-            return ok(inforClient.getLocationService().createLocation(context, location));
+            return ok(inforClient.getLocationService().createLocation(authenticationTools.getInforContext(), location));
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {
@@ -69,12 +63,7 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response updateLocation(@PathParam("locationCode") String locationCode, Location location) {
         try {
-
-            InforContext context = authenticationTools.getInforContext();
-            OrganizationTools.assumeMonoOrg(context);
-            inforClient.getLocationService().updateLocation(context, location);
-            return ok(inforClient.getLocationService().readLocation(context,
-                locationCode));
+            return ok(inforClient.getLocationService().updateLocation(authenticationTools.getInforContext(), location));
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {
@@ -87,9 +76,7 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response deleteLocation(@PathParam("locationCode") String locationCode) {
         try {
-            InforContext context = authenticationTools.getInforContext();
-            OrganizationTools.assumeMonoOrg(context);
-            return ok(inforClient.getLocationService().deleteLocation(context, locationCode));
+            return ok(inforClient.getLocationService().deleteLocation(authenticationTools.getInforContext(), locationCode));
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {
@@ -102,12 +89,10 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response initLocation() {
         try {
-            InforContext context = authenticationTools.getInforContext();
-            OrganizationTools.assumeMonoOrg(context);
             Location location = new Location();
             location.setUserDefinedFields(new UserDefinedFields());
             location.setCustomFields(inforClient.getTools().getCustomFieldsTools()
-                .getWSHubCustomFields(context, "LOC", "*"));
+                .getWSHubCustomFields(authenticationTools.getInforContext(), "LOC", "*"));
             return ok(location);
         } catch (Exception e) {
             return serverError(e);

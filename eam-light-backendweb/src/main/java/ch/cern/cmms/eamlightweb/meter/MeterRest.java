@@ -16,11 +16,8 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
-
-import static ch.cern.cmms.eamlightweb.tools.OrganizationTools.assumeEquipmentMonoOrg;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToObject;
 import ch.cern.eam.wshub.core.services.workorders.entities.MeterReading;
 import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
@@ -76,7 +73,6 @@ public class MeterRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response createReading(MeterReading meterReading) {
 		try {
-			assumeEquipmentMonoOrg(meterReading);
 			return ok(inforClient.getWorkOrderMiscService().createMeterReading(authenticationTools.getInforContext(), meterReading));
 		} catch (InforException e) {
 			return badRequest(e);
