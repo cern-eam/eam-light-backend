@@ -6,6 +6,9 @@ package ch.cern.cmms.eamlightejb.index;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 /**
  * Result of index when the search is executed
@@ -27,6 +30,9 @@ public class IndexResult {
 	private String serial;
 	@Column(name = "ALIAS")
 	private String alias;
+
+	@Transient
+	private String organization;
 
 	public String getCode() {
 		return code;
@@ -58,18 +64,29 @@ public class IndexResult {
 	 * @return The link to navigate to the proper page in the system
 	 */
 	public String getLink() {
+		String link = null;
 		switch (type) {
 		case "A":/* Asset */
-			return "asset/" + code;
+			link = "asset/" + code;
+			break;
 		case "P":/* Position */
-			return "position/" + code;
+			link = "position/" + code;
+			break;
 		case "S":/* System */
-			return "system/" + code;
+			link = "system/" + code;
+			break;
 		case "PART":/* Part */
-			return "part/" + code;
+			link = "part/" + code;
+			break;
 		default:/* WorkOrder */
-			return "workorder/" + code;
+			link = "workorder/" + code;
 		}
+
+		if (isNotEmpty(organization)) {
+			link += "%23" + organization;
+		}
+
+		return link;
 	}
 
 	public String getMrc() {
@@ -125,6 +142,14 @@ public class IndexResult {
 	 */
 	public void setAlias(String alias) {
 		this.alias = alias;
+	}
+
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
 	}
 
 	/* (non-Javadoc)

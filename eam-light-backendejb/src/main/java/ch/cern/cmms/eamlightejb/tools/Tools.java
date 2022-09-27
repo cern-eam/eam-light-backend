@@ -1,5 +1,8 @@
 package ch.cern.cmms.eamlightejb.tools;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Tools {
 
     public static String getVariableValue(String variableName) {
@@ -18,6 +21,19 @@ public class Tools {
         } catch(NumberFormatException e) {
             return null;
         }
+    }
+
+    public static Map<String, String> createCodeDescOrgMap(String code, String desc, String organization) {
+        Map<String, String> result = createCodeDescMap(code, desc);
+        result.put("organization", organization);
+        return result;
+    }
+
+    public static Map<String, String> createCodeDescMap(String code, String desc) {
+        Map<String, String> result = new HashMap<>();
+        result.put("code", code);
+        result.put("desc", desc);
+        return result;
     }
 
 }

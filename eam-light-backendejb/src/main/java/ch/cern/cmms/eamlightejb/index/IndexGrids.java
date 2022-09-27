@@ -25,6 +25,7 @@ public class IndexGrids {
             map.put("workordernum", "code");
             map.put("description", "description");
             map.put("department", "mrc");
+            map.put("organization", "organization");
             GridRequest gridRequest = new GridRequest("WSJOBS");
             gridRequest.setUserFunctionName("WSJOBS");
             gridRequest.addFilter("workordernum", keyword, operator);
@@ -46,6 +47,7 @@ public class IndexGrids {
             map.put("department", "mrc");
             map.put("alias", "alias");
             map.put("serialnumber", "serial");
+            map.put("organization", "organization");
             GridRequest gridRequest = new GridRequest(gridName);
             gridRequest.setUserFunctionName(gridName);
             gridRequest.addFilter("equipmentno", keyword, operator, GridRequestFilter.JOINER.OR);
@@ -71,6 +73,7 @@ public class IndexGrids {
             Map<String, String> map = new HashMap<>();
             map.put("partcode", "code");
             map.put("description", "description");
+            map.put("organization", "organization");
             GridRequest gridRequest = new GridRequest("SSPART");
             gridRequest.setUserFunctionName("SSPART");
             gridRequest.addFilter("partcode", keyword, operator);
