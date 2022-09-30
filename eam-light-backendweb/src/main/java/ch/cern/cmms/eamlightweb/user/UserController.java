@@ -4,6 +4,7 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -67,6 +68,16 @@ public class UserController extends EAMLightController {
 		} catch (InforException e) {
 			return serverError(e);
 		}
+	}
+
+	@GET
+	@Path("/organizations/{userFunctionName}")
+	@Produces("application/json")
+	public Response readOrganizations(@PathParam("userFunctionName") String userFunctionName) {
+		GridRequest gridRequest = new GridRequest("LVORGC", GridRequest.GRIDTYPE.LOV);
+		gridRequest.addParam("parameter.mos", "+");
+		gridRequest.setUserFunctionName(userFunctionName);
+		return getPairListResponse(gridRequest, "organization", "org_desc");
 	}
 
 }

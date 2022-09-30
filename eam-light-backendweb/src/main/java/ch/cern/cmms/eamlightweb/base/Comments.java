@@ -28,9 +28,6 @@ public class Comments extends EAMLightController {
 	public Response readComments(@QueryParam("entityCode") String entityCode,
 								 @QueryParam("entityKeyCode") String entityKeyCode) {
 		try {
-			Comment comment = new Comment();
-			comment.setEntityCode(entityCode);
-			comment.setEntityKeyCode(entityKeyCode);
 			return ok(inforClient.getCommentService().readComments(authenticationTools.getInforContext(), entityCode, entityKeyCode, null));
 		} catch (InforException e) {
 			return badRequest(e);
@@ -44,13 +41,7 @@ public class Comments extends EAMLightController {
 	@Consumes("application/json")
 	public Response createComment(Comment comment) {
 		try {
-			// Create the comment
-			inforClient.getCommentService().createComment(authenticationTools.getInforContext(), comment);
-			// Read the comments again
-			return ok(inforClient.getCommentService().readComments(authenticationTools.getInforContext(),
-					comment.getEntityCode(),
-					comment.getEntityKeyCode(),
-					null));
+			return ok(inforClient.getCommentService().createComment(authenticationTools.getInforContext(), comment));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
@@ -63,15 +54,7 @@ public class Comments extends EAMLightController {
 	@Consumes("application/json")
 	public Response updateComment(Comment comment) {
 		try {
-			// Remove update count
-			comment.setUpdateCount(null);
-			// Update comment
-			inforClient.getCommentService().updateComment(authenticationTools.getInforContext(), comment);
-			// Read the comments again
-			return ok(inforClient.getCommentService().readComments(authenticationTools.getInforContext(),
-					comment.getEntityCode(),
-					comment.getEntityKeyCode(),
-					null));
+			return ok(inforClient.getCommentService().updateComment(authenticationTools.getInforContext(), comment));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

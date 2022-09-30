@@ -1,7 +1,6 @@
 package ch.cern.cmms.eamlightweb.equipment.autocomplete;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
