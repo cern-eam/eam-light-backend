@@ -3,13 +3,11 @@
  */
 package ch.cern.cmms.eamlightejb.equipment;
 
+import ch.cern.eam.wshub.core.annotations.GridField;
+
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
+import javax.persistence.*;
 
 /**
  * Children of an Equipment
@@ -41,14 +39,24 @@ public class EquipmentChildren implements Serializable {
 
 	@Id
 	@Column(name = "STC_PARENT")
+	@GridField(name="stc_parent")
 	private String parentCode;
+
+	@Transient
+	@GridField(name="stc_parent_org")
+	private String parentOrg;
 
 	@Id
 	@Column(name = "STC_CHILD")
+	@GridField(name="stc_child")
 	private String childCode;
 
+	@Transient
+	@GridField(name="stc_child_org")
+	private String childOrg;
 	@Id
 	@Column(name = "STC_PARENTRTYPE")
+	@GridField(name="stc_parenttype")
 	private String parentType;
 
 	@Column(name = "STC_PARENTRTYPE_DESC")
@@ -56,6 +64,7 @@ public class EquipmentChildren implements Serializable {
 
 	@Id
 	@Column(name = "STC_CHILDRTYPE")
+	@GridField(name="stc_childtype")
 	private String childType;
 
 	@Column(name = "STC_CHILDRTYPE_DESC")
@@ -72,6 +81,22 @@ public class EquipmentChildren implements Serializable {
 	 */
 	public EquipmentChildren() {
 
+	}
+
+	public String getParentOrg() {
+		return parentOrg;
+	}
+
+	public void setParentOrg(String parentOrg) {
+		this.parentOrg = parentOrg;
+	}
+
+	public String getChildOrg() {
+		return childOrg;
+	}
+
+	public void setChildOrg(String childOrg) {
+		this.childOrg = childOrg;
 	}
 
 	public String getParentCode() {

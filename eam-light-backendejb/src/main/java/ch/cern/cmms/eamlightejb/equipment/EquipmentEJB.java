@@ -3,7 +3,6 @@ package ch.cern.cmms.eamlightejb.equipment;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -13,10 +12,8 @@ import ch.cern.cmms.eamlightejb.index.IndexGrids;
 import ch.cern.cmms.eamlightejb.index.IndexResult;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.entities.Pair;
+import ch.cern.eam.wshub.core.services.entities.Entity;
 import ch.cern.eam.wshub.core.tools.InforException;
-
-import static ch.cern.cmms.eamlightejb.tools.Tools.createCodeDescOrgMap;
 
 @Stateless
 @LocalBean
@@ -43,7 +40,7 @@ public class EquipmentEJB {
 				.setParameter("equipment", equipment).getResultList();
 	}
 
-	public List<Map> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext) throws InforException {
+	public List<Entity> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext) throws InforException {
 		if (customEntityTypes == null) {
 			customEntityTypes = Arrays.asList("A", "P", "S", "L");
 		}
@@ -62,7 +59,7 @@ public class EquipmentEJB {
 		if (indexResults.size() > 10) {
 			indexResults = indexResults.subList(0, 9);
 		}
-		return indexResults.stream().map(r -> createCodeDescOrgMap(r.getCode(), r.getDescription(), r.getOrganization())).collect(Collectors.toList());
+		return indexResults.stream().map(r -> new Entity(r.getCode(), r.getDescription(), r.getOrganization())).collect(Collectors.toList());
 	}
 
 	public List<GraphNode> getEquipmentStructureTree(String equipment) {

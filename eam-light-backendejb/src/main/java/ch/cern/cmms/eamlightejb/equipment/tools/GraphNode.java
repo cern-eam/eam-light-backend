@@ -5,11 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.cern.cmms.eamlightejb.equipment.EquipmentChildren;
+import ch.cern.eam.wshub.core.annotations.GridField;
 
 public class GraphNode {
-	
+
+	@GridField(name="stc_child")
 	private String id;
+
+	@GridField(name="stc_child_org")
+	private String idOrg;
+
 	private String name;
+	@GridField(name="stc_childtype")
 	private String type;
 	
 	private GraphNode parent;
@@ -23,6 +30,11 @@ public class GraphNode {
 		this.name = name;
 		this.type = type;
 	}
+
+	public GraphNode() {
+
+	}
+
 	
 	public GraphNode clone() {
 		return new GraphNode(id, name, type);
@@ -74,6 +86,14 @@ public class GraphNode {
 	
 	public void setParents(List<EquipmentChildren> parents) {
 		this.parents = parents;
+	}
+
+	public String getIdOrg() {
+		return idOrg;
+	}
+
+	public void setIdOrg(String idOrg) {
+		this.idOrg = idOrg;
 	}
 
 	@Override

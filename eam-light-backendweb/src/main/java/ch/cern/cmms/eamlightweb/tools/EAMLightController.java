@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightweb.tools;
 
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.entities.Entity;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
@@ -9,7 +10,6 @@ import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +82,18 @@ public class EAMLightController {
         try {
             return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
                     Pair.generateGridPairMap(codeKey, descKey),
+                    inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
+        } catch (InforException e) {
+            return badRequest(e);
+        } catch(Exception e) {
+            return serverError(e);
+        }
+    }
+
+    public Response getEntityListResponse(GridRequest gridRequest, String codeKey, String descKey, String organizationKey) {
+        try {
+            return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Entity.class,
+                    Entity.generateGridEntityMap(codeKey, descKey, organizationKey),
                     inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
         } catch (InforException e) {
             return badRequest(e);

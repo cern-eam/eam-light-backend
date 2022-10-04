@@ -1,57 +1,100 @@
 package ch.cern.cmms.eamlightweb.equipment.structure;
 
+import ch.cern.cmms.eamlightejb.equipment.EquipmentChildren;
+import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
+import ch.cern.cmms.eamlightejb.equipment.tools.GraphNode;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
+
 import javax.ejb.EJB;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
 
-import ch.cern.cmms.eamlightweb.tools.EAMLightController;
-import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightejb.equipment.EquipmentEJB;
-
-@Path("/eqstructure")
-@Interceptors({ RESTLoggingInterceptor.class })
-public class EquipmentStructure extends EAMLightController {
-
-	@EJB
-	private EquipmentEJB equipmentEJB;
-    @Inject
-    private InforClient inforClient;
+@ApplicationScoped
+public class EquipmentStructure
+{
+    @EJB
+    private EquipmentEJB equipmentEJB;
     @Inject
     private AuthenticationTools authenticationTools;
+    @Inject
+    private InforClient inforClient;
 
-	@GET
-	@Path("/tree")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response readEquipmentTree(@QueryParam("eqid") String eqID) {
-		try {
-			return ok(equipmentEJB.getEquipmentStructureTree(eqID));
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
+    private int counter = 0;
 
-	@POST
-    @Path("/attach")
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response attachEquipment(ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure equipmentStructure){
-
-        try{
-            return ok(inforClient.getEquipmentStructureService().addEquipmentToStructure(authenticationTools.getInforContext(), equipmentStructure));
-        }catch (InforException ie){
-            return serverError(ie);
+    public List<GraphNode> readEquipmentTree(String eqID, String org, String type) throws InforException {
+        if (inforClient.getTools().isDatabaseConnectionConfigured()) {
+            return equipmentEJB.getEquipmentStructureTree(eqID);
         }
+
+        GraphNode current = new GraphNode();
+        current.setId(eqID);
+        current.setType(type);
+        current.setIdOrg(org);
+        current.setParents(inforClient.getTools().getGridTools().convertGridResultToObject(EquipmentChildren.class,
+                null,
+                inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), getGridRequest("stc_child", current.getId()))));
+        attachChildren(inforClient, authenticationTools.getInforContext(), current);
+
+        return new LinkedList<>(Arrays.asList(current));
+    }
+
+
+    private GraphNode attachChildren(InforClient inforClient, InforContext context, GraphNode root) {
+
+        List<GraphNode> nodes = new LinkedList<>();
+        nodes.add(root);
+
+        while (!nodes.isEmpty()) {
+
+            LinkedList<GraphNode> nodesCopy = new LinkedList<>(nodes);
+            LinkedList<Runnable> runnables = new LinkedList<>();
+            nodes.clear();
+
+            nodesCopy.forEach(node -> {
+                runnables.add( () -> {
+                    List<GraphNode> children = getChildren(inforClient, context, node.getId());
+                    if (children != null) {
+                        node.setChildren(children);
+                        nodes.addAll(children);
+                    }
+                });
+            });
+
+            try {
+                inforClient.getTools().processRunnables(runnables);
+            } catch (Exception e) {
+                inforClient.getTools().log(Level.SEVERE, "Error " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return root;
+    }
+
+    private List<GraphNode> getChildren(InforClient inforClient, InforContext context, String code) {
+        try {
+            return inforClient.getTools().getGridTools().convertGridResultToObject(GraphNode.class,
+                    null,
+                    inforClient.getGridsService().executeQuery(context, getGridRequest("stc_parent", code)));
+
+        } catch (InforException inforException) {
+            inforClient.getTools().log(Level.SEVERE, "Error " + inforException.getMessage());
+            return null;
+        }
+    }
+
+    private GridRequest getGridRequest(String codeKey, String codeValue) {
+        GridRequest gridRequest = new GridRequest("OCSTRU");
+        gridRequest.addParam("parameter.lastupdated", "1-JAN-1970");
+        gridRequest.addFilter(codeKey, codeValue, "=");
+        return gridRequest;
     }
 
 }

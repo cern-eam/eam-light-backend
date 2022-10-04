@@ -39,7 +39,7 @@ public class AutocompleteEquipmentParent extends EAMLightController {
 
 			gridRequest.addFilter("equipmentcode", code.toUpperCase(), "BEGINS");
 			gridRequest.sortBy("equipmentcode");
-			return getPairListResponse(gridRequest, "equipmentcode", "description_obj");
+			return getEntityListResponse(gridRequest, "equipmentcode", "description_obj", "equiporganization");
 	}
 
 }
