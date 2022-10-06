@@ -14,7 +14,7 @@ public class ElementInfo {
 	@GridField(name="pld_xpath")
 	private String xpath;
 	@GridField(name="pld_maxlength")
-	private BigInteger maxLength;
+	private String maxLength;
 	@GridField(name="pld_case")
 	private String characterCase;
 	// H = Hidden, O = Optional, R = Required, S = System Required,
@@ -71,11 +71,11 @@ public class ElementInfo {
 		this.xpath = xpath;
 	}
 
-	public BigInteger getMaxLength() {
+	public String getMaxLength() {
 		return maxLength;
 	}
 
-	public void setMaxLength(BigInteger maxLength) {
+	public void setMaxLength(String maxLength) {
 		this.maxLength = maxLength;
 	}
 
