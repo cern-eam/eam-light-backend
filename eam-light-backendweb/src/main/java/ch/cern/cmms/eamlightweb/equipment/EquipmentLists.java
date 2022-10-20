@@ -19,7 +19,6 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
-import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
 
 @Path("/eqplists")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -49,9 +48,11 @@ public class EquipmentLists extends EAMLightController {
 				Pair.generateGridPairMap("3580", "3581"),
 				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
 
-		if (gridRequestResult.getRows().length > 0) {
-			result.add(new Pair(getCellContent("3578", gridRequestResult.getRows()[0]), getCellContent("3579", gridRequestResult.getRows()[0])));
+		if (!neweqp && !result.stream().anyMatch(pair -> pair.getCode().equals(oldStatusCode))) {
+			String oldStatusDesc = inforClient.getTools().getFieldDescriptionsTools().readUserCodeDesc(authenticationTools.getR5InforContext(), "OBST", oldStatusCode);
+			result.add(new Pair(oldStatusCode, oldStatusDesc));
 		}
+
 		return ok(result);
 	}
 
