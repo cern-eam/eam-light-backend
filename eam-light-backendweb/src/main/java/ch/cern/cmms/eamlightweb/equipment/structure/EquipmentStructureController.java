@@ -53,7 +53,6 @@ public class EquipmentStructureController extends EAMLightController {
     @Produces("application/json")
     @Consumes("application/json")
     public Response attachEquipment(ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure equipmentStructure){
-
         try{
             return ok(inforClient.getEquipmentStructureService().addEquipmentToStructure(authenticationTools.getInforContext(), equipmentStructure));
         }catch (InforException ie){
@@ -61,10 +60,16 @@ public class EquipmentStructureController extends EAMLightController {
         }
     }
 
-
-
-
-
-
+    @POST
+    @Path("/detach")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response detachEquipment(ch.cern.eam.wshub.core.services.equipment.entities.EquipmentStructure equipmentStructure){
+        try{
+            return ok(inforClient.getEquipmentStructureService().removeEquipmentFromStructure(authenticationTools.getInforContext(), equipmentStructure));
+        }catch (InforException ie){
+            return serverError(ie);
+        }
+    }
 
 }
