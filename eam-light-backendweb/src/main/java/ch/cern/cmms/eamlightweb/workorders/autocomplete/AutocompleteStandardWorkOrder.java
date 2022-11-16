@@ -23,13 +23,16 @@ public class AutocompleteStandardWorkOrder extends EAMLightController {
     @Path("/standardworkorder")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response complete(@QueryParam("userGroup") String userGroup, @QueryParam("s") String code) {
+    public Response complete(@QueryParam("userGroup") String userGroup,
+                             @QueryParam("equipmentClass") String equipmentClass,
+                             @QueryParam("equipmentCategory") String equipmentCategory,
+                             @QueryParam("s") String code) {
         GridRequest gridRequest = new GridRequest( "LVSTANDWOREP", GridRequest.GRIDTYPE.LOV, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
 
         gridRequest.addParam("param.excludetype", null);
-        gridRequest.addParam("param.equipclass", null);
-        gridRequest.addParam("param.category", null);
-        gridRequest.addParam("param.equipclassorg", null);
+        gridRequest.addParam("param.equipclass", equipmentClass);
+        gridRequest.addParam("param.category", equipmentCategory);
+        gridRequest.addParam("param.equipclassorg", authenticationTools.getOrganizationCode());
         gridRequest.addParam("param.pagemode", "display");
         gridRequest.addParam("param.rjobtype", null);
         gridRequest.addParam("param.group", userGroup);
