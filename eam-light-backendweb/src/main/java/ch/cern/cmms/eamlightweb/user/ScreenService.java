@@ -115,6 +115,7 @@ public class ScreenService {
                     .flatMap(ScreenService::flattenMenuTree)
                     .filter(option -> option.getParentMenuEntry().getDescription().equals(EAM_REPORTS_MENU))
                     .map(report -> new Pair(report.getFunctionId(), report.getDescription()))
+                    .distinct()
                     .collect(Collectors.toList());
 
             reportsCache.put(userGroup, reports);
