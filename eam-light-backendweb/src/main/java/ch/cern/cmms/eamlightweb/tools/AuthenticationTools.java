@@ -98,6 +98,7 @@ public class AuthenticationTools {
 
         InforContext inforContext = new InforContext();
 
+        inforContext.setLocalizeResults(false);
         // Organization
         if (isEmpty(organization)) {
             throw inforClient.getTools().generateFault("Organization is required.");

@@ -152,7 +152,6 @@ public class EquipmentRest extends EAMLightController {
 			gridRequest.setRowCount(2000);
 			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
 			gridRequest.sortBy("wocompleted", "DESC");
-			gridRequest.setLocalizeResults(false);
 			return ok(GridTools.convertGridResultToObject(EquipmentHistory.class,
 					  null,
 					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
