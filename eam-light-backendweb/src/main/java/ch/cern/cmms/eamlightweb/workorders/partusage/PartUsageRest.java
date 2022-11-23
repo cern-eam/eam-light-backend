@@ -178,7 +178,7 @@ public class PartUsageRest extends EAMLightController {
 		// Read activities
 		Activity[] activities = inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), workOrder.getNumber(), false);
 		if (activities != null && activities.length == 1) {
-			transaction.setActivityCode(activities[0].getActivityCode());
+			transaction.setActivityCode(activities[0].getActivityCode().toString());
 		} else {
 			transaction.setActivityCode(null);
 		}

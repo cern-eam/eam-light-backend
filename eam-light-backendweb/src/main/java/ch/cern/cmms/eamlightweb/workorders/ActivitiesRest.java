@@ -71,27 +71,9 @@ public class ActivitiesRest extends EAMLightController {
 	public Response initActivity(@PathParam("workorder") String number) {
 		try {
 			Activity activity = new Activity();
-			activity.setWorkOrderNumber(number);
-			activity.setActivityCode(getDefaultActivityId(number));
-			activity.setStartDate(new Date());
-			activity.setEndDate(new Date());
-			activity.setPeopleRequired(BigInteger.ONE);
-			activity.setEstimatedHours(BigDecimal.ONE);
 			return ok(activity);
-		} catch (InforException e) {
-			return badRequest(e);
 		} catch(Exception e) {
 			return serverError(e);
 		}
 	}
-
-	private String getDefaultActivityId(String workOrder) throws InforException {
-		Activity[] activities = inforClient.getLaborBookingService().readActivities(authenticationTools.getInforContext(), workOrder, false);
-		if (activities != null && activities.length > 0) {
-			return Integer.toString(Integer.parseInt(activities[activities.length - 1].getActivityCode()) + 5);
-		} else {
-			return "5";
-		}
-	}
-
 }
