@@ -78,6 +78,9 @@ public class IndexResult {
 		case "PART":/* Part */
 			link = "part/" + code;
 			break;
+		case "L":/* Part */
+			link = "location/" + code;
+			break;
 		default:/* WorkOrder */
 			link = "workorder/" + code;
 		}
