@@ -9,6 +9,15 @@ public class Tab {
     Boolean tabAvailable;
     String tabDescription;
 
+    Boolean deleteAllowed;
+
+    Boolean updateAllowed;
+
+    Boolean queryAllowed;
+
+    Boolean insertAllowed;
+
+
     public Tab() {
         fields = new HashMap<>();
         alwaysDisplayed = false;
@@ -45,5 +54,37 @@ public class Tab {
 
     public void setTabDescription(String tabDescription) {
         this.tabDescription = tabDescription;
+    }
+
+    public Boolean getDeleteAllowed() {
+        return deleteAllowed;
+    }
+
+    public void setDeleteAllowed(Boolean deleteAllowed) {
+        this.deleteAllowed = deleteAllowed;
+    }
+
+    public Boolean getUpdateAllowed() {
+        return updateAllowed;
+    }
+
+    public void setUpdateAllowed(Boolean updateAllowed) {
+        this.updateAllowed = updateAllowed;
+    }
+
+    public Boolean getQueryAllowed() {
+        return queryAllowed;
+    }
+
+    public void setQueryAllowed(Boolean queryAllowed) {
+        this.queryAllowed = queryAllowed;
+    }
+
+    public Boolean getInsertAllowed() {
+        return insertAllowed;
+    }
+
+    public void setInsertAllowed(Boolean insertAllowed) {
+        this.insertAllowed = insertAllowed;
     }
 }

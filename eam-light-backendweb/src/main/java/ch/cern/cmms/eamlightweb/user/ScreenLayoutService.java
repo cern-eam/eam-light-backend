@@ -12,6 +12,7 @@ import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.decodeBoolean;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToMap;
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
@@ -139,14 +140,16 @@ public class ScreenLayoutService {
         GridRequestResult result = inforClient.getGridsService().executeQuery(context, gridRequest);
         for (GridRequestRow row : result.getRows()) {
             String tabCode = GridTools.getCellContent("tabcode", row);
-            Boolean tabAvailable = GridTools.getCellContent("tabavailable", row).equals("true");
-            Boolean tabAlwaysDisplayed = GridTools.getCellContent("tabalwaysdisp", row).equals("true");
-            String tabDescription = GridTools.getCellContent("tabcodetext", row);
-            tabs.get(tabCode).setTabAvailable(tabAvailable);
-            tabs.get(tabCode).setAlwaysDisplayed(tabAlwaysDisplayed);
-            tabs.get(tabCode).setTabDescription(tabDescription);
+            tabs.get(tabCode).setTabAvailable(decodeBoolean(GridTools.getCellContent("tabavailable", row)));
+            tabs.get(tabCode).setAlwaysDisplayed(decodeBoolean(GridTools.getCellContent("tabalwaysdisp", row)));
+            tabs.get(tabCode).setTabDescription(GridTools.getCellContent("tabcodetext", row));
+            tabs.get(tabCode).setInsertAllowed(decodeBoolean(GridTools.getCellContent("insertval", row)));
+            tabs.get(tabCode).setQueryAllowed(decodeBoolean(GridTools.getCellContent("queryval", row)));
+            tabs.get(tabCode).setUpdateAllowed(decodeBoolean(GridTools.getCellContent("updateval", row)));
+            tabs.get(tabCode).setDeleteAllowed(decodeBoolean(GridTools.getCellContent("deleteval", row)));
         }
     }
+
     private ElementInfo bindUdfDescription(UserDefinedFieldDescription description, ElementInfo elementInfo) {
         if(description != null) {
             elementInfo.setUdfLookupEntity(description.getLookupREntity());
