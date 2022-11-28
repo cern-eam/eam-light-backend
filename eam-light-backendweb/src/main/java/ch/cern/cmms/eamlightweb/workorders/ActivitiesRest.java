@@ -76,4 +76,16 @@ public class ActivitiesRest extends EAMLightController {
 			return serverError(e);
 		}
 	}
+
+	@DELETE
+	@Produces("application/json")
+	public Response deleteActivity(Activity activity) {
+		try {
+			return ok(inforClient.getLaborBookingService().deleteActivity(authenticationTools.getInforContext(), activity));
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
 }
