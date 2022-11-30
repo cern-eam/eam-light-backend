@@ -56,7 +56,7 @@ public class AuthenticationTools {
         String tenant = null;
         String sessionid = null;
         String authenticationMode = applicationData.getAuthenticationMode();
-        String headerUser = request.getHeader("INFOR_USER");
+        String localizeResults = request.getHeader("INFOR_LOCALIZE_RESULTS");
         if ("LOCAL".equalsIgnoreCase(authenticationMode)) {
             user = applicationData.getDefaultUser();
             if (user == null) {
@@ -98,7 +98,11 @@ public class AuthenticationTools {
 
         InforContext inforContext = new InforContext();
 
-        inforContext.setLocalizeResults(false);
+        if (isEmpty(localizeResults)) {
+            inforContext.setLocalizeResults(false);
+        } else {
+            inforContext.setLocalizeResults("true".equalsIgnoreCase(localizeResults));
+        }
         // Organization
         if (isEmpty(organization)) {
             throw inforClient.getTools().generateFault("Organization is required.");
