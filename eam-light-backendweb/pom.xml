@@ -84,10 +84,22 @@
 
 	<profiles>
 		<profile>
-			<id>CERN</id>
+			<id>KEYCLOAK</id>
 			<properties>
 				<webxml.path>src/main/webapp/WEB-INF/cern/web.xml</webxml.path>
 			</properties>
+		</profile>
+		<profile>
+			<id>NONE</id>
+			<properties>
+				<webxml.path>src/main/webapp/WEB-INF/open/web.xml</webxml.path>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>CERN</id>
 			<dependencies>
 				<dependency>
 					<groupId>ch.cern.cmms</groupId>
@@ -99,9 +111,6 @@
 		</profile>
 		<profile>
 			<id>OPEN</id>
-			<properties>
-				<webxml.path>src/main/webapp/WEB-INF/open/web.xml</webxml.path>
-			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>

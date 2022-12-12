@@ -119,5 +119,11 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>CERNSSO</id>
+			<properties>
+				<project.contextRoot>/SSO/eamlightws</project.contextRoot>
+			</properties>
+		</profile>
 	</profiles>
 </project>
