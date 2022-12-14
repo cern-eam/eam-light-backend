@@ -6,6 +6,7 @@ package ch.cern.cmms.eamlightejb.index;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
@@ -167,5 +168,18 @@ public class IndexResult implements Serializable {
 				+ (description != null ? "description=" + description + ", " : "")
 				+ (mrc != null ? "mrc=" + mrc + ", " : "") + (serial != null ? "serial=" + serial + ", " : "")
 				+ (alias != null ? "alias=" + alias : "") + "]";
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		final IndexResult that = (IndexResult) o;
+		return Objects.equals(code, that.code) && Objects.equals(type, that.type);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(code, type);
 	}
 }
