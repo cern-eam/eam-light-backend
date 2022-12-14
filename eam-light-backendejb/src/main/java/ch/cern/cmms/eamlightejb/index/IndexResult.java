@@ -3,10 +3,9 @@
  */
 package ch.cern.cmms.eamlightejb.index;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
+
+import java.io.Serializable;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
@@ -15,11 +14,14 @@ import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
  *
  */
 @Entity
-public class IndexResult {
+@IdClass(IndexResultId.class)
+public class IndexResult implements Serializable {
 
 	@Id
 	@Column(name = "CODE")
 	private String code;
+
+	@Id
 	@Column(name = "ENTTYPE")
 	private String type;
 	@Column(name = "DESCRIPTION")
