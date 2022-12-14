@@ -86,12 +86,15 @@ public class UserService {
                 break;
         }
 
-        // Check if the screen code has any value and if the user has access to the screen with that screen code
+        // 3. Try to set the default to the master screen, if none is specified
+        screenCode = screenCode != null ? screenCode : functionCode;
+
+        // 4. Check if the screen code has any value and if the user has access to the screen with that screen code
         if (isNotEmpty(screenCode) && userData.getScreens().containsKey(screenCode)) {
             return screenCode;
         }
 
-        // 3. Checking access to the default screen
+        // 5. Checking access to the default screen
         String stream = userData.getScreens().values().stream()
                                      .filter(screenInfo -> functionCode.equals(screenInfo.getParentScreen()))
                                      .map(ScreenInfo::getScreenCode)
