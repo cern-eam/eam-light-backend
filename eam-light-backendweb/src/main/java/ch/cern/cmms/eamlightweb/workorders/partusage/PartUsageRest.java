@@ -22,7 +22,9 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
+import ch.cern.cmms.plugins.SharedPlugin;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.entities.WorkOrderPart;
@@ -30,6 +32,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.*;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransaction;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionLine;
 import ch.cern.eam.wshub.core.services.material.entities.IssueReturnPartTransactionType;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
@@ -43,6 +46,8 @@ public class PartUsageRest extends EAMLightController {
 	private InforClient inforClient;
 	@Inject
 	private AuthenticationTools authenticationTools;
+	@Inject
+	private SharedPlugin sharedPlugin;
 
 	@GET
 	@Path("/stores")
@@ -89,6 +94,64 @@ public class PartUsageRest extends EAMLightController {
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
 					Pair.generateGridPairMap("830", "824"),
 					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
+	@GET
+	@Path("/lots")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response loadLotList(@QueryParam("transaction") String transaction, @QueryParam("lot") String lot,
+								@QueryParam("bin") String bin, @QueryParam("part") String part,
+								@QueryParam("store") String store,
+								@QueryParam("requireAvailableQty") boolean requireAvailableQty) {
+		try {
+			GridRequest gridRequest;
+			InforContext context = authenticationTools.getInforContext();
+			String gridFieldLotCode;
+			String gridFieldDescriptionCode = "2175";
+
+			if (transaction.equals("ISSUE")) {
+				gridRequest = new GridRequest("LVIRLOT", GridRequest.GRIDTYPE.LOV);
+				gridFieldLotCode = "825";
+
+				gridRequest.addParam("bin_code", bin);
+				gridRequest.addParam("part_code", part);
+				gridRequest.addParam("part_org", context.getOrganizationCode());
+				gridRequest.addParam("store_code", store);
+
+				if (requireAvailableQty) {
+					gridRequest.addFilter("availableqty", "0", ">", GridRequestFilter.JOINER.AND);
+				}
+
+			} else if (transaction.equals("RETURN")) {
+				List<Pair> udsLots = sharedPlugin.getUdsLots(part, inforClient, context);
+
+				// Check whether there are user defined lots, otherwise return all lots
+				if (udsLots != null && udsLots.size() > 0) {
+					return ok(udsLots);
+				} else {
+					gridRequest = new GridRequest("LVLOT", GridRequest.GRIDTYPE.LOV);
+					gridFieldLotCode = "2174";
+					gridRequest.setRowCount(10000);
+				}
+
+			} else {
+				throw new IllegalArgumentException("Transaction type '" + transaction + "' is not valid. Use ISSUE or RETURN");
+			}
+
+			if (lot != null && !lot.isEmpty()) {
+				gridRequest.addFilter("lotcode", lot, "=");
+			}
+
+			return ok(GridTools.convertGridResultToObject(Pair.class,
+					Pair.generateGridPairMap(gridFieldLotCode, gridFieldDescriptionCode),
+					inforClient.getGridsService().executeQuery(context, gridRequest)));
+
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
