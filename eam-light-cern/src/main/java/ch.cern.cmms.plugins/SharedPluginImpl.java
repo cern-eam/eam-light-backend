@@ -24,7 +24,7 @@ public class SharedPluginImpl implements SharedPlugin {
             "           , MAX(PLO_ATTRIBUTE) " +
             "                 KEEP ( DENSE_RANK FIRST ORDER BY DECODE(PLO_ATTRIBUTE, 'O', 0, 'R', 1, 'P', 2, 3) )    " +
             "            AS ATTR " +
-            "      FROM R5EXTMENUS " +
+            "      FROM R5EXTMENUS E1 " +
             "               LEFT JOIN r5pagelayout " +
             "                         ON PLO_PAGENAME = EMN_FUNCTION " +
             "                             AND PLO_USERGROUP = EMN_GROUP " +
@@ -39,6 +39,13 @@ public class SharedPluginImpl implements SharedPlugin {
             "                             FROM R5FUNCTIONS " +
             "                             WHERE NVL(FUN_APPLICATION, FUN_CODE) = 'WSJOBS') " +
             "      AND PLO_ATTRIBUTE IN ('O', 'R', 'P') " +
+            " AND NOT EXISTS ( " +
+            "        SELECT E2.EMN_HIDE, E2.EMN_CODE, E2.EMN_PARENT " +
+            "        FROM R5EXTMENUS E2 " +
+            "        WHERE EMN_HIDE = '+' " +
+            "        CONNECT BY PRIOR E2.EMN_PARENT = E2.EMN_CODE " +
+            "        START WITH E2.EMN_CODE = E1.EMN_CODE " +
+            "    )" +
             "      GROUP BY EMN_GROUP, PLO_ELEMENTID) A ";
 
     @Override
