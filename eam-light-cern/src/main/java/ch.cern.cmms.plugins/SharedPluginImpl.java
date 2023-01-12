@@ -29,7 +29,11 @@ public class SharedPluginImpl implements SharedPlugin {
 
         GridRequestResult udsLotsResult = inforClient.getGridsService().executeQuery(context, udsLotsRequest);
 
-        return GridTools.convertGridResultToObject(
-                Pair.class, Pair.generateGridPairMap("137670", ""), udsLotsResult);
+        Map<String, String> lotColumns = new HashMap<String, String>(){{
+            put("137670", "code");
+            put("", "desc");
+        }};
+
+        return GridTools.convertGridResultToObject(Pair.class, lotColumns, udsLotsResult);
     }
 }
