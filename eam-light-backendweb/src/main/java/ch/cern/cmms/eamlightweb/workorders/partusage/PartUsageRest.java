@@ -102,46 +102,25 @@ public class PartUsageRest extends EAMLightController {
 	}
 
 	@GET
-	@Path("/lots")
+	@Path("/lots/issue")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response loadLotList(@QueryParam("transaction") String transaction, @QueryParam("lot") String lot,
-								@QueryParam("bin") String bin, @QueryParam("part") String part,
-								@QueryParam("store") String store,
-								@QueryParam("requireAvailableQty") boolean requireAvailableQty) {
+	public Response loadLotListIssue(@QueryParam("lot") String lot, @QueryParam("bin") String bin,
+									 @QueryParam("part") String part, @QueryParam("store") String store,
+									 @QueryParam("requireAvailableQty") boolean requireAvailableQty) {
 		try {
 			GridRequest gridRequest;
 			InforContext context = authenticationTools.getInforContext();
-			String gridFieldLotCode;
-			String gridFieldDescriptionCode = "2175";
 
-			if (transaction.equals("ISSUE")) {
-				gridRequest = new GridRequest("LVIRLOT", GridRequest.GRIDTYPE.LOV);
-				gridFieldLotCode = "825";
+			gridRequest = new GridRequest("LVIRLOT", GridRequest.GRIDTYPE.LOV);
 
-				gridRequest.addParam("bin_code", bin);
-				gridRequest.addParam("part_code", part);
-				gridRequest.addParam("part_org", context.getOrganizationCode());
-				gridRequest.addParam("store_code", store);
+			gridRequest.addParam("bin_code", bin);
+			gridRequest.addParam("part_code", part);
+			gridRequest.addParam("part_org", context.getOrganizationCode());
+			gridRequest.addParam("store_code", store);
 
-				if (requireAvailableQty) {
-					gridRequest.addFilter("availableqty", "0", ">", GridRequestFilter.JOINER.AND);
-				}
-
-			} else if (transaction.equals("RETURN")) {
-				List<Pair> udsLots = sharedPlugin.getUdsLots(part, inforClient, context);
-
-				// Check whether there are user defined lots, otherwise return all lots
-				if (udsLots != null && udsLots.size() > 0) {
-					return ok(udsLots);
-				} else {
-					gridRequest = new GridRequest("LVLOT", GridRequest.GRIDTYPE.LOV);
-					gridFieldLotCode = "2174";
-					gridRequest.setRowCount(10000);
-				}
-
-			} else {
-				throw new IllegalArgumentException("Transaction type '" + transaction + "' is not valid. Use ISSUE or RETURN");
+			if (requireAvailableQty) {
+				gridRequest.addFilter("availableqty", "0", ">", GridRequestFilter.JOINER.AND);
 			}
 
 			if (lot != null && !lot.isEmpty()) {
@@ -149,8 +128,42 @@ public class PartUsageRest extends EAMLightController {
 			}
 
 			return ok(GridTools.convertGridResultToObject(Pair.class,
-					Pair.generateGridPairMap(gridFieldLotCode, gridFieldDescriptionCode),
-					inforClient.getGridsService().executeQuery(context, gridRequest)));
+					  Pair.generateGridPairMap("825", "2175"),
+					  inforClient.getGridsService().executeQuery(context, gridRequest)));
+
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
+	@GET
+	@Path("/lots/return")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response loadLotListReturn(@QueryParam("lot") String lot, @QueryParam("part") String part) {
+		try {
+			GridRequest gridRequest;
+			InforContext context = authenticationTools.getInforContext();
+
+			List<Pair> udsLots = sharedPlugin.getUdsLots(part, inforClient, context);
+
+			// Check whether there are user defined lots, otherwise return all lots
+			if (udsLots != null && udsLots.size() > 0) {
+				return ok(udsLots);
+			} else {
+				gridRequest = new GridRequest("LVLOT", GridRequest.GRIDTYPE.LOV);
+				gridRequest.setRowCount(10000);
+			}
+
+			if (lot != null && !lot.isEmpty()) {
+				gridRequest.addFilter("lotcode", lot, "=");
+			}
+
+			return ok(GridTools.convertGridResultToObject(Pair.class,
+					  Pair.generateGridPairMap("2174", "2175"),
+					  inforClient.getGridsService().executeQuery(context, gridRequest)));
 
 		} catch (InforException e) {
 			return badRequest(e);
