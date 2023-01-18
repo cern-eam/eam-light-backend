@@ -22,15 +22,18 @@ public class SharedPluginImpl implements SharedPlugin {
 
     // Retrieve lots from the user defined screen
     @Override
-    public List<Pair> getUdsLots(String partCode, InforClient inforClient, InforContext context) throws InforException {
+    public List<Pair> getUdsLots(String partCode, InforClient inforClient, InforContext context,
+                                 Map<String, String> applicationData) throws InforException {
 
-        GridRequest udsLotsRequest = new GridRequest("SSPART_U1");
+        String udsPartLotGrid = applicationData.get("EL_USPLT");
+
+        GridRequest udsLotsRequest = new GridRequest(udsPartLotGrid);
         udsLotsRequest.addParam("parameter.partcode", partCode);
 
         GridRequestResult udsLotsResult = inforClient.getGridsService().executeQuery(context, udsLotsRequest);
 
         Map<String, String> lotColumns = new HashMap<String, String>(){{
-            put("137670", "code");
+            put("wspf_10_plo_lot", "code");
             put("", "desc");
         }};
 

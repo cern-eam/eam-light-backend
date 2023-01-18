@@ -21,7 +21,7 @@ public class SharedPluginImpl implements SharedPlugin {
     }
 
     @Override
-    public List<Pair> getUdsLots(String partCode, InforClient inforClient, InforContext context) throws InforException {
+    public List<Pair> getUdsLots(String partCode, InforClient inforClient, InforContext context, Map<String, String> applicationData) throws InforException {
         return new LinkedList<>();
     }
 }

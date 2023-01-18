@@ -20,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import ch.cern.cmms.eamlightweb.application.ApplicationService;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.plugins.SharedPlugin;
@@ -146,8 +147,9 @@ public class PartUsageRest extends EAMLightController {
 		try {
 			GridRequest gridRequest;
 			InforContext context = authenticationTools.getInforContext();
+			Map<String, String> applicationData = ApplicationService.paramFieldCache;
 
-			List<Pair> udsLots = sharedPlugin.getUdsLots(part, inforClient, context);
+			List<Pair> udsLots = sharedPlugin.getUdsLots(part, inforClient, context, applicationData);
 
 			// Check whether there are user defined lots, otherwise return all lots
 			if (udsLots != null && udsLots.size() > 0) {
