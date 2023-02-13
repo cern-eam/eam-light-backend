@@ -34,6 +34,8 @@ public class ApplicationData {
 
     public Integer getLDAPPort() { return Tools.getVariableIntegerValue("EAMLIGHT_LDAP_PORT"); }
 
+    public Boolean trustAllCertificates() { return "true".equalsIgnoreCase(Tools.getVariableValue("EAMLIGHT_TRUST_ALL_CERTIFICATES")); }
+
     public String getVersion() {
         return getClass().getPackage().getImplementationVersion();
     }

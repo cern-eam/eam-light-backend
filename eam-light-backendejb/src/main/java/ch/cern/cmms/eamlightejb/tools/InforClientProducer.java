@@ -1,8 +1,11 @@
 package ch.cern.cmms.eamlightejb.tools;
 
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightejb.tools.soaphandler.SOAPHandlerResolver;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
+
+import java.security.cert.X509Certificate;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -10,6 +13,7 @@ import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
@@ -26,6 +30,9 @@ public class InforClientProducer {
     private InforClient inforClient;
     @Resource
     private ManagedExecutorService executorService;
+
+    @Inject
+    private ApplicationData applicationData;
 
     @PostConstruct
     public void init() {
@@ -58,6 +65,10 @@ public class InforClientProducer {
 
             // Avoid 'Chunked transfer encoding is currently not supported' error which might be thrown by some web servers
             HTTPConduit conduit = (HTTPConduit)ClientProxy.getClient(inforClient.getInforWebServicesToolkitClient()).getConduit();
+            // Should be only executed conditionally
+            if (applicationData.trustAllCertificates()) {
+                conduit.setTlsClientParameters(Tools.tlsClientParameters());
+            }
             HTTPClientPolicy client = conduit.getClient();
             client.setAllowChunking(false);
         } catch (Exception exception) {
