@@ -6,14 +6,15 @@ import javax.persistence.*;
 @NamedNativeQueries({
         @NamedNativeQuery(
                 name = MTFWorkOrderImpl.GET_EQUIPMENT_SWO_MAX_STEP,
-                query = "SELECT EVT_CODE, MTF_STEP" +
-                        "  FROM cern_wo_mtf m1" +
-                        " WHERE evt_object = :eqCode" +
-                        "   AND evt_standwork = :swo" +
-                        "   AND prv_code = ( SELECT MAX(to_number(m2.prv_code))" +
-                        "                      FROM cern_wo_mtf m2" +
-                        "                     WHERE m2.evt_standwork = m1.evt_standwork" +
-                        "                       AND m2.evt_object = m1.evt_object)",
+                query = "SELECT MIN(stp_evtcode) EVT_CODE" +
+                        "   , MAX(STP_ID) MTF_STEP" +
+                        " FROM mtf_steps m1 " +
+                        " WHERE stp_object = :eqCode " +
+                        "  AND stp_standwo = :swo " +
+                        "  AND stp_id = (SELECT MAX(to_number(m2.stp_id)) " +
+                        "                FROM mtf_steps m2 " +
+                        "                WHERE m2.stp_standwo = m1.stp_standwo " +
+                        "                  AND m2.stp_object = m1.stp_object)",
                 resultClass = MTFWorkOrderImpl.class
         ),
 })
