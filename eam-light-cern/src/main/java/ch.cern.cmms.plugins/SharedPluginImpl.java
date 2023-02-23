@@ -39,6 +39,7 @@ public class SharedPluginImpl implements SharedPlugin {
             "                             FROM R5FUNCTIONS " +
             "                             WHERE NVL(FUN_APPLICATION, FUN_CODE) = 'WSJOBS') " +
             "      AND PLO_ATTRIBUTE IN ('O', 'R', 'P') " +
+            "      AND PLO_PRESENTINJSP = 'Y' " +
             " AND NOT EXISTS ( " +
             "        SELECT E2.EMN_HIDE, E2.EMN_CODE, E2.EMN_PARENT " +
             "        FROM R5EXTMENUS E2 " +
