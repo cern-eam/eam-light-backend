@@ -12,12 +12,12 @@ import ch.cern.cmms.eamlightweb.base.UserDefinedFieldsController;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.user.ScreenLayoutService;
 import ch.cern.cmms.eamlightweb.user.ScreenService;
 import ch.cern.cmms.eamlightweb.user.UserService;
 import ch.cern.cmms.plugins.LDAPPlugin;
 import ch.cern.cmms.plugins.SharedPlugin;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.services.administration.impl.ScreenLayoutServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
 import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
@@ -78,8 +78,8 @@ public class ApplicationController extends EAMLightController {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response cleanCache() {
-		ScreenLayoutService.screenLayoutCache.clear();
-		ScreenLayoutService.screenLayoutLabelCache.clear();
+		ScreenLayoutServiceImpl.screenLayoutCache.clear();
+		ScreenLayoutServiceImpl.screenLayoutLabelCache.clear();
 		ScreenService.screenCache.clear();
 		ScreenService.reportsCache.clear();
 		InforGrids.gridFieldCache.clear();

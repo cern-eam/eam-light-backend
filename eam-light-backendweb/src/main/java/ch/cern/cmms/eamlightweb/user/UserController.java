@@ -3,6 +3,7 @@ package ch.cern.cmms.eamlightweb.user;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -22,7 +23,7 @@ public class UserController extends EAMLightController {
 	@Inject
 	private UserService userService;
 	@Inject
-	private ScreenLayoutService screenLayoutService;
+	private InforClient inforClient;
 	@Inject
 	private AuthenticationTools authenticationTools;
 
@@ -51,7 +52,7 @@ public class UserController extends EAMLightController {
 									 @QueryParam("lang") String language,
 									 @QueryParam("tabname") List<String> tabs) throws InforException {
 		try {
-			return ok(screenLayoutService.getScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity));
+			return ok(inforClient.getScreenLayoutService().readScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity));
 		} catch(Exception e) {
 			e.printStackTrace();
 			return serverError(e);
