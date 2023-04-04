@@ -81,7 +81,7 @@ public class AuthenticationTools {
             try {
                 KeycloakPrincipal<KeycloakSecurityContext> kp = (KeycloakPrincipal<KeycloakSecurityContext>) request.getUserPrincipal();
                 String username = kp.getKeycloakSecurityContext().getToken().getPreferredUsername();
-                user = getUnderlyingUser(username);
+                user = getUnderlyingUser(username.toUpperCase());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -137,7 +137,7 @@ public class AuthenticationTools {
     private  String getFinalUser(String authenticatedUser, String impersonatedUser) throws InforException {
         String authenticationMode = applicationData.getAuthenticationMode();
         boolean allowImpersonation = isNotEmpty(impersonatedUser)
-                && Arrays.asList("SSO", "LOCAL", "OPENID").contains(authenticationMode)
+                && Arrays.asList("SSO", "LOCAL", "OPENID", "KEYCLOAK").contains(authenticationMode)
                 && applicationService.getServiceAccounts().containsKey(authenticatedUser)
                 && userIsAllowed(authenticatedUser, impersonatedUser)
                 ;
