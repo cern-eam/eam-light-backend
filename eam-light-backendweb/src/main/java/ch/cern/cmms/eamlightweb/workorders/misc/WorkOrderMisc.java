@@ -6,11 +6,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
@@ -83,9 +79,9 @@ public class WorkOrderMisc extends EAMLightController {
 	}
 
 	@GET
-	@Path("/equipment/{eqCode}/details")
+	@Path("/equipment")
 	@Produces("application/json")
-	public Response getWOEquipLinearDetails(@PathParam("eqCode") String eqCode) throws InforException {
+	public Response getWOEquipLinearDetails(@QueryParam("eqCode") String eqCode) throws InforException {
 		try {
 			final AdditionalWOEquipDetails woEquipLinearDetails = inforClient.getWorkOrderMiscService().getEquipLinearDetails(authenticationTools.getR5InforContext(), eqCode);
 			return ok(woEquipLinearDetails);
