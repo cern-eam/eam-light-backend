@@ -21,7 +21,6 @@ import ch.cern.eam.wshub.core.services.administration.impl.ScreenLayoutServiceIm
 import ch.cern.eam.wshub.core.services.grids.impl.GridsServiceImpl;
 import ch.cern.eam.wshub.core.services.grids.impl.InforGrids;
 import ch.cern.eam.wshub.core.services.workorders.impl.ChecklistServiceImpl;
-import ch.cern.eam.wshub.core.tools.InforException;
 
 @Path("/application")
 @ApplicationScoped
@@ -39,19 +38,6 @@ public class ApplicationController extends EAMLightController {
 	private SharedPlugin sharedPlugin;
 	@Inject
 	private LDAPPlugin ldapPlugin;
-
-	@GET
-	@Path("/dates/permissions")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response getDatesPermisisons() {
-		try {
-			return ok(sharedPlugin.getDatesPermissions(inforClient,
-					authenticationTools.getInforContext().getCredentials().getUsername()));
-		} catch (InforException e) {
-			return serverError(e);
-		}
-	}
 
 	@GET
 	@Path("/hello")
