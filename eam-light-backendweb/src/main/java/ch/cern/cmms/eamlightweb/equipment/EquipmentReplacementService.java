@@ -183,6 +183,35 @@ public class EquipmentReplacementService {
     }
 
     /**
+     * Recursively detaches dependent children from their positions if they are dependent on their parent asset
+     *
+     * @param parentEquipment
+     *            The uppermost parent asset of the hierarchy being replaced
+     */
+    private void detachDependentChildrenFromPosition(InforContext inforContext, Equipment parentEquipment) throws InforException {
+        List<EquipmentStructure> parentEquipmentChildren = getDirectChildren(parentEquipment);
+
+        for (EquipmentStructure child : parentEquipmentChildren) {
+            // Check for parent asset dependency
+            if (child.getDependent()) {
+                String childCode = child.getChildCode();
+                Equipment childEquipment = inforClient.getAssetService().readAsset(inforContext, childCode, null);
+
+                // Detach from position (if there is one)
+                String parentPositionCode = childEquipment.getHierarchyPositionCode();
+                if (!DataTypeTools.isEmpty(parentPositionCode)) {
+                    EquipmentStructure structure = new EquipmentStructure();
+                    structure.setChildCode(childCode);
+                    structure.setParentCode(parentPositionCode);
+                    inforClient.getEquipmentStructureService().removeEquipmentFromStructure(inforContext, structure);
+                }
+
+                detachDependentChildrenFromPosition(inforContext, childEquipment);
+            }
+        }
+    }
+
+    /**
      * Standard Equipment replacement functionality
      *
      * @param replacement
@@ -228,6 +257,11 @@ public class EquipmentReplacementService {
             inforClient.getEquipmentStructureService().removeEquipmentFromStructure(inforContext, structure);
          }
 
+        /*
+         * 3. Detach the old equipment's descendants from parent positions if they are dependent on their parent asset
+         */
+        detachDependentChildrenFromPosition(inforContext, oldEquipment);
+
         if (oldAssetIsInStore) {
             try {
                 IssueReturnPartTransaction transaction = new IssueReturnPartTransaction();
@@ -254,7 +288,7 @@ public class EquipmentReplacementService {
             }
         } else {
             /*
-             * 3. Detach the new equipment from all it's parents (if any) OR issue it
+             * 4. Detach the new equipment from all its parents (if any) OR issue it
              */
             List<EquipmentStructure> newEquipmentParents = getDirectParents(newEquipment);
             // Remove one by one
@@ -266,7 +300,7 @@ public class EquipmentReplacementService {
                 inforClient.getEquipmentStructureService().removeEquipmentFromStructure(inforContext, structure);
             }
             /*
-             * 4. Attach the new Equipment to all Old Equipment parents
+             * 5. Attach the new Equipment to all Old Equipment parents
              */
             for (EquipmentStructure oldEquipmentParent : oldEquipmentParents) {
                 EquipmentStructure structure = new EquipmentStructure();
@@ -281,7 +315,7 @@ public class EquipmentReplacementService {
         }
 
         /*
-         * 5. Update the statuses of the equipments if necessary
+         * 6. Update the statuses of the equipments if necessary
          */
         if (!replacement.getOldEquipmentStatus().equals(oldEquipment.getStatusCode()) || !replacement.getOldEquipmentState().equals(oldEquipment.getStateCode())) {
             toUpdate.setCode(oldEquipment.getCode());
