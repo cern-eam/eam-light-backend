@@ -65,7 +65,7 @@ public class CustomFieldsController extends EAMLightController {
 		Map<String, String> map = new HashMap<>();
 		map.put("461", "code");
 
-		GridRequest gridRequest = new GridRequest("104", "LVCFV", "105");
+		GridRequest gridRequest = new GridRequest("LVCFV");
 		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
@@ -74,7 +74,7 @@ public class CustomFieldsController extends EAMLightController {
 		Map<String, String> map = new HashMap<>();
 		map.put("462", "code");
 
-		GridRequest gridRequest = new GridRequest("105", "LVCFN", "106");
+		GridRequest gridRequest = new GridRequest("LVCFN");
 		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
@@ -83,7 +83,7 @@ public class CustomFieldsController extends EAMLightController {
 		Map<String, String> map = new HashMap<>();
 		map.put("463", "code");
 
-		GridRequest gridRequest = new GridRequest("106", "LVCFD", "107");
+		GridRequest gridRequest = new GridRequest("LVCFD");
 		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
@@ -92,7 +92,7 @@ public class CustomFieldsController extends EAMLightController {
 		Map<String, String> map = new HashMap<>();
 		map.put("464", "code");
 
-		GridRequest gridRequest = new GridRequest("107", "LVCFD", "108");
+		GridRequest gridRequest = new GridRequest("LVCFD");
 		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
@@ -102,7 +102,7 @@ public class CustomFieldsController extends EAMLightController {
 		map.put("461", "code");
 		map.put("465", "desc");
 
-		GridRequest gridRequest = new GridRequest("108", "LVCFCD", "109");
+		GridRequest gridRequest = new GridRequest("LVCFCD");
 		gridRequest.setRowCount(1000);
 		return getData("param.propcode", property, gridRequest, map);
 	}
@@ -112,7 +112,7 @@ public class CustomFieldsController extends EAMLightController {
 		map.put("101", "code");
 		map.put("103", "desc");
 
-		GridRequest gridRequest = new GridRequest("109", "LVCFE", "110");
+		GridRequest gridRequest = new GridRequest("LVCFE");
 		gridRequest.setRowCount(10);
 		gridRequest.addFilter("customfieldvalue", filter, "BEGINS", GridRequestFilter.JOINER.OR);
 		gridRequest.addFilter("description", filter, "BEGINS");
