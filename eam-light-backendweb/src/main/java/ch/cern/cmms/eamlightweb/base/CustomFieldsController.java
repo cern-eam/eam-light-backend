@@ -107,7 +107,7 @@ public class CustomFieldsController extends EAMLightController {
 		return getData("param.propcode", property, gridRequest, map);
 	}
 
-	public List<Pair> cfEntity(String entity, String filter) throws InforException {
+	public List<Pair> cfEntity(String entityCode, String rentCodeValue, String cfCode, String filter) throws InforException {
 		Map<String, String> map = new HashMap<>();
 		map.put("101", "code");
 		map.put("103", "desc");
@@ -116,8 +116,11 @@ public class CustomFieldsController extends EAMLightController {
 		gridRequest.setRowCount(10);
 		gridRequest.addFilter("customfieldvalue", filter, "BEGINS", GridRequestFilter.JOINER.OR);
 		gridRequest.addFilter("description", filter, "BEGINS");
+		gridRequest.addParam("param.fieldid", cfCode);
+		gridRequest.addParam("param.associatedrentity", entityCode);
+		gridRequest.addParam("param.lookuprentity", rentCodeValue);
 
-		return getData("parameter.propentity", entity, gridRequest, map);
+		return getData("parameter.propentity", rentCodeValue, gridRequest, map);
 	}
 
 
@@ -127,7 +130,7 @@ public class CustomFieldsController extends EAMLightController {
 
 		List<Pair> customFieldLookupValues = inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
 				map,
-				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
+				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
 
 		return customFieldLookupValues;
 	}

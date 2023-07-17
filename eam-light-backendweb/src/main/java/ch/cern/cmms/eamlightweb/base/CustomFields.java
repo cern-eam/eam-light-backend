@@ -61,15 +61,15 @@ public class CustomFields extends EAMLightController {
 	}
 
 	@GET
-	@Path("/autocomplete/{rentity}/{code}/{filter}")
+	@Path("/autocomplete/{entityCode}/{rentCodeValue}/{cfCode}/{filter}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response complete(@PathParam("rentity") String rentity, @PathParam("code") String code, @PathParam("filter") String filter) throws InforException {
+	public Response complete(@PathParam("entityCode") String entityCode, @PathParam("rentCodeValue") String rentCodeValue, @PathParam("cfCode") String cfCode, @PathParam("filter") String filter) throws InforException {
 		List<Pair> result = new LinkedList<>();
-		if (code.equals("0003") && filter.length() > 3) {
+		if (cfCode.equals("0003") && filter.length() > 3) {
 			result.addAll(ldapPlugin.readEgroups(filter));
 		}
-		result.addAll(customFieldsController.cfEntity(rentity, filter));
+		result.addAll(customFieldsController.cfEntity(entityCode, rentCodeValue, cfCode, filter));
 
 		return ok(result);
 	}
