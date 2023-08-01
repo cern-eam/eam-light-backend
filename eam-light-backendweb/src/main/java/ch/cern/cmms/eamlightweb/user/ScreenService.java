@@ -6,7 +6,6 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuEntryNode;
 import ch.cern.eam.wshub.core.services.administration.entities.MenuRequestType;
-import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter.JOINER;
 import ch.cern.eam.wshub.core.tools.InforException;
@@ -28,8 +27,8 @@ public class ScreenService {
     private InforClient inforClient;
     private List<String> screens;
     public static final Map<String, Map<String, ScreenInfo>> screenCache = new ConcurrentHashMap<>();
-    public static final Map<String, List<Pair>> reportsCache = new ConcurrentHashMap<>();
-    public static final String EAM_REPORTS_MENU = "Custom Grids"; // Possibly a better way of doing this
+    public static final Map<String, Map<String, List<Map<String, String>>>> reportsCache = new ConcurrentHashMap<>();
+    public static final String EAM_REPORTS_MENU = "Lists & Reports"; // Possibly a better way of doing this
 
     @PostConstruct
     private void init() {
@@ -103,22 +102,57 @@ public class ScreenService {
         return functions;
     }
 
-    public List<Pair> getReports(InforContext context, String userGroup) throws InforException {
+    public Map<String, List<Map<String, String>>> getReports(InforContext context, String userGroup) throws InforException {
+
         if (!reportsCache.containsKey(userGroup)) {
-            MenuEntryNode menu = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(
+            // Get all menus for the user group
+            MenuEntryNode menus = inforClient.getUserGroupMenuService().getExtMenuHierarchyAsTree(
                     context,
                     userGroup,
                     MenuRequestType.EXCLUDE_PERMISSIONSAND_TABS
             );
 
-            List<Pair> reports = menu.getChildren().stream()
+            // Get all menu entries that are children of the EAM Reports menu
+            List<MenuEntryNode> eamReportsMenuEntries = menus.getChildren().stream()
                     .flatMap(ScreenService::flattenMenuTree)
                     .filter(option -> option.getParentMenuEntry().getDescription().equals(EAM_REPORTS_MENU))
-                    .map(report -> new Pair(report.getFunctionId(), report.getDescription()))
+                    .collect(Collectors.toList());
+
+            // Get function IDs of all children (direct or indirect) of the EAM Reports menu
+            List<String> eamReportsMenuFunctionIds = eamReportsMenuEntries.stream()
+                    .flatMap(ScreenService::flattenMenuTree)
+                    .map(MenuEntryNode::getFunctionId)
                     .distinct()
                     .collect(Collectors.toList());
 
-            reportsCache.put(userGroup, reports);
+            // Get the metadata of the menu entries collected above (includes indirect children)
+            GridRequest gridRequestLayout = new GridRequest("BSFUNC", 1000);
+            gridRequestLayout.addFilter("screencode", String.join(",", eamReportsMenuFunctionIds), "IN");
+
+            List<Map<String,String>> eamReportsMetadata = inforClient.getTools().getGridTools().convertGridResultToMapList(
+                    inforClient.getGridsService().executeQuery(context, gridRequestLayout));
+
+            // Get menu entries that have children (thus are sub-menus of the EAM reports menu) and create a map of the
+            // sub-menu name to the list of children function IDs
+            Map<String, List<String>> eamReportsSubMenusChildren = eamReportsMenuEntries.stream()
+                    .filter(option -> option.getChildren().size() > 0)
+                    .collect(Collectors.toMap(
+                            MenuEntryNode::getDescription,
+                            option -> option.getChildren().stream().map(MenuEntryNode::getFunctionId).collect(Collectors.toList())
+                    ));
+
+            // Create a map with the key being either the sub-menu name, or the name of the EAM reports menu in the case
+            // where the report is its direct child, and the value being the list of the corresponding menu entries metadata
+            Map<String, List<Map<String, String>>> eamReportsMenuMetadataMap = eamReportsMetadata.stream()
+                    .collect(Collectors.groupingBy(
+                            report -> eamReportsSubMenusChildren.entrySet().stream()
+                                    .filter(entry -> entry.getValue().contains(report.get("screencode")))
+                                    .map(Map.Entry::getKey)
+                                    .findFirst()
+                                    .orElse(EAM_REPORTS_MENU)
+                    ));
+
+            reportsCache.put(userGroup, eamReportsMenuMetadataMap);
         }
 
         return reportsCache.get(userGroup);
