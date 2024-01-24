@@ -18,10 +18,7 @@ import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -185,35 +182,61 @@ public class EquipmentReplacementService {
     }
 
     /**
-     * TODO: adjust comment after problem clarification?
-     * Recursively detaches child assets and positions from their positions if the assets are dependent on their parent asset
+     * Recursively detaches child assets and positions from their positions if they are dependent on their parent asset
      *
      * @param parentEquipment
-     *            The uppermost parent asset of the hierarchy being replaced
+     *            The uppermost parent asset or position of the hierarchy being replaced
      */
-    private void detachDependentChildrenFromPositions(InforContext inforContext, Equipment parentEquipment) throws InforException {
-        // Collect asset-dependent children TODO: adjust comment and method name after problem clarification?
+    private Map<String, String> detachDependentChildrenFromPositions(InforContext inforContext, Equipment parentEquipment) throws InforException {
+        Map<String, String> detachedChildren = new HashMap<>();
+
+        // Collect parent-dependent children
         List<EquipmentStructure> parentEquipmentChildren = getDirectChildren(parentEquipment);
-        List<String> dependentChildren = getDependentChildrenCodes(parentEquipment, parentEquipmentChildren);
+        List<String> dependentChildren = getDependentChildrenCodes(parentEquipmentChildren);
 
-        // Detach dependent children from their parent positions
+        // Detach asset-dependent children from their parent positions
         if (!dependentChildren.isEmpty()) {
-            List<Equipment> childrenEquipment = getEquipmentData(inforContext, dependentChildren);
+            List<Equipment> dependentChildrenEquipment = getEquipmentData(inforContext, dependentChildren);
 
-            // Detach children from their parent positions
-            for (Equipment child : childrenEquipment) {
-                String parentPositionCode = child.getHierarchyPositionCode();
+            for (Equipment dependent : dependentChildrenEquipment) {
+                String parentPositionCode = dependent.getHierarchyPositionCode();
 
-                if (!DataTypeTools.isEmpty(parentPositionCode)) {
+                if (parentEquipment.getTypeCode().equals("A") && !DataTypeTools.isEmpty(parentPositionCode)) {
+                    String dependentCode = dependent.getCode();
                     EquipmentStructure structure = new EquipmentStructure();
-                    structure.setChildCode(child.getCode());
+
+                    structure.setChildCode(dependentCode);
                     structure.setParentCode(parentPositionCode);
                     inforClient.getEquipmentStructureService().removeEquipmentFromStructure(inforContext, structure);
+
+                    detachedChildren.put(dependentCode, parentPositionCode);
                 }
 
-                detachDependentChildrenFromPositions(inforContext, child);
+                detachedChildren.putAll(detachDependentChildrenFromPositions(inforContext, dependent));
             }
         }
+
+         return detachedChildren;
+    }
+
+    /**
+     * Collects parent-dependent children that are assets or positions
+     */
+    private List<String> getDependentChildrenCodes(List<EquipmentStructure> parentEquipmentChildren) {
+        List<String> dependentChildren = new ArrayList<>();
+
+        for (EquipmentStructure child : parentEquipmentChildren) {
+            if (child.getDependent()) {
+                String childCode = child.getChildCode();
+                String childType = child.getChildType();
+
+                if (childType.equals("P") || childType.equals("A")) {
+                    dependentChildren.add(childCode);
+                }
+            }
+        }
+
+        return dependentChildren;
     }
 
     private List<Equipment> getEquipmentData(InforContext inforContext, List<String> equipmentCodes) {
@@ -223,26 +246,6 @@ public class EquipmentReplacementService {
                 .stream()
                 .map(BatchSingleResponse::getResponse)
                 .collect(Collectors.toList());
-    }
-
-    private List<String> getDependentChildrenCodes(Equipment parentEquipment, List<EquipmentStructure> parentEquipmentChildren) {
-        List<String> dependentChildren = new ArrayList<>();
-
-        // Find children dependent on their parent asset
-        for (EquipmentStructure child : parentEquipmentChildren) {
-            if (child.getDependent()) {
-                String childCode = child.getChildCode();
-                String childType = child.getChildType();
-
-                if (childType.equals("P") || childType.equals("A")) { // TODO: && parentEquipment.getTypeCode().equals("A") ?
-                    dependentChildren.add(childCode);
-                } else {
-                    throw new IllegalArgumentException("Invalid childType: " + childType + ", for childCode: " + childCode
-                            + ", of parentCode: " + parentEquipment.getCode() + ". Only 'A' and 'P' are supported.");
-                }
-            }
-        }
-        return dependentChildren;
     }
 
     /**
@@ -292,10 +295,12 @@ public class EquipmentReplacementService {
          }
 
         /*
-         * TODO: adjust comment after problem clarification?
-         * 3. Detach the old equipment's assets and positions from their parent positions if they are dependent on their parent asset
+         * 3. Detach the old equipment's children assets and positions from their parent positions (if they are dependent on their parent asset)
          */
-        detachDependentChildrenFromPositions(inforContext, oldEquipment);
+        Map<String, String> detachedChildren = new HashMap<>();
+        if (oldEquipment.getTypeCode().equals("A")) {
+            detachedChildren = detachDependentChildrenFromPositions(inforContext, oldEquipment);
+        }
 
         if (oldAssetIsInStore) {
             try {
