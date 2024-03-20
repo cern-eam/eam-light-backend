@@ -30,37 +30,37 @@ public class AutocompleteEntityResolver {
     @Inject
     private IndexGrids indexGrids;
 
-    private Map<String, BiFunction<String, InforContext, List<Entity>>> autocompleteEntityMap;
+    private Map<String, BiFunction<AutocompleteEntityFilter, InforContext, List<Entity>>> autocompleteEntityMap;
 
     @PostConstruct
     public void init() {
         autocompleteEntityMap = new HashMap<>();
-        autocompleteEntityMap.put("OBJ", (code, inforContext) -> {
+        autocompleteEntityMap.put("OBJ", (autocompleteEntityFilter, inforContext) -> {
             try {
-                return autocompleteObj(code, inforContext);
+                return autocompleteObj(autocompleteEntityFilter, inforContext);
             } catch (InforException e) {
                 throw new RuntimeException(e);
             }
         });
-        autocompleteEntityMap.put("PART", (code, inforContext) -> {
+        autocompleteEntityMap.put("PART", (autocompleteEntityFilter, inforContext) -> {
             try {
-                return autocompletePart(code, inforContext);
+                return autocompletePart(autocompleteEntityFilter, inforContext);
             } catch (InforException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-    public List<Entity> autocomplete(String entityType, String code, InforContext inforContext){
-        return autocompleteEntityMap.get(entityType).apply(code, inforContext);
+    public List<Entity> autocomplete(String entityType, AutocompleteEntityFilter autocompleteEntityFilter, InforContext inforContext) {
+        return autocompleteEntityMap.get(entityType).apply(autocompleteEntityFilter, inforContext);
     }
 
-    private List<Entity> autocompleteObj(String code, InforContext inforContext) throws InforException {
-        return equipmentEJB.getEquipmentSearchResults(code, null, inforContext);
+    private List<Entity> autocompleteObj(AutocompleteEntityFilter autocompleteEntityFilter, InforContext inforContext) throws InforException {
+        return equipmentEJB.getEquipmentSearchResults(autocompleteEntityFilter.getCode(), null, inforContext, autocompleteEntityFilter.getEntityClass());
     }
 
-    private List<Entity> autocompletePart(String code, InforContext inforContext) throws InforException {
-        List<IndexResult> indexResults = indexGrids.search(inforContext, code, Collections.singletonList("PART"));
+    private List<Entity> autocompletePart(AutocompleteEntityFilter autocompleteEntityFilter, InforContext inforContext) throws InforException {
+        List<IndexResult> indexResults = indexGrids.search(inforContext, autocompleteEntityFilter.getCode(), Collections.singletonList("PART"), autocompleteEntityFilter.getEntityClass());
         if (indexResults.size() > AUTOCOMPLETE_RESULT_SIZE) {
             indexResults = indexResults.subList(0, AUTOCOMPLETE_RESULT_SIZE - 1);
         }
