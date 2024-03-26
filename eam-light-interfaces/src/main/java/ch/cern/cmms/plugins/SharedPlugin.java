@@ -11,7 +11,5 @@ import java.util.Map;
 public interface SharedPlugin {
     String sayHello();
 
-    Map<String, Map<String, String>> getDatesPermissions(InforClient inforClient, String username);
-
     List<Pair> getUdsLots(String partCode, InforClient inforClient, InforContext context, Map<String, String> applicationData) throws InforException;
 }

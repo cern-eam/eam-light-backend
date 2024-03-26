@@ -16,11 +16,6 @@ public class SharedPluginImpl implements SharedPlugin {
     }
 
     @Override
-    public Map<String, Map<String, String>> getDatesPermissions(final InforClient inforClient, final String username) {
-        return new HashMap<>();
-    }
-
-    @Override
     public List<Pair> getUdsLots(String partCode, InforClient inforClient, InforContext context, Map<String, String> applicationData) throws InforException {
         return new LinkedList<>();
     }
