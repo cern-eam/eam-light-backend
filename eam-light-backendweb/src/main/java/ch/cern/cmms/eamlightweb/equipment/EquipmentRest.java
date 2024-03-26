@@ -144,6 +144,19 @@ public class EquipmentRest extends EAMLightController {
 	}
 
 	@GET
+	@Path("/collectdetachables/{oldEquipment}")
+	@Produces("application/json")
+	public Response collectDetachableEquipment(@PathParam("oldEquipment") String oldEquipmentCode) {
+		try {
+			return ok(equipmentReplacementService.collectDetachableEquipment(authenticationTools.getInforContext(), oldEquipmentCode));
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
+	@GET
 	@Path("/history")
 	@Produces("application/json")
 	public Response getEquipmentHistory(@QueryParam("c") String equipmentCode) {
