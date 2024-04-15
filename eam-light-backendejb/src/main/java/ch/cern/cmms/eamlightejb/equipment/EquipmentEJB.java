@@ -41,10 +41,10 @@ public class EquipmentEJB {
 	}
 
 	public List<Entity> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext) throws InforException {
-		return getEquipmentSearchResults(code, customEntityTypes, inforContext, null);
+		return getEquipmentSearchResults(code, customEntityTypes, inforContext, null, 10);
 	}
 
-	public List<Entity> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext, String entityClass) throws InforException {
+	public List<Entity> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext, String entityClass, Integer rowCount) throws InforException {
 		if (customEntityTypes == null) {
 			customEntityTypes = Arrays.asList("A", "P", "S", "L");
 		}
@@ -58,10 +58,7 @@ public class EquipmentEJB {
 			);
 
 		} else {
-			indexResults = indexGrids.search(inforContext, code, customEntityTypes, entityClass);
-		}
-		if (indexResults.size() > 10) {
-			indexResults = indexResults.subList(0, 9);
+			indexResults = indexGrids.search(inforContext, code, customEntityTypes, entityClass, rowCount);
 		}
 		return indexResults.stream().map(r -> new Entity(r.getCode(), r.getDescription(), r.getOrganization())).collect(Collectors.toList());
 	}

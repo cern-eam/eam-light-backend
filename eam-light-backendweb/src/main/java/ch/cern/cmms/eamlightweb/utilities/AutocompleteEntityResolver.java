@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import static ch.cern.cmms.eamlightejb.data.ApplicationData.AUTOCOMPLETE_RESULT_SIZE;
-
 
 @Stateless
 @LocalBean
@@ -56,14 +54,11 @@ public class AutocompleteEntityResolver {
     }
 
     private List<Entity> autocompleteObj(AutocompleteEntityFilter autocompleteEntityFilter, InforContext inforContext) throws InforException {
-        return equipmentEJB.getEquipmentSearchResults(autocompleteEntityFilter.getCode(), null, inforContext, autocompleteEntityFilter.getEntityClass());
+        return equipmentEJB.getEquipmentSearchResults(autocompleteEntityFilter.getCode(), null, inforContext, autocompleteEntityFilter.getEntityClass(), 10);
     }
 
     private List<Entity> autocompletePart(AutocompleteEntityFilter autocompleteEntityFilter, InforContext inforContext) throws InforException {
-        List<IndexResult> indexResults = indexGrids.search(inforContext, autocompleteEntityFilter.getCode(), Collections.singletonList("PART"), autocompleteEntityFilter.getEntityClass());
-        if (indexResults.size() > AUTOCOMPLETE_RESULT_SIZE) {
-            indexResults = indexResults.subList(0, AUTOCOMPLETE_RESULT_SIZE - 1);
-        }
+        List<IndexResult> indexResults = indexGrids.search(inforContext, autocompleteEntityFilter.getCode(), Collections.singletonList("PART"), autocompleteEntityFilter.getEntityClass(), 10);
         return indexResults.stream().map(r -> new Entity(r.getCode(), r.getDescription(), r.getOrganization())).collect(Collectors.toList());
     }
 }

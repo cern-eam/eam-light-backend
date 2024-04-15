@@ -22,6 +22,10 @@ public class IndexGrids {
     private InforClient inforClient;
 
     private List<IndexResult> searchWorkOrders(InforContext inforContext, String keyword, String operator) {
+        return searchWorkOrders(inforContext, keyword, operator, null);
+    }
+
+    private List<IndexResult> searchWorkOrders(InforContext inforContext, String keyword, String operator, Integer rowCount) {
         try {
             Map<String, String> map = new HashMap<>();
             map.put("workordernum", "code");
@@ -31,6 +35,7 @@ public class IndexGrids {
             GridRequest gridRequest = new GridRequest("WSJOBS");
             gridRequest.setUserFunctionName("WSJOBS");
             gridRequest.addFilter("workordernum", keyword, operator);
+            if (rowCount != null) gridRequest.setRowCount(rowCount);
             List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
                     map,
                     inforClient.getGridsService().executeQuery(inforContext, gridRequest));
@@ -42,10 +47,10 @@ public class IndexGrids {
     }
 
     private List<IndexResult> searchEquipment(InforContext inforContext,String keyword, String operator, String gridName, String type, boolean searchExtraColumns) {
-        return searchEquipment(inforContext, keyword, operator, gridName, type, searchExtraColumns, null);
+        return searchEquipment(inforContext, keyword, operator, gridName, type, searchExtraColumns, null, null);
     }
 
-    private List<IndexResult> searchEquipment(InforContext inforContext, String keyword, String operator, String gridName, String type, boolean searchExtraColumns, String classFilter) {
+    private List<IndexResult> searchEquipment(InforContext inforContext, String keyword, String operator, String gridName, String type, boolean searchExtraColumns, String classFilter, Integer rowCount) {
         try {
             Map<String, String> map = new HashMap<>();
             map.put("equipmentno", "code");
@@ -67,6 +72,8 @@ public class IndexGrids {
                 gridRequest.addFilter("class", classFilter, "IN", GridRequestFilter.JOINER.AND);
             }
 
+            if (rowCount != null) gridRequest.setRowCount(rowCount);
+
             //gridRequest.addFilter("udfchar45", keyword, operator, GridRequestFilter.JOINER.OR);
             List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
                     map,
@@ -79,10 +86,10 @@ public class IndexGrids {
     }
 
     private List<IndexResult> searchParts(InforContext inforContext, String keyword, String operator) {
-        return searchParts(inforContext, keyword, operator, null);
+        return searchParts(inforContext, keyword, operator, null, null);
     }
 
-    private List<IndexResult> searchParts(InforContext inforContext, String keyword, String operator, String classFilter) {
+    private List<IndexResult> searchParts(InforContext inforContext, String keyword, String operator, String classFilter, Integer rowCount) {
         try {
             Map<String, String> map = new HashMap<>();
             map.put("partcode", "code");
@@ -94,6 +101,7 @@ public class IndexGrids {
             if (isNotEmpty(classFilter)) {
                 gridRequest.addFilter("class", classFilter, "IN", GridRequestFilter.JOINER.AND);
             }
+            if (rowCount != null) gridRequest.setRowCount(rowCount);
             List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
                     map,
                     inforClient.getGridsService().executeQuery(inforContext, gridRequest));
@@ -105,20 +113,20 @@ public class IndexGrids {
     }
 
     public List<IndexResult> search(InforContext inforContext, String keyword, List<String> entityTypes) throws InforException {
-        return search(inforContext, keyword, entityTypes, null);
+        return search(inforContext, keyword, entityTypes, null, null);
     }
 
-    public List<IndexResult> search(InforContext inforContext, String keyword, List<String> entityTypes, String entityClass) throws InforException {
+    public List<IndexResult> search(InforContext inforContext, String keyword, List<String> entityTypes, String entityClass, Integer rowCount) throws InforException {
         List<IndexResult> result = new LinkedList<>();
         List<Runnable> runnables = new LinkedList<>();
 
         Map<String, Runnable> entityTypeRunnableMap = new HashMap();
-        entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword,"BEGINS")));
-        entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJA", "A", true, entityClass)));
-        entityTypeRunnableMap.put("P", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJP", "P", true, entityClass)));
-        entityTypeRunnableMap.put("S", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJS", "S", true, entityClass)));
-        entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJL", "L", false, entityClass)));
-        entityTypeRunnableMap.put("PART", () -> result.addAll(searchParts(inforContext, keyword, "BEGINS", entityClass)));
+        entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword, "BEGINS", rowCount - result.size())));
+        entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJA", "A", true, entityClass, rowCount - result.size())));
+        entityTypeRunnableMap.put("P", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJP", "P", true, entityClass, rowCount - result.size())));
+        entityTypeRunnableMap.put("S", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJS", "S", true, entityClass, rowCount - result.size())));
+        entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJL", "L", false, entityClass, rowCount - result.size())));
+        entityTypeRunnableMap.put("PART", () -> result.addAll(searchParts(inforContext, keyword, "BEGINS", entityClass, rowCount - result.size())));
 
         entityTypeRunnableMap.entrySet().stream()
                 .filter(entry -> entityTypes.contains(entry.getKey()))
