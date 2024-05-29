@@ -8,10 +8,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
@@ -51,6 +48,9 @@ public class IndexGrids {
     }
 
     private List<IndexResult> searchEquipment(InforContext inforContext, String keyword, String operator, String gridName, String type, boolean searchExtraColumns, String classFilter, Integer rowCount) {
+        if (rowCount < 1) {
+            return new ArrayList<>();
+        }
         try {
             Map<String, String> map = new HashMap<>();
             map.put("equipmentno", "code");
@@ -64,9 +64,9 @@ public class IndexGrids {
 
             if (searchExtraColumns) {
                 gridRequest.addFilter("alias", keyword, operator, GridRequestFilter.JOINER.OR, true, false);
-                gridRequest.addFilter("serialnumber", keyword, operator, GridRequestFilter.JOINER.OR);
+                gridRequest.addFilter("pomserialnumber", keyword, operator, GridRequestFilter.JOINER.OR);
             }
-            gridRequest.addFilter("equipmentno", keyword, operator, GridRequestFilter.JOINER.AND, false, true);
+            gridRequest.addFilter("equipmentno", keyword, operator, GridRequestFilter.JOINER.AND, false, searchExtraColumns);
 
             if (isNotEmpty(classFilter)) {
                 gridRequest.addFilter("class", classFilter, "IN", GridRequestFilter.JOINER.AND);
@@ -122,10 +122,10 @@ public class IndexGrids {
 
         Map<String, Runnable> entityTypeRunnableMap = new HashMap();
         entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword, "BEGINS", rowCount - result.size())));
+        entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJL", "L", false, entityClass, rowCount - result.size())));
         entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJA", "A", true, entityClass, rowCount - result.size())));
         entityTypeRunnableMap.put("P", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJP", "P", true, entityClass, rowCount - result.size())));
         entityTypeRunnableMap.put("S", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJS", "S", true, entityClass, rowCount - result.size())));
-        entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJL", "L", false, entityClass, rowCount - result.size())));
         entityTypeRunnableMap.put("PART", () -> result.addAll(searchParts(inforContext, keyword, "BEGINS", entityClass, rowCount - result.size())));
 
         entityTypeRunnableMap.entrySet().stream()
