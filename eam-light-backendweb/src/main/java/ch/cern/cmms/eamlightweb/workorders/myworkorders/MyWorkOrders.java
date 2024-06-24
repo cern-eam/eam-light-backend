@@ -34,6 +34,7 @@ public class MyWorkOrders {
         }
         //
         GridRequest gridRequest = new GridRequest("WSJOBS");
+        gridRequest.setUserFunctionName("WSJOBS");
         gridRequest.addFilter("assignedto", eamUser.getEmployeeCode(), "=", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
         return GridTools.convertGridResultToObject(MyWorkOrder.class,
@@ -48,6 +49,7 @@ public class MyWorkOrders {
         }
 
         GridRequest gridRequest = new GridRequest("WSJOBS");
+        gridRequest.setUserFunctionName("WSJOBS");
         gridRequest.addFilter("department", userDepartments, "IN", GridRequestFilter.JOINER.AND);
         gridRequest.addFilter("evt_rstatus", "R", "=");
         return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,

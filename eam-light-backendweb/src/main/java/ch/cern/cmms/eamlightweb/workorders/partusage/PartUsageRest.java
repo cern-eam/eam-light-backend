@@ -285,6 +285,7 @@ public class PartUsageRest extends EAMLightController {
 			if (workorder != null) {
 				// Creates simple grid input
 				GridRequest gridRequest = new GridRequest("WSJOBS_PAR");
+				gridRequest.setUserFunctionName("WSJOBS");
 				gridRequest.addParam("param.workordernum", workorder);
 				gridRequest.addParam("param.headeractivity", "0");
 				gridRequest.addParam("param.headerjob", "0");

@@ -75,6 +75,7 @@ public class PartListsController extends EAMLightController {
 	public Response loadAssets(@PathParam("part") String part) {
 		try {
 			GridRequest gridRequest = new GridRequest("OSOBJA", 1000);
+			gridRequest.setUserFunctionName("OSOBJA");
 			gridRequest.addFilter("part", part, "EQUALS");
 
 			String[] fields = new String[] {"equipmentno", "equipmentdesc", "assetstatus", "assetstatus_display", "location", "department"};

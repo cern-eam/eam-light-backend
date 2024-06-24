@@ -26,6 +26,7 @@ public class AutocompleteMeterCode extends EAMLightController {
 	public Response complete(@PathParam("code") String code) {
 		// Result
 		GridRequest gridRequest = new GridRequest("OSMETE", GridRequest.GRIDTYPE.LOV, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
+		gridRequest.setUserFunctionName("OSMETE");
 		gridRequest.setUseNative(true);
 		gridRequest.addFilter("metercode", code, "BEGINS");
 		return getPairListResponse(gridRequest, "metercode", "meterunit");
