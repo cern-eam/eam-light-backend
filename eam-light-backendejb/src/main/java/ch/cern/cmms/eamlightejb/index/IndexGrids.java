@@ -89,7 +89,7 @@ public class IndexGrids {
         return searchParts(inforContext, keyword, operator, null, null);
     }
 
-    private List<IndexResult> searchParts(InforContext inforContext, String keyword, String operator, String classFilter, Integer rowCount) {
+    public List<IndexResult> searchParts(InforContext inforContext, String keyword, String operator, String classFilter, Integer rowCount) {
         try {
             Map<String, String> map = new HashMap<>();
             map.put("partcode", "code");

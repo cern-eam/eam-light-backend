@@ -58,7 +58,7 @@ public class AutocompleteEntityResolver {
     }
 
     private List<Entity> autocompletePart(AutocompleteEntityFilter autocompleteEntityFilter, InforContext inforContext) throws InforException {
-        List<IndexResult> indexResults = indexGrids.search(inforContext, autocompleteEntityFilter.getCode(), Collections.singletonList("PART"), autocompleteEntityFilter.getEntityClass(), 10);
+        List<IndexResult> indexResults = indexGrids.searchParts(inforContext, autocompleteEntityFilter.getCode(), "BEGINS", autocompleteEntityFilter.getEntityClass(), 10);
         return indexResults.stream().map(r -> new Entity(r.getCode(), r.getDescription(), r.getOrganization())).collect(Collectors.toList());
     }
 }
