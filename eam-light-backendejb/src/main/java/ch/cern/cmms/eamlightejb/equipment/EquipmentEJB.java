@@ -1,11 +1,5 @@
 package ch.cern.cmms.eamlightejb.equipment;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import ch.cern.cmms.eamlightejb.equipment.tools.GraphNode;
 import ch.cern.cmms.eamlightejb.index.IndexEJB;
 import ch.cern.cmms.eamlightejb.index.IndexGrids;
@@ -14,6 +8,12 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.Entity;
 import ch.cern.eam.wshub.core.tools.InforException;
+
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -41,6 +41,10 @@ public class EquipmentEJB {
 	}
 
 	public List<Entity> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext) throws InforException {
+		return getEquipmentSearchResults(code, customEntityTypes, inforContext, null, 10);
+	}
+
+	public List<Entity> getEquipmentSearchResults(String code, List<String> customEntityTypes, InforContext inforContext, String entityClass, Integer rowCount) throws InforException {
 		if (customEntityTypes == null) {
 			customEntityTypes = Arrays.asList("A", "P", "S", "L");
 		}
@@ -54,10 +58,7 @@ public class EquipmentEJB {
 			);
 
 		} else {
-			indexResults = indexGrids.search(inforContext, code, customEntityTypes);
-		}
-		if (indexResults.size() > 10) {
-			indexResults = indexResults.subList(0, 9);
+			indexResults = indexGrids.search(inforContext, code, customEntityTypes, entityClass, rowCount);
 		}
 		return indexResults.stream().map(r -> new Entity(r.getCode(), r.getDescription(), r.getOrganization())).collect(Collectors.toList());
 	}

@@ -35,6 +35,7 @@ public class AutocompleteEmployee extends EAMLightController {
 		gridRequest.addParam("param.sessionid", null);
 		gridRequest.addParam("parameter.noemployees", null);
 		gridRequest.addParam("param.shift", null);
+		gridRequest.addParam("control.org", authenticationTools.getOrganizationCode());
 
 		String uppercasedCode = code.toUpperCase();
 

@@ -61,13 +61,22 @@ public class CustomFieldsController extends EAMLightController {
 			return customFieldLookupValues;
 	}
 
+	private String treatPropcode(String propertyCode) {
+		if (propertyCode == null) {
+			return null;
+		}
+		return propertyCode.replaceAll("-", "-0045"); //The LOV grid requests (such as LVCFCD) do not return the list
+		// of values for Custom Fields containing a dash (-) due to an EAM bug, so the 4 digit asci code needs to be
+		// appended (0045)
+	}
+
 	public List<Pair> cfChar(String property) throws InforException {
 		Map<String, String> map = new HashMap<>();
 		map.put("461", "code");
 
 		GridRequest gridRequest = new GridRequest("LVCFV");
 		gridRequest.setRowCount(1000);
-		return getData("param.propcode", property, gridRequest, map);
+		return getData("param.propcode", treatPropcode(property), gridRequest, map);
 	}
 
 	public List<Pair> cfNum(String property) throws InforException {
@@ -76,7 +85,7 @@ public class CustomFieldsController extends EAMLightController {
 
 		GridRequest gridRequest = new GridRequest("LVCFN");
 		gridRequest.setRowCount(1000);
-		return getData("param.propcode", property, gridRequest, map);
+		return getData("param.propcode", treatPropcode(property), gridRequest, map);
 	}
 
 	public List<Pair> cfDate(String property) throws InforException {
@@ -85,7 +94,7 @@ public class CustomFieldsController extends EAMLightController {
 
 		GridRequest gridRequest = new GridRequest("LVCFD");
 		gridRequest.setRowCount(1000);
-		return getData("param.propcode", property, gridRequest, map);
+		return getData("param.propcode", treatPropcode(property), gridRequest, map);
 	}
 
 	public List<Pair> cfDateTime(String property) throws InforException {
@@ -94,7 +103,7 @@ public class CustomFieldsController extends EAMLightController {
 
 		GridRequest gridRequest = new GridRequest("LVCFD");
 		gridRequest.setRowCount(1000);
-		return getData("param.propcode", property, gridRequest, map);
+		return getData("param.propcode", treatPropcode(property), gridRequest, map);
 	}
 
 	public List<Pair> cfCodeDesc(String property) throws InforException {
@@ -104,7 +113,8 @@ public class CustomFieldsController extends EAMLightController {
 
 		GridRequest gridRequest = new GridRequest("LVCFCD");
 		gridRequest.setRowCount(1000);
-		return getData("param.propcode", property, gridRequest, map);
+
+		return getData("param.propcode", treatPropcode(property), gridRequest, map);
 	}
 
 	public List<Pair> cfEntity(String entityCode, String rentCodeValue, String cfCode, String filter) throws InforException {

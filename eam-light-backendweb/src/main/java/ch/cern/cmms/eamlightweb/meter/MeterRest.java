@@ -54,6 +54,7 @@ public class MeterRest extends EAMLightController {
 	public Response readByMeter(@PathParam("meter") String meterCode) {
 		try {
 			GridRequest gridRequest = new GridRequest("OSMETE", GridRequest.GRIDTYPE.LIST, 1);
+			gridRequest.setUserFunctionName("OSMETE");
 			gridRequest.addFilter("metercode", meterCode, "=");
 			String equipment = getCellContent("equipment", inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest).getRows()[0]);
 			return ok(getMeterEquipmentMeterReading(equipment, meterCode));

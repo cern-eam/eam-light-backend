@@ -30,6 +30,7 @@ public class AutocompleteDepartment extends EAMLightController {
 		gridRequest.addParam("param.bypassdeptsecurity", null);
 		gridRequest.addFilter("department", code.toUpperCase(), "CONTAINS");
 		gridRequest.sortBy("department");
+		gridRequest.addParam("control.org", authenticationTools.getOrganizationCode());
 
 		return getPairListResponse(gridRequest, "department", "des_text");
 	}
