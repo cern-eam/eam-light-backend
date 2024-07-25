@@ -11,9 +11,6 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Date;
 
 @Path("/activities")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -56,7 +53,7 @@ public class ActivitiesRest extends EAMLightController {
 	@Consumes("application/json")
 	public Response updateActivity(Activity activity) {
 		try {
-			return ok(inforClient.getLaborBookingService().updateActivity(authenticationTools.getInforContext(),activity));
+			return ok(inforClient.getLaborBookingService().updateActivity(authenticationTools.getInforContext(), activity, "confirmed"));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
