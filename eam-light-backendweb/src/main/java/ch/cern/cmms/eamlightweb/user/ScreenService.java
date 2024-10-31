@@ -39,6 +39,7 @@ public class ScreenService {
         screens.add("OSOBJS");
         screens.add("SSPART");
         screens.add("OSOBJL");
+        screens.add("OSNCHD"); // NonConformities
     }
 
     public Map<String, ScreenInfo> getScreens(InforContext context, String userGroup) throws InforException {
