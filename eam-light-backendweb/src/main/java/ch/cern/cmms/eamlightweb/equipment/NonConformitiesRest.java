@@ -89,6 +89,7 @@ public class NonConformitiesRest extends EAMLightController {
 	public Response initNonConformity() {
 			try {
 				NonConformity nonConformity = inforClient.getNonconformityService().readNonconformityDefault(authenticationTools.getInforContext(), "");
+				nonConformity.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "NOCF", "*"));
 				nonConformity.setUserDefinedFields(new UserDefinedFields());
 				return ok(nonConformity);
 			} catch (InforException e) {
