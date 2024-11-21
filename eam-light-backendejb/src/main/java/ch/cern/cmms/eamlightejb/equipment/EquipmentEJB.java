@@ -54,7 +54,8 @@ public class EquipmentEJB {
 			indexResults = indexEJB.getIndexResultsFaster(
 					code,
 					inforContext.getCredentials().getUsername(),
-					customEntityTypes
+					customEntityTypes,
+					entityClass
 			);
 
 		} else {

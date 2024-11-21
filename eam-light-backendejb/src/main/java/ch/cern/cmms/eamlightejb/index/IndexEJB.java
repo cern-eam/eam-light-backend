@@ -68,7 +68,8 @@ public class IndexEJB {
             " FROM ( " +
             " SELECT 'PART' ENTTYPE, PAR_CODE CODE, PAR_DESC DESCRIPTION, NULL MRC, NULL SERIAL, NULL ALIAS " +
             " FROM r5parts " +
-            " WHERE par_code LIKE :hint ESCAPE '\\' " +
+            " WHERE NVL(PAR_CLASS , '%') LIKE :classCode " +
+            "   AND par_code LIKE :hint ESCAPE '\\' " +
             "    AND ROWNUM < " + INDEX_QUERY_LIMIT_PER_TYPE +
             " UNION ALL " +
             "    SELECT OBJ_OBRTYPE ENTTYPE, OBJ_CODE CODE, OBJ_DESC DESCRIPTION, OBJ_MRC MRC, OBJ_SERIALNO SERIAL, OBJ_ALIAS ALIAS " +
@@ -83,6 +84,7 @@ public class IndexEJB {
             "            OR upper(obj_serialno) LIKE upper(:hint) ESCAPE '\\' " +
             "            OR obj_udfchar45 LIKE :hint ESCAPE '\\' " +
             "        ) " +
+            "        AND NVL(OBJ_CLASS, '%') LIKE :classCode " +
             "        AND ROWNUM < " + INDEX_QUERY_LIMIT_PER_TYPE +
             " UNION ALL " +
             " SELECT 'JOB' ENTTYPE, EVT_CODE CODE, EVT_DESC DESCRIPTION, EVT_MRC MRC, NULL SERIAL, NULL ALIAS " +
@@ -103,6 +105,10 @@ public class IndexEJB {
     }
 
     public List<IndexResult> getIndexResultsFaster(String hint, String userCode, List<String> allowedEntityTypes) {
+        return getIndexResultsFaster(hint, userCode, allowedEntityTypes, null);
+    }
+
+    public List<IndexResult> getIndexResultsFaster(String hint, String userCode, List<String> allowedEntityTypes, String classCode) {
         inforClient.getTools().log(Level.INFO, "SEARCH FASTER / " + userCode + " / " + hint + " / ");
 
         List<IndexResult> exactResults = inforClient.getTools().getEntityManager()
@@ -110,6 +116,7 @@ public class IndexEJB {
                 .setParameter("hint", hint)
                 .setParameter("activeUser", userCode)
                 .setParameter("allowedEntityTypes", allowedEntityTypes)
+                .setParameter("classCode", classCode != null ? classCode : '%')
                 .getResultList()
                 ;
 
@@ -118,6 +125,7 @@ public class IndexEJB {
                 .setParameter("hint", hint + "%")
                 .setParameter("activeUser", userCode)
                 .setParameter("allowedEntityTypes", allowedEntityTypes)
+                .setParameter("classCode", classCode != null ? classCode : '%')
                 .getResultList()
                 ;
 

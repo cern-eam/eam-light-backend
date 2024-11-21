@@ -67,6 +67,10 @@ public class IndexGrids {
                 gridRequest.addFilter("pomserialnumber", keyword, operator, GridRequestFilter.JOINER.OR);
             }
             gridRequest.addFilter("equipmentno", keyword, operator, GridRequestFilter.JOINER.AND, false, searchExtraColumns);
+            final List<GridRequestFilter> gridRequestFilters = gridRequest.getGridRequestFilters();
+            final GridRequestFilter gridRequestFilter = gridRequestFilters.get(gridRequestFilters.size() - 1);
+            gridRequestFilter.setForceCaseInsensitive(true);
+            gridRequestFilter.setUpperCase(true);
 
             if (isNotEmpty(classFilter)) {
                 gridRequest.addFilter("class", classFilter, "IN", GridRequestFilter.JOINER.AND);
