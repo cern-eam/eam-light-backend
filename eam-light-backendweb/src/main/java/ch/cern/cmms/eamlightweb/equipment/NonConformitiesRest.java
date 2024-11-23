@@ -7,6 +7,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.NonConformity;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,7 +15,10 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Path("/ncrs")
 @ApplicationScoped
@@ -98,5 +102,29 @@ public class NonConformitiesRest extends EAMLightController {
 				return serverError(e);
 			}
 		}
+
+
+	@GET
+	@Path("/equipment/{asset}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response getEquipmentNonConformities(@PathParam("asset") String asset) {
+		try {
+			List<Map<String, String>> assetNonConformities = new ArrayList<>();
+			if (asset != null) {
+				GridRequest gridRequest = new GridRequest("OSNCHD");
+				gridRequest.setUserFunctionName("OSNCHD");
+				gridRequest.addFilter("equipment", asset, "=");
+				assetNonConformities = inforClient.getTools().getGridTools().convertGridResultToMapList(
+						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)
+				);
+			}
+			return ok(assetNonConformities);
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
 
 }

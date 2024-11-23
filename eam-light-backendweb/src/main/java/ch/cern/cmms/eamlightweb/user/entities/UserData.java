@@ -16,6 +16,7 @@ public class UserData {
 	private String partScreen;
 	private String locationScreen;
 	private String ncrScreen;
+
 	private Map<String, List<Map<String, String>>> reports;
 
 	public EAMUser getEamAccount() {

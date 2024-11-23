@@ -25,6 +25,10 @@ public class ScreenInfo {
 	@GridField(name="tabavailable")
 	private boolean tabAvailable;
 
+	private String entity;
+
+
+
 	public String getScreenCode() {
 		return screenCode;
 	}
@@ -85,6 +89,14 @@ public class ScreenInfo {
 
 	public void setStartupAction(String startupAction) {
 		this.startupAction = startupAction;
+	}
+
+	public String getEntity() {
+		return entity;
+	}
+
+	public void setEntity(String entity) {
+		this.entity = entity;
 	}
 
 	@Override

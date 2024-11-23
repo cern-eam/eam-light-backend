@@ -67,6 +67,7 @@ public class ScreenService {
         screens.values().forEach(screen -> {
             screen.setParentScreen(functions.get(screen.getScreenCode()).getParentScreenCode());
             screen.setStartupAction(functions.get(screen.getScreenCode()).getStartUpModeDisplayCode());
+            screen.setEntity(functions.get(screen.getScreenCode()).getSystemEntity());
         });
 
         screenCache.put(userGroup, screens);
