@@ -79,7 +79,7 @@
 		<profile>
 			<id>OPEN</id>
 			<properties>
-				<project.contextRoot>/</project.contextRoot>
+				<project.contextRoot>/apis/eamlightws</project.contextRoot>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>

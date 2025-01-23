@@ -92,7 +92,13 @@ public class AuthenticationTools {
             user = request.getHeader("INFOR_USER");
             password = request.getHeader("INFOR_PASSWORD");
             tenant = request.getHeader("INFOR_TENANT");
+            if (isEmpty(tenant)) {
+                tenant = applicationData.getTenant();
+            }
             organization = request.getHeader("INFOR_ORGANIZATION");
+            if (isEmpty(organization)) {
+                organization = applicationData.getDefaultOrganization();
+            }
             sessionid = request.getHeader("INFOR_SESSIONID");
         }
 
@@ -227,6 +233,17 @@ public class AuthenticationTools {
             inforContext.getCredentials().setPassword(applicationData.getAdminPassword());
         }
 
+        // Organization
+        if (isEmpty(request.getHeader("INFOR_ORGANIZATION"))) {
+            inforContext.setOrganizationCode(applicationData.getDefaultOrganization());
+        } else {
+            inforContext.setOrganizationCode(request.getHeader("INFOR_ORGANIZATION"));
+        }
+
+        // Sessionid
+        if (!isEmpty(request.getHeader("INFOR_SESSIONID"))) {
+            inforContext.setSessionID(request.getHeader("INFOR_SESSIONID"));
+        }
         return inforContext;
     }
 

@@ -120,9 +120,11 @@ public class IndexGrids {
         return search(inforContext, keyword, entityTypes, null, null);
     }
 
-    public List<IndexResult> search(InforContext inforContext, String keyword, List<String> entityTypes, String entityClass, Integer rowCount) throws InforException {
+    public List<IndexResult> search(InforContext inforContext, String keyword, List<String> entityTypes,
+                                    String entityClass, Integer rowCountTemp) throws InforException {
         List<IndexResult> result = new LinkedList<>();
         List<Runnable> runnables = new LinkedList<>();
+        final Integer rowCount = rowCountTemp == null ? 10 : rowCountTemp;
 
         Map<String, Runnable> entityTypeRunnableMap = new HashMap();
         entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword, "BEGINS", rowCount - result.size())));
