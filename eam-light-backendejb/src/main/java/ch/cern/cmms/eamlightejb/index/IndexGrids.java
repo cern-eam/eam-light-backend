@@ -129,9 +129,9 @@ public class IndexGrids {
         Map<String, Runnable> entityTypeRunnableMap = new HashMap();
         entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword, "BEGINS", rowCount - result.size())));
         entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJL", "L", false, entityClass, rowCount - result.size())));
-        entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJA", "A", true, entityClass, rowCount - result.size())));
-        entityTypeRunnableMap.put("P", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJP", "P", true, entityClass, rowCount - result.size())));
-        entityTypeRunnableMap.put("S", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJS", "S", true, entityClass, rowCount - result.size())));
+        entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJA", "A", false, entityClass, rowCount - result.size())));
+        entityTypeRunnableMap.put("P", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJP", "P", false, entityClass, rowCount - result.size())));
+        entityTypeRunnableMap.put("S", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJS", "S", false, entityClass, rowCount - result.size())));
         entityTypeRunnableMap.put("PART", () -> result.addAll(searchParts(inforContext, keyword, "BEGINS", entityClass, rowCount - result.size())));
 
         entityTypeRunnableMap.entrySet().stream()
