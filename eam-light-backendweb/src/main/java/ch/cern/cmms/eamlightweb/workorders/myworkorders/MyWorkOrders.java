@@ -81,7 +81,7 @@ public class MyWorkOrders {
     public List<MyWorkOrder> getObjectEvents(String equipmentCode, String equipmentType) throws InforException {
         GridsService gridsService = inforClient.getGridsService();
         GridTools gridTools = inforClient.getTools().getGridTools();
-
+        String organization = authenticationTools.getR5InforContext().getOrganizationCode();
         // get the work orders that correspond to the events of the object (in the Events tab in Extended)
         GridRequest workOrdersGridRequest = new GridRequest("OSVEVT");
         workOrdersGridRequest.setUserFunctionName(typeToUserFunctionMap.getOrDefault(equipmentType, "OSOBJA"));
@@ -89,7 +89,7 @@ public class MyWorkOrders {
         workOrdersGridRequest.addParam("parameter.object", equipmentCode);
 
         // use star organization to get all work orders, independently of organization
-        workOrdersGridRequest.addParam("parameter.objorganization", "*");
+        workOrdersGridRequest.addParam("parameter.objorganization",  organization);
 
         workOrdersGridRequest.addFilter("eventtype", "JOB", "=", GridRequestFilter.JOINER.OR, true, false);
         workOrdersGridRequest.addFilter("eventtype", "PPM", "=", GridRequestFilter.JOINER.AND , false, true);
