@@ -16,7 +16,9 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToObject;
 import ch.cern.eam.wshub.core.services.workorders.entities.MeterReading;
@@ -83,18 +85,35 @@ public class MeterRest extends EAMLightController {
 	}
 
 	private List<MeterReadingWrap> getMeterEquipmentMeterReading(String equipmentCode, String meterCode) throws InforException {
-		GridRequest gridRequest = new GridRequest("OSEQMR", GridRequest.GRIDTYPE.LIST);
+		GridRequest gridRequest = new GridRequest("OSMETE", GridRequest.GRIDTYPE.LIST);
+		gridRequest.setUserFunctionName("OSOBJA");
+
+		gridRequest.addParam("parameter.organization", authenticationTools.getR5InforContext().getOrganizationCode());
 		gridRequest.addParam("parameter.object", equipmentCode);
 
 		if (meterCode != null) {
-			gridRequest.addFilter("physicalmeter", meterCode, "=");
+			gridRequest.addFilter("metercode", meterCode, "=");
 		}
 
-		List<MeterReadingWrap> result = convertGridResultToObject(MeterReadingWrap.class,
-				null,
-				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest));
+		GridRequestResult gridResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest);
 
-		result.forEach(meter -> meter.setEquipmentCode(equipmentCode));
+		List<MeterReadingWrap> result = convertGridResultToObject(MeterReadingWrap.class,
+				null, gridResult
+		);
+
+		result.forEach(meter -> {
+			try {
+			meter.setEquipmentCode(equipmentCode);
+				GridRequest uomGridRequest = new GridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST);
+				uomGridRequest.addFilter("uomcode", meter.getUom(), "=");
+			GridRequestResult uomDescResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest);
+			List<Pair> uomDesc = convertGridResultToObject(Pair.class,
+						Pair.generateGridPairMap("uomcode", "uomdescription"), uomDescResult);
+			meter.setUomDesc(uomDesc.get(0).getDesc());
+			} catch (InforException e) {
+				throw new RuntimeException(e);
+			}
+		});
 
 		return result;
 	}
