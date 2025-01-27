@@ -64,7 +64,7 @@ public class IndexGrids {
 
             if (searchExtraColumns) {
                 gridRequest.addFilter("alias", keyword, operator, GridRequestFilter.JOINER.OR, true, false);
-                gridRequest.addFilter("pomserialnumber", keyword, operator, GridRequestFilter.JOINER.OR);
+                gridRequest.addFilter("serialnumber", keyword, operator, GridRequestFilter.JOINER.OR);
             }
             gridRequest.addFilter("equipmentno", keyword, operator, GridRequestFilter.JOINER.AND, false, searchExtraColumns);
             final List<GridRequestFilter> gridRequestFilters = gridRequest.getGridRequestFilters();
