@@ -34,9 +34,15 @@ public class NonConformitiesRest extends EAMLightController {
 	@Path("/{code}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readNonConformity(@PathParam(value = "code") String code) {
+	public Response readNonConformity(@PathParam(value = "code") String codeOrganization) {
 		try {
-			return ok(inforClient.getNonconformityService().readNonconformity(authenticationTools.getInforContext(), code));
+            if (codeOrganization == null) {
+                return badRequest(new Exception("The NCR code must not be null"));
+            }
+			String[] codeOrganizationArray = codeOrganization.split("#");
+			return ok(inforClient.getNonconformityService().readNonconformity(authenticationTools.getInforContext(),
+					codeOrganizationArray[0],
+					codeOrganizationArray.length > 1 ? codeOrganizationArray[1] : null));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {
