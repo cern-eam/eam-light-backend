@@ -13,6 +13,7 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -126,6 +127,11 @@ public class ScreenService {
                     .map(MenuEntryNode::getFunctionId)
                     .distinct()
                     .collect(Collectors.toList());
+
+            if (eamReportsMenuFunctionIds.isEmpty()) {
+                reportsCache.put(userGroup, new HashMap<>());
+                return reportsCache.get(userGroup);
+            }
 
             // Get the metadata of the menu entries collected above (includes indirect children)
             GridRequest gridRequestLayout = new GridRequest("BSFUNC", 1000);
