@@ -12,19 +12,19 @@ public class MeterReadingWrap {
 	@GridField(name="lastreadingdate")
 	private Date lastUpdateDate;
 	
-	@GridField(name="lastreading")
+	@GridField(name="lastvalue")
 	private BigDecimal lastValue;
 
 	@GridField(name="meterrollover")
 	private BigDecimal rolloverValue;
 	
-	@GridField(name="description")
+	@GridField(name="uomDesc")
 	private String uomDesc;
 
-	@GridField(name="uom")
+	@GridField(name="meterunit")
 	private String uom;
 	
-	@GridField(name="physicalmeter")
+	@GridField(name="metercode")
 	private String meterName;
 
 	private String equipmentCode;
