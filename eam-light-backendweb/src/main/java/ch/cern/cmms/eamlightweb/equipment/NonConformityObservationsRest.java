@@ -35,10 +35,12 @@ public class NonConformityObservationsRest extends EAMLightController {
         try {
             List<Map<String, String>> additionalCostsList = new ArrayList<>();
             if (ncr != null) {
+                String organization = authenticationTools.getR5InforContext().getOrganizationCode();
+
                 GridRequest gridRequest = new GridRequest("OSNCHD_OBS");
                 gridRequest.setUserFunctionName("OSNCHD");
                 gridRequest.addParam("param.nonconformity", ncr);
-                gridRequest.addParam("param.organization", "*");
+                gridRequest.addParam("param.organization", organization);
                 additionalCostsList = inforClient.getTools().getGridTools().convertGridResultToMapList(
                         inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)
                 );
