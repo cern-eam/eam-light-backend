@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightweb.meter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -18,6 +19,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToObject;
@@ -96,23 +98,24 @@ public class MeterRest extends EAMLightController {
 		}
 
 		GridRequestResult gridResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest);
-
 		List<MeterReadingWrap> result = convertGridResultToObject(MeterReadingWrap.class,
 				null, gridResult
 		);
 
+		List<String> filteredUOM = result.stream().map(MeterReadingWrap::getUom).collect((Collectors.toList()));
+		GridRequest uomGridRequest = new GridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST);
+		uomGridRequest.addFilter("uomcode", String.join(",", filteredUOM), "IN", GridRequestFilter.JOINER.OR);
+
+		List<Pair> uomDesc = convertGridResultToObject(Pair.class,
+				Pair.generateGridPairMap("uomcode", "uomdescription"),
+				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest));
+
+		Map<String, String> uomDescMap = uomDesc.stream()
+				.collect(Collectors.toMap(Pair::getCode, Pair::getDesc));
+
 		result.forEach(meter -> {
-			try {
 			meter.setEquipmentCode(equipmentCode);
-				GridRequest uomGridRequest = new GridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST);
-				uomGridRequest.addFilter("uomcode", meter.getUom(), "=");
-			GridRequestResult uomDescResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest);
-			List<Pair> uomDesc = convertGridResultToObject(Pair.class,
-						Pair.generateGridPairMap("uomcode", "uomdescription"), uomDescResult);
-			meter.setUomDesc(uomDesc.get(0).getDesc());
-			} catch (InforException e) {
-				throw new RuntimeException(e);
-			}
+			if(meter.getUom()!=null) meter.setUomDesc(uomDescMap.get(meter.getUom()));
 		});
 
 		return result;
