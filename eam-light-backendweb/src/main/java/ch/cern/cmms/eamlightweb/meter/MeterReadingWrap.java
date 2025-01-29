@@ -27,6 +27,7 @@ public class MeterReadingWrap {
 	@GridField(name="metercode")
 	private String meterName;
 
+	@GridField(name="equipment")
 	private String equipmentCode;
 
 	/**
