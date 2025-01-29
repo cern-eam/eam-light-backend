@@ -102,21 +102,32 @@ public class MeterRest extends EAMLightController {
 				null, gridResult
 		);
 
-		List<String> filteredUOM = result.stream().map(MeterReadingWrap::getUom).collect((Collectors.toList()));
-		GridRequest uomGridRequest = new GridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST);
-		uomGridRequest.addFilter("uomcode", String.join(",", filteredUOM), "IN", GridRequestFilter.JOINER.OR);
+		if(!result.isEmpty()) {
+			List<String> filteredUOM = result.stream()
+					.filter(meter -> !meter.getUomDesc().isEmpty())
+					.map(MeterReadingWrap::getUom).collect((Collectors.toList()));
+			Map<String, String> uomDescMap;
 
-		List<Pair> uomDesc = convertGridResultToObject(Pair.class,
-				Pair.generateGridPairMap("uomcode", "uomdescription"),
-				inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest));
+			if(!filteredUOM.isEmpty()) {
+				GridRequest uomGridRequest = new GridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST);
+				uomGridRequest.addFilter("uomcode", String.join(",", filteredUOM), "IN", GridRequestFilter.JOINER.OR);
 
-		Map<String, String> uomDescMap = uomDesc.stream()
-				.collect(Collectors.toMap(Pair::getCode, Pair::getDesc));
+				List<Pair> uomDesc = convertGridResultToObject(Pair.class,
+						Pair.generateGridPairMap("uomcode", "uomdescription"),
+						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest));
 
-		result.forEach(meter -> {
-			meter.setEquipmentCode(equipmentCode);
-			if(meter.getUom()!=null) meter.setUomDesc(uomDescMap.get(meter.getUom()));
-		});
+			 	uomDescMap = uomDesc.stream()
+						.filter(uom -> !uomDesc.isEmpty())
+						.collect(Collectors.toMap(Pair::getCode, Pair::getDesc));
+			} else {
+                uomDescMap = new HashMap<>();
+            }
+            result.forEach(meter -> {
+				meter.setEquipmentCode(equipmentCode);
+				String uomValue = uomDescMap.get(meter.getUom());
+				if(uomValue != null && !uomValue.isEmpty()) meter.setUomDesc(uomValue);
+			});
+		}
 
 		return result;
 	}
