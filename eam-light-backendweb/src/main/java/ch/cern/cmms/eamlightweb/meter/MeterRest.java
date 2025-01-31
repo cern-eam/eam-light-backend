@@ -1,6 +1,7 @@
 package ch.cern.cmms.eamlightweb.meter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -18,6 +19,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
 import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToObject;
@@ -93,27 +95,41 @@ public class MeterRest extends EAMLightController {
 
 		if (meterCode != null) {
 			gridRequest.addFilter("metercode", meterCode, "=");
+		}else{
+			gridRequest.addFilter("equipment", equipmentCode, "=");
 		}
 
 		GridRequestResult gridResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest);
-
 		List<MeterReadingWrap> result = convertGridResultToObject(MeterReadingWrap.class,
 				null, gridResult
 		);
 
-		result.forEach(meter -> {
-			try {
-			meter.setEquipmentCode(equipmentCode);
+		if(!result.isEmpty()) {
+			List<String> filteredUOM = result.stream()
+					.filter(meter -> meter.getUomDesc() == null || meter.getUomDesc().isEmpty())
+					.map(MeterReadingWrap::getUom).collect((Collectors.toList()));
+			Map<String, String> uomDescMap;
+
+			if(!filteredUOM.isEmpty()) {
 				GridRequest uomGridRequest = new GridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST);
-				uomGridRequest.addFilter("uomcode", meter.getUom(), "=");
-			GridRequestResult uomDescResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest);
-			List<Pair> uomDesc = convertGridResultToObject(Pair.class,
-						Pair.generateGridPairMap("uomcode", "uomdescription"), uomDescResult);
-			meter.setUomDesc(uomDesc.get(0).getDesc());
-			} catch (InforException e) {
-				throw new RuntimeException(e);
-			}
-		});
+				uomGridRequest.addFilter("uomcode", String.join(",", filteredUOM), "IN", GridRequestFilter.JOINER.OR);
+
+				List<Pair> uomDesc = convertGridResultToObject(Pair.class,
+						Pair.generateGridPairMap("uomcode", "uomdescription"),
+						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest));
+
+			 	uomDescMap = uomDesc.stream()
+						.filter(uom -> !uomDesc.isEmpty())
+						.collect(Collectors.toMap(Pair::getCode, Pair::getDesc));
+			} else {
+                uomDescMap = new HashMap<>();
+            }
+            result.forEach(meter -> {
+				meter.setEquipmentCode(equipmentCode);
+				String uomValue = uomDescMap.get(meter.getUom());
+				if(uomValue != null && !uomValue.isEmpty()) meter.setUomDesc(uomValue);
+			});
+		}
 
 		return result;
 	}
