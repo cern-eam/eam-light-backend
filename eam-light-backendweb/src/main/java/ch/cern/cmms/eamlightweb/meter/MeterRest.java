@@ -92,10 +92,11 @@ public class MeterRest extends EAMLightController {
 
 		gridRequest.addParam("parameter.organization", authenticationTools.getR5InforContext().getOrganizationCode());
 		gridRequest.addParam("parameter.object", equipmentCode);
-		gridRequest.addFilter("equipment", equipmentCode, "=");
 
 		if (meterCode != null) {
 			gridRequest.addFilter("metercode", meterCode, "=");
+		}else{
+			gridRequest.addFilter("equipment", equipmentCode, "=");
 		}
 
 		GridRequestResult gridResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest);
