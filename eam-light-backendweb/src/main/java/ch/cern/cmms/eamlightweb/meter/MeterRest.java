@@ -92,6 +92,7 @@ public class MeterRest extends EAMLightController {
 
 		gridRequest.addParam("parameter.organization", authenticationTools.getR5InforContext().getOrganizationCode());
 		gridRequest.addParam("parameter.object", equipmentCode);
+		gridRequest.addFilter("equipment", equipmentCode, "=");
 
 		if (meterCode != null) {
 			gridRequest.addFilter("metercode", meterCode, "=");
@@ -104,7 +105,7 @@ public class MeterRest extends EAMLightController {
 
 		if(!result.isEmpty()) {
 			List<String> filteredUOM = result.stream()
-					.filter(meter -> !meter.getUomDesc().isEmpty())
+					.filter(meter -> meter.getUomDesc() == null || meter.getUomDesc().isEmpty())
 					.map(MeterReadingWrap::getUom).collect((Collectors.toList()));
 			Map<String, String> uomDescMap;
 
