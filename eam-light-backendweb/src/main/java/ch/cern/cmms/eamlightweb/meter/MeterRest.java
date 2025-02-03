@@ -1,7 +1,6 @@
 package ch.cern.cmms.eamlightweb.meter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -15,16 +14,17 @@ import javax.ws.rs.core.Response;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
+import ch.cern.cmms.eamlightweb.utilities.GridRequestResultEnhancer;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.InforException;
-import static ch.cern.eam.wshub.core.tools.GridTools.convertGridResultToObject;
 import ch.cern.eam.wshub.core.services.workorders.entities.MeterReading;
-import static ch.cern.eam.wshub.core.tools.GridTools.getCellContent;
+
+import static ch.cern.cmms.eamlightweb.utilities.GridRequestResultEnhancer.performGridRequestAction;
+import static ch.cern.cmms.eamlightweb.utilities.GridRequestResultEnhancer.performMatch;
+import static ch.cern.eam.wshub.core.tools.GridTools.*;
 
 /**
  * Controller for the meter readings in WO.
@@ -46,7 +46,7 @@ public class MeterRest extends EAMLightController {
 	public Response readByEquipment(@PathParam("equipment") String equipment) {
 		try {
 			return ok(getMeterEquipmentMeterReading(equipment, null));
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -62,16 +62,15 @@ public class MeterRest extends EAMLightController {
 			gridRequest.addFilter("metercode", meterCode, "=");
 			String equipment = getCellContent("equipment", inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest).getRows()[0]);
 			return ok(getMeterEquipmentMeterReading(equipment, meterCode));
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
 
 	/**
 	 * Creates a new reading for the given equipment.
-	 * 
-	 * @param meterReading
-	 *            Meter reading for the equipment.
+	 *
+	 * @param meterReading Meter reading for the equipment.
 	 */
 	@POST
 	@Produces("application/json")
@@ -81,7 +80,7 @@ public class MeterRest extends EAMLightController {
 			return ok(inforClient.getWorkOrderMiscService().createMeterReading(authenticationTools.getInforContext(), meterReading));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return serverError(e);
 		}
 	}
@@ -104,34 +103,23 @@ public class MeterRest extends EAMLightController {
 				null, gridResult
 		);
 
-		if(!result.isEmpty()) {
-			List<String> filteredUOM = result.stream()
-					.filter(meter -> meter.getUomDesc() == null || meter.getUomDesc().isEmpty())
-					.map(MeterReadingWrap::getUom).collect((Collectors.toList()));
-			Map<String, String> uomDescMap;
-
-			if(!filteredUOM.isEmpty()) {
-				GridRequest uomGridRequest = new GridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST);
-				uomGridRequest.addFilter("uomcode", String.join(",", filteredUOM), "IN", GridRequestFilter.JOINER.OR);
-
-				List<Pair> uomDesc = convertGridResultToObject(Pair.class,
-						Pair.generateGridPairMap("uomcode", "uomdescription"),
-						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), uomGridRequest));
-
-			 	uomDescMap = uomDesc.stream()
-						.filter(uom -> !uomDesc.isEmpty())
-						.collect(Collectors.toMap(Pair::getCode, Pair::getDesc));
-			} else {
-                uomDescMap = new HashMap<>();
-            }
-            result.forEach(meter -> {
-				meter.setEquipmentCode(equipmentCode);
-				String uomValue = uomDescMap.get(meter.getUom());
-				if(uomValue != null && !uomValue.isEmpty()) meter.setUomDesc(uomValue);
-			});
+		if (result.isEmpty()) {
+			return result;
 		}
+
+		GridRequest uomGridRequest =
+				GridRequestResultEnhancer.<MeterReadingWrap>missingFieldGridRequest("BSUOMS", GridRequest.GRIDTYPE.LIST)
+				.apply(result)
+				.apply(MeterReadingWrap::getUom)
+				.apply("uomcode");
+
+		performGridRequestAction(uomGridRequest, inforClient, authenticationTools, meters -> {
+			Map<String, String> descriptionMap = convertGridResultToMap("uomcode", "uomdescription", meters);
+			performMatch(MeterReadingWrap::getUom, MeterReadingWrap::setUomDesc, descriptionMap, null)
+					.accept(result);
+		});
 
 		return result;
 	}
-
 }
+
