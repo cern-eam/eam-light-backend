@@ -94,7 +94,8 @@ public class MeterRest extends EAMLightController {
 
 		if (meterCode != null) {
 			gridRequest.addFilter("metercode", meterCode, "=");
-		}else{
+		}
+		if (equipmentCode != null) {
 			gridRequest.addFilter("equipment", equipmentCode, "=");
 		}
 
