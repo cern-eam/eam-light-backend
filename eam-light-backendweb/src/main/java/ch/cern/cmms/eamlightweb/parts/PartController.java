@@ -14,9 +14,12 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.services.material.entities.Part;
 import ch.cern.eam.wshub.core.services.material.entities.PartStock;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.Tools;
 
 @Path("/parts")
 @ApplicationScoped
@@ -38,12 +41,17 @@ public class PartController extends EAMLightController {
 		try {
 			GridRequest gridRequest = new GridRequest("SSPART_BIS", GridRequest.GRIDTYPE.LOV);
 			gridRequest.setUserFunctionName("SSPART");
-			gridRequest.addParam("partorg", authenticationTools.getInforContext().getOrganizationCode());
-			gridRequest.addParam("partcode", partCode);
+			String org = Tools.extractOrganizationCode(partCode);
+			if (org == null) {
+				//org = authenticationTools.getInforContext().getOrganizationCode();
+				org = "*";
+			}
+			gridRequest.addParam("partorg", org);
+			gridRequest.addParam("partcode", Tools.extractEntityCode(partCode));
 
-			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(PartStock.class,
-					null,
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
+			final GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest);
+
+			return ok(GridTools.convertGridResultToObject(PartStock.class,null, gridRequestResult));
 		} catch(Exception e) {
 			return serverError(e);
 		}
@@ -55,7 +63,9 @@ public class PartController extends EAMLightController {
 	@Consumes("application/json")
 	public Response readPart(@PathParam("part") String number) {
 		try {
-			return ok(inforClient.getPartService().readPart(authenticationTools.getInforContext(), number));
+			final Part part = inforClient.getPartService().readPart(authenticationTools.getInforContext(), number +
+					"#*");
+			return ok(part);
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch(Exception e) {

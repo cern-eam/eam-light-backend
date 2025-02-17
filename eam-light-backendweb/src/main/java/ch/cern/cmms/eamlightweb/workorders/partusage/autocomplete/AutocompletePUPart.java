@@ -13,9 +13,15 @@ import javax.ws.rs.core.Response;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.eam.wshub.core.services.entities.Pair;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Autocomplete class to select the part or asset in the part usage of work orders
@@ -49,7 +55,14 @@ public class AutocompletePUPart extends EAMLightController {
 		// EDMS Item ID Reference
 		gridRequest.addFilter("udfchar11", code.toUpperCase(), "BEGINS");
 
-		return getPairListResponse(gridRequest, "partcode", "partdescription");
+		final GridRequestResult gridRequestResult =
+				inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest);
+
+		final List<Map<String, String>> partList = GridTools.convertGridResultToMapList(gridRequestResult);
+		partList.forEach(part -> {part.put("code", part.get("partcode")); part.put(
+				"desc",
+				part.get("partdescription"));});
+		return ok(partList);
 	}
 
 }

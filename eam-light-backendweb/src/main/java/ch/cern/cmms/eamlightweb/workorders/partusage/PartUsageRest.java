@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -89,7 +90,7 @@ public class PartUsageRest extends EAMLightController {
 				gridRequest = new GridRequest("LVRETURNBIN");
 			}
 			gridRequest.addParam("part_code", part);
-			gridRequest.addParam("part_org", authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.addParam("part_org", "*");
 			gridRequest.addParam("store_code", store);
 
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
@@ -117,7 +118,7 @@ public class PartUsageRest extends EAMLightController {
 
 			gridRequest.addParam("bin_code", bin);
 			gridRequest.addParam("part_code", part);
-			gridRequest.addParam("part_org", context.getOrganizationCode());
+			gridRequest.addParam("part_org", "*");
 			gridRequest.addParam("store_code", store);
 
 			if (requireAvailableQty) {
