@@ -15,7 +15,7 @@ public class Tools {
         if (valueFromEnv != null && !valueFromEnv.isEmpty()) {
             return valueFromEnv;
         } else {
-            return null;
+            return System.getProperty(variableName);
         }
     }
 
