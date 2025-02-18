@@ -14,6 +14,7 @@ import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.services.material.entities.PartAssociation;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -277,6 +278,17 @@ public class EquipmentRest extends EAMLightController {
 		} catch(Exception e) {
 			return serverError(e);
 		}
+	}
+
+	@POST
+       @Path("/partsassociated")
+       @Produces("application/json")
+       public Response createPartAssociation(PartAssociation partAssociation) {
+	   try {
+		   return ok(inforClient.getPartMiscService().createPartAssociation(authenticationTools.getInforContext(), partAssociation));
+	   } catch(Exception e) {
+		   return serverError(e);
+	   }
 	}
 
 }
