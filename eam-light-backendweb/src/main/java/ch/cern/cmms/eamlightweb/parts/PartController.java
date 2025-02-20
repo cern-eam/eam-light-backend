@@ -18,6 +18,9 @@ import ch.cern.eam.wshub.core.services.material.entities.Part;
 import ch.cern.eam.wshub.core.services.material.entities.PartStock;
 import ch.cern.eam.wshub.core.tools.InforException;
 
+import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
+import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
+
 @Path("/parts")
 @ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -34,12 +37,12 @@ public class PartController extends EAMLightController {
 	@Path("/partstock/{part}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response readPartStock(@PathParam("part") String partCode) {
+	public Response readPartStock(@PathParam("part") String part) {
 		try {
 			GridRequest gridRequest = new GridRequest("SSPART_BIS", GridRequest.GRIDTYPE.LOV);
 			gridRequest.setUserFunctionName("SSPART");
-			gridRequest.addParam("partorg", authenticationTools.getInforContext().getOrganizationCode());
-			gridRequest.addParam("partcode", partCode);
+			gridRequest.addParam("partorg", inforClient.getTools().getOrganizationCode(authenticationTools.getInforContext(), extractOrganizationCode(part)));
+			gridRequest.addParam("partcode", extractEntityCode(part));
 
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(PartStock.class,
 					null,

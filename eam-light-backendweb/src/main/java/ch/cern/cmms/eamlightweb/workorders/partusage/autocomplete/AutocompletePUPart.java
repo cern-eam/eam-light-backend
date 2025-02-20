@@ -49,7 +49,7 @@ public class AutocompletePUPart extends EAMLightController {
 		// EDMS Item ID Reference
 		gridRequest.addFilter("udfchar11", code.toUpperCase(), "BEGINS");
 
-		return getPairListResponse(gridRequest, "partcode", "partdescription");
+		return getEntityListResponse(gridRequest, "partcode", "partdescription", "partorganization");
 	}
 
 }
