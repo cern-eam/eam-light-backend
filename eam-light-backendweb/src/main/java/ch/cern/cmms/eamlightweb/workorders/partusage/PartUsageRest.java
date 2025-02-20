@@ -38,6 +38,9 @@ import ch.cern.eam.wshub.core.tools.InforException;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrder;
 
+import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
+import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
+
 @Path("/partusage")
 @ApplicationScoped
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -88,8 +91,8 @@ public class PartUsageRest extends EAMLightController {
 				// RETURN
 				gridRequest = new GridRequest("LVRETURNBIN");
 			}
-			gridRequest.addParam("part_code", part);
-			gridRequest.addParam("part_org", authenticationTools.getInforContext().getOrganizationCode());
+			gridRequest.addParam("part_code", extractEntityCode(part));
+			gridRequest.addParam("part_org", inforClient.getTools().getOrganizationCode(authenticationTools.getInforContext(), extractOrganizationCode(part)));
 			gridRequest.addParam("store_code", store);
 
 			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
@@ -114,10 +117,10 @@ public class PartUsageRest extends EAMLightController {
 			InforContext context = authenticationTools.getInforContext();
 
 			gridRequest = new GridRequest("LVIRLOT", GridRequest.GRIDTYPE.LOV);
-
+			System.out.println("part: " +  part);
 			gridRequest.addParam("bin_code", bin);
-			gridRequest.addParam("part_code", part);
-			gridRequest.addParam("part_org", context.getOrganizationCode());
+			gridRequest.addParam("part_code", extractEntityCode(part));
+			gridRequest.addParam("part_org", inforClient.getTools().getOrganizationCode(authenticationTools.getInforContext(), extractOrganizationCode(part)));
 			gridRequest.addParam("store_code", store);
 
 			if (requireAvailableQty) {
@@ -149,7 +152,7 @@ public class PartUsageRest extends EAMLightController {
 			InforContext context = authenticationTools.getInforContext();
 			Map<String, String> applicationData = ApplicationService.paramFieldCache;
 
-			List<Pair> udsLots = sharedPlugin.getUdsLots(part, inforClient, context, applicationData);
+			List<Pair> udsLots = sharedPlugin.getUdsLots(extractEntityCode(part), inforClient, context, applicationData);
 
 			// Check whether there are user defined lots, otherwise return all lots
 			if (udsLots != null && udsLots.size() > 0) {
