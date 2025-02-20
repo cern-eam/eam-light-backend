@@ -15,7 +15,7 @@
 
 	<properties>
 		<artifact.filename>${project.build.finalName}-${project.version}</artifact.filename>
-		<ch.cern.eam.eam-wshub-core.version>12.1.1-8</ch.cern.eam.eam-wshub-core.version>
+		<ch.cern.eam.eam-wshub-core.version>12.1.2-8</ch.cern.eam.eam-wshub-core.version>
 		<ch.cern.cmms.eamtools.version>2.4.0</ch.cern.cmms.eamtools.version>
 		<ch.cern.cmms.ldaptools.version>0.3.1</ch.cern.cmms.ldaptools.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

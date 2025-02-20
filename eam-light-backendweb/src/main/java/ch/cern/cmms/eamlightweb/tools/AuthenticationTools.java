@@ -122,14 +122,19 @@ public class AuthenticationTools {
         inforContext.setTenant(tenant);
 
         // Credentials, Session ID
-        if (isNotEmpty(user) && isNotEmpty(password)) {
+        if (isNotEmpty(user)) {
             Credentials credentials = new Credentials();
             credentials.setUsername(user.toUpperCase());
             credentials.setPassword(password);
             inforContext.setCredentials(credentials);
-        } else if (isNotEmpty(sessionid)) {
+        }
+
+        if (isNotEmpty(sessionid)) {
             inforContext.setSessionID(sessionid);
-        } else {
+            inforContext.setKeepSession(true);
+        }
+
+        if (isEmpty(sessionid) && (isEmpty(user) || isEmpty(password))) {
             throw inforClient.getTools().generateFault("Credentials or Session ID is required.");
         }
 

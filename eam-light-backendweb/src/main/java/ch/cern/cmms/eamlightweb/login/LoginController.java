@@ -3,6 +3,7 @@ package ch.cern.cmms.eamlightweb.login;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -23,9 +24,11 @@ public class LoginController extends EAMLightController {
     @GET
     @Path("/")
     @Produces("application/json")
-    public Response getWorkOrderEquipment() throws InforException {
+    public Response login() throws InforException {
         try {
-            return ok(inforClient.getUserSetupService().login(authenticationTools.getInforContext(), ""));
+            InforContext inforContext = authenticationTools.getInforContext();
+            inforContext.setKeepSession(true);
+            return ok(inforClient.getUserSetupService().login(inforContext, ""));
         } catch (InforException e) {
             return badRequest(e);
         } catch(Exception e) {

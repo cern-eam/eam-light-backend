@@ -49,7 +49,7 @@ public class EAMResponse<T> {
 			InforException inforException = (InforException) exception;
 			return Arrays.asList(inforException.getExceptionInfoList())
 					.stream()
-					.map(error -> new Error("", error.getLocation(), error.getMessage()))
+					.map(error -> new Error("", error.getLocation(), error.getMessage(), error.getName()))
 					.collect(Collectors.toList());
 		}
 		else {
@@ -70,6 +70,8 @@ public class EAMResponse<T> {
 
 		private String message;
 
+		private String name;
+
 		public Error(String code, String message) {
 			this.code = code;
 			this.message = message;
@@ -78,6 +80,11 @@ public class EAMResponse<T> {
 		public Error(String code, String location, String message) {
 			this(code, message);
 			this.location = location;
+		}
+
+		public Error(String code, String location, String message, String name) {
+			this(code, location, message);
+			this.name = name;
 		}
 
 		public String getCode() {
@@ -90,6 +97,10 @@ public class EAMResponse<T> {
 
 		public String getMessage() {
 			return message;
+		}
+
+		public String getName() {
+			return name;
 		}
 
 		@Override
