@@ -38,37 +38,6 @@ public class PartListsController extends EAMLightController {
 	}
 
 	@GET
-	@Path("/partsassociated/{part}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response loadPartAssociation(@PathParam("part") String part) {
-		try {
-			Map<String, String> map = new HashMap<>();
-			map.put("7448", "entity");
-			map.put("3747", "code");
-			map.put("8463", "description");
-			map.put("3750", "quantity");
-			map.put("15932", "type");
-
-			GridRequest gridRequest = new GridRequest( "SSPART_EPA");
-			gridRequest.setUserFunctionName("SSPART");
-
-			gridRequest.addParam("partcode", part);
-			gridRequest.addParam("partorg", authenticationTools.getInforContext().getOrganizationCode());
-
-			List<PartAssociation> partAssociations = inforClient.getTools().getGridTools().convertGridResultToObject(PartAssociation.class,
-									map,
-									inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
-
-			return ok(partAssociations);
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
 	@Path("/assets/{part}")
 	@Produces("application/json")
 	@Consumes("application/json")

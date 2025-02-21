@@ -34,25 +34,6 @@ public class PartController extends EAMLightController {
 	private CodeGeneratorService codeGeneratorService;
 
 	@GET
-	@Path("/partstock/{part}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response readPartStock(@PathParam("part") String part) {
-		try {
-			GridRequest gridRequest = new GridRequest("SSPART_BIS", GridRequest.GRIDTYPE.LOV);
-			gridRequest.setUserFunctionName("SSPART");
-			gridRequest.addParam("partorg", inforClient.getTools().getOrganizationCode(authenticationTools.getInforContext(), extractOrganizationCode(part)));
-			gridRequest.addParam("partcode", extractEntityCode(part));
-
-			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(PartStock.class,
-					null,
-					inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
 	@Path("/{part}")
 	@Produces("application/json")
 	@Consumes("application/json")

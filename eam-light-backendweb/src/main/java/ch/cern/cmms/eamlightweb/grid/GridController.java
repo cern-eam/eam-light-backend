@@ -5,12 +5,18 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 @Path("/grids")
 @Interceptors({ RESTLoggingInterceptor.class })
@@ -34,6 +40,25 @@ public class GridController extends EAMLightController {
 			return serverError(e);
 		}
 	}
+
+	@POST
+	@Path("/datamap")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response executeGridQuery(GridRequest gridRequest) {
+		try {
+			GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest);
+			LinkedList<LinkedHashMap<String, String>> collect = Arrays.stream(gridRequestResult.getRows())
+					.map(row -> GridTools.gridRequestRowMapper(row, null))
+					.collect(Collectors.toCollection(LinkedList::new));
+			return ok(collect);
+		} catch (InforException e) {
+			return badRequest(e);
+		} catch(Exception e) {
+			return serverError(e);
+		}
+	}
+
 
 	@POST
 	@Path("/export")
