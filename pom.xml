@@ -3,7 +3,7 @@
 
 	<groupId>ch.cern.cmms</groupId>
 	<artifactId>eam-light-backend</artifactId>
-	<version>3.23.4-SNAPSHOT</version>
+	<version>3.24.0</version>
 	<packaging>pom</packaging>
 
 	<modules>
