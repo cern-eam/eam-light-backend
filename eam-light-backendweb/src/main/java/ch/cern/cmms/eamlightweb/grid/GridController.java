@@ -5,7 +5,9 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestCell;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
+import ch.cern.eam.wshub.core.services.grids.entities.GridRequestRow;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -13,9 +15,7 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Path("/grids")
@@ -49,7 +49,7 @@ public class GridController extends EAMLightController {
 		try {
 			GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest);
 			LinkedList<LinkedHashMap<String, String>> collect = Arrays.stream(gridRequestResult.getRows())
-					.map(row -> GridTools.gridRequestRowMapper(row, null))
+					.map(row -> gridRequestRowMapper(row, null))
 					.collect(Collectors.toCollection(LinkedList::new));
 			return ok(collect);
 		} catch (InforException e) {
@@ -59,6 +59,15 @@ public class GridController extends EAMLightController {
 		}
 	}
 
+	// TODO: Utilize the method from wshub-core, but first verify whether it might include cells with order = -1.
+	public static LinkedHashMap<String, String> gridRequestRowMapper(GridRequestRow row, List<String> allowedColumns) {
+		LinkedHashMap<String, String> rowAsPairs = (LinkedHashMap)Arrays.stream(row.getCell()).filter((cell) -> {
+			return allowedColumns == null || allowedColumns.contains(cell.getCol()) || allowedColumns.contains(cell.getTag());
+		}).sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(LinkedHashMap::new, (m, v) -> {
+			String var10000 = (String)m.put(v.getTag(), v.getContent());
+		}, HashMap::putAll);
+		return rowAsPairs;
+	}
 
 	@POST
 	@Path("/export")

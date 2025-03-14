@@ -69,16 +69,6 @@ public class WorkOrderLists extends EAMLightController {
 		return getCodesResponse(gridRequest);
 	}
 
-	@GET
-	@Path("/prioritycodes")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response readPriorityCodes() {
-		GridRequest gridRequest = new GridRequest("LVJBPR", GridRequest.GRIDTYPE.LOV);
-		gridRequest.addFilter("description", "Tou", "NOTCONTAINS");
-		return getCodesResponse(gridRequest);
-	}
-
 	/**
 	 * Loads the Failure codes lists
 	 * 

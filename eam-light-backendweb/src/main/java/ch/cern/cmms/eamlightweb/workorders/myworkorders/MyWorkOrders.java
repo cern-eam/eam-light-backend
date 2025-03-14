@@ -24,52 +24,6 @@ public class MyWorkOrders {
     @Inject
     private UserService userService;
 
-    public List<MyWorkOrder> getMyOpenWorkOrders() throws InforException {
-        String userCode = authenticationTools.getInforContext().getCredentials().getUsername();
-        EAMUser eamUser = userService.readUserSetup(authenticationTools.getInforContext(), userCode);
-
-        // If EAM User has no associated employee, return an empty list
-        if (eamUser.getEmployeeCode() == null || "".equals(eamUser.getEmployeeCode().trim())) {
-            return new ArrayList<>();
-        }
-        //
-        GridRequest gridRequest = new GridRequest("WSJOBS");
-        gridRequest.setUserFunctionName("WSJOBS");
-        gridRequest.addFilter("assignedto", eamUser.getEmployeeCode(), "=", GridRequestFilter.JOINER.AND);
-        gridRequest.addFilter("evt_rstatus", "R", "=");
-        return GridTools.convertGridResultToObject(MyWorkOrder.class,
-                null,
-                inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
-    }
-
-    public List<MyWorkOrder> getMyTeamsWorkOrders() throws InforException {
-        String userDepartments = readUserDepartments();
-        if (userDepartments.isEmpty()) {
-            return new LinkedList<>();
-        }
-
-        GridRequest gridRequest = new GridRequest("WSJOBS");
-        gridRequest.setUserFunctionName("WSJOBS");
-        gridRequest.addFilter("department", userDepartments, "IN", GridRequestFilter.JOINER.AND);
-        gridRequest.addFilter("evt_rstatus", "R", "=");
-        return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
-                null,
-                inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
-    }
-
-    public List<MyWorkOrder> getObjectWorkOrders(String equipmentCode) throws InforException {
-        GridRequest gridRequest = new GridRequest("WSJOBS");
-        gridRequest.setUserFunctionName("WSJOBS");
-        gridRequest.setRowCount(2000);
-        gridRequest.setUseNative(false);
-        gridRequest.addFilter("equipment", equipmentCode, "=");
-        gridRequest.sortBy("datecreated", "DESC");
-
-        return inforClient.getTools().getGridTools().convertGridResultToObject(MyWorkOrder.class,
-                null,
-                inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
-    }
-
     private static final Map<String, String> typeToUserFunctionMap = new HashMap<>();
     static {
         typeToUserFunctionMap.put("A", "OSOBJA");
@@ -110,23 +64,6 @@ public class MyWorkOrders {
         workOrders.forEach(workOrder -> workOrder.setEquipmentType(equipmentTypeMap.get(workOrder.getEquipmentType())));
 
         return workOrders;
-    }
-
-
-    private String readUserDepartments() throws InforException {
-        String userCode = authenticationTools.getInforContext().getCredentials().getUsername();
-        EAMUser eamUser = userService.readUserSetup(authenticationTools.getInforContext(), userCode);
-        String departments = "";
-        if (eamUser.getDepartment() != null) {
-            departments = eamUser.getDepartment();
-        }
-        if (eamUser.getUserDefinedFields().getUdfchar10() != null) {
-            if (!departments.isEmpty()) {
-                departments += ",";
-            }
-            departments += eamUser.getUserDefinedFields().getUdfchar10();
-        }
-        return departments;
     }
 
 }
