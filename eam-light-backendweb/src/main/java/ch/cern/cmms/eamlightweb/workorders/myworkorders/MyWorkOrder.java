@@ -42,7 +42,7 @@ public class MyWorkOrder implements Serializable {
 	@GridField(name="datecreated")
 	private Date createdDate;
 
-	@GridField(name="datecompleted")
+	@GridField(name="datecompleted", alternativeNames={"completiondate"})
 	private Date completedDate;
 
 	@GridField(name="equipmenttype")
