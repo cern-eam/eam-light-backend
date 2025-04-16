@@ -54,26 +54,6 @@ public class PartUsageRest extends EAMLightController {
 	private SharedPlugin sharedPlugin;
 
 	@GET
-	@Path("/stores")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response loadStoreList() {
-		try {
-			GridRequest gridRequest = new GridRequest("LVIRSTOR", GridRequest.GRIDTYPE.LOV, 1000);
-			gridRequest.setUserFunctionName("SSISSU");
-			gridRequest.getParams().put("param.storefield", "IR");
-			gridRequest.getParams().put("parameter.r5role", "");
-			return ok(inforClient.getTools().getGridTools().convertGridResultToObject(Pair.class,
-					Pair.generateGridPairMap("682", "133"),
-					inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest)));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
 	@Path("/bins")
 	@Produces("application/json")
 	@Consumes("application/json")
@@ -273,72 +253,6 @@ public class PartUsageRest extends EAMLightController {
 		transaction.setTransactionlines(new LinkedList<IssueReturnPartTransactionLine>());
 		// Returns the transaction created
 		return transaction;
-	}
-
-	@GET
-	@Path("/transactions/{workorder}")
-	@Produces("application/json")
-	@Consumes("application/json")
-
-	public Response loadPartUsageList(@PathParam("workorder") String workorder) {
-		try {
-			// Init the list
-			List<WorkOrderPart> partUsageList = new ArrayList<>();
-			// Just execute if there is work order
-			if (workorder != null) {
-				// Creates simple grid input
-				GridRequest gridRequest = new GridRequest("WSJOBS_PAR");
-				gridRequest.setUserFunctionName("WSJOBS");
-				gridRequest.addParam("param.workordernum", workorder);
-				gridRequest.addParam("param.headeractivity", "0");
-				gridRequest.addParam("param.headerjob", "0");
-
-				partUsageList = inforClient.getTools().getGridTools().convertGridResultToObject(WorkOrderPart.class,
-						null,
-						inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
-
-				partUsageList = transformPartUsageList(partUsageList);
-			}
-			return ok(partUsageList);
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	private List<WorkOrderPart> transformPartUsageList(List<WorkOrderPart> list) {
-		List<WorkOrderPart> rows = new ArrayList<>();
-
-		Function<WorkOrderPart, WorkOrderPart> cloneWoPart = woPart -> {
-			try {
-				return (WorkOrderPart) woPart.clone();
-			} catch(CloneNotSupportedException e) {
-				throw new RuntimeException("Failed to clone WorkOrderPart");
-			}
-		};
-
-		list.stream().forEach(woPart -> {
-			if (woPart.getPlannedQty() != null && woPart.getPlannedQty().compareTo(BigDecimal.ZERO) == 1) {
-				WorkOrderPart clone = cloneWoPart.apply(woPart);
-				clone.setTransType("Planned");
-				clone.setQuantity(clone.getPlannedQty());
-				rows.add(clone);
-			}
-
-			if (woPart.getUsedQty() != null) {
-				int usedQtyCompareToZero = woPart.getUsedQty().compareTo(BigDecimal.ZERO);
-				if (usedQtyCompareToZero != 0) {
-					WorkOrderPart clone = cloneWoPart.apply(woPart);
-					boolean issue = usedQtyCompareToZero > 0;
-					clone.setTransType(issue ? "Issue" : "Return");
-					clone.setQuantity(clone.getUsedQty().abs());
-					rows.add(clone);
-				}
-			}
-		});
-
-		return rows;
 	}
 
 }

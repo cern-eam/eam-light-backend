@@ -42,34 +42,6 @@ public class GridController extends EAMLightController {
 	}
 
 	@POST
-	@Path("/datamap")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response executeGridQuery(GridRequest gridRequest) {
-		try {
-			GridRequestResult gridRequestResult = inforClient.getGridsService().executeQuery(authenticationTools.getInforContext(), gridRequest);
-			LinkedList<LinkedHashMap<String, String>> collect = Arrays.stream(gridRequestResult.getRows())
-					.map(row -> gridRequestRowMapper(row, null))
-					.collect(Collectors.toCollection(LinkedList::new));
-			return ok(collect);
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	// TODO: Utilize the method from wshub-core, but first verify whether it might include cells with order = -1.
-	public static LinkedHashMap<String, String> gridRequestRowMapper(GridRequestRow row, List<String> allowedColumns) {
-		LinkedHashMap<String, String> rowAsPairs = (LinkedHashMap)Arrays.stream(row.getCell()).filter((cell) -> {
-			return allowedColumns == null || allowedColumns.contains(cell.getCol()) || allowedColumns.contains(cell.getTag());
-		}).sorted(Comparator.comparing(GridRequestCell::getOrder)).collect(LinkedHashMap::new, (m, v) -> {
-			String var10000 = (String)m.put(v.getTag(), v.getContent());
-		}, HashMap::putAll);
-		return rowAsPairs;
-	}
-
-	@POST
 	@Path("/export")
 	@Produces("text/csv")
 	@Consumes("application/json")

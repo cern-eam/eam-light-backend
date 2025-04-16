@@ -1,6 +1,8 @@
 package ch.cern.cmms.eamlightweb.application;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
+import ch.cern.cmms.eamlightweb.tools.EAMLightController;
+import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -11,11 +13,25 @@ import java.net.URI;
 
 @ApplicationScoped
 @Path("proxy")
-public class ProxyController {
+public class ProxyController extends EAMLightController {
     private static final String TARGET_URL = "https://testeam.cern.ch/axis/restservices";
 
     @Inject
     private AuthenticationTools authenticationTools;
+
+    @GET
+    @Path("/customfields")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response readComments(@QueryParam("entityCode") String entityCode, @QueryParam("classCode") String classCode) {
+        try {
+            return ok(inforClient.getTools().getCustomFieldsTools().getInforCustomFields(authenticationTools.getInforContext(), entityCode, classCode));
+        } catch (InforException e) {
+            return badRequest(e);
+        } catch(Exception e) {
+            return serverError(e);
+        }
+    }
 
     @Path("{path: .*}")
     @GET

@@ -5,6 +5,8 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
+import ch.cern.eam.wshub.core.services.administration.entities.ElementInfo;
+import ch.cern.eam.wshub.core.services.administration.entities.ScreenLayout;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -52,6 +54,18 @@ public class UserController extends EAMLightController {
 									 @QueryParam("lang") String language,
 									 @QueryParam("tabname") List<String> tabs) throws InforException {
 		try {
+			ScreenLayout screenLayout = inforClient.getScreenLayoutService().readScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity);
+			for (ElementInfo elementInfo : screenLayout.getFields().values()) {
+				String xpath = elementInfo.getXpath();
+				if (xpath != null && xpath.startsWith("EAMID_")) {
+					// Remove "EAMID_" and the next segment
+					String[] parts = xpath.split("_", 3); // split into 3 parts: ["EAMID", "xxx", "rest"]
+					if (parts.length == 3) {
+						String transformed = parts[2].replace("_", ".");
+						elementInfo.setXpath(transformed); // update xpath
+					}
+				}
+			}
 			return ok(inforClient.getScreenLayoutService().readScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity));
 		} catch(Exception e) {
 			e.printStackTrace();
