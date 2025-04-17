@@ -49,26 +49,4 @@ public class AutocompleteEquipment extends EAMLightController {
 		}
 	}
 
-	@GET
-	@Path("/eqp/selected")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response getValuesSelectedEquipment(@QueryParam("code") String code) {
-		try {
-
-			GridRequest gridRequest = prepareGridRequest(GridRequest.GRIDTYPE.LIST);
-			gridRequest.addFilter("equipmentcode", code.trim(), "EQUALS");
-
-			String[] fields = new String[] {"equipmentcode", "equipmentdesc", "department",
-					                        "departmentdisc", "parentlocation", "locationdesc", "equipcostcode"};
-
-			return ok(inforClient.getTools().getGridTools().convertGridResultToMapList(inforClient.getGridsService()
-					.executeQuery(authenticationTools.getInforContext(), gridRequest), Arrays.asList(fields)));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
 }

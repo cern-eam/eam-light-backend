@@ -7,6 +7,13 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
 import ch.cern.eam.wshub.core.services.equipment.entities.Location;
 import ch.cern.eam.wshub.core.tools.InforException;
+import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
+import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
+import net.datastream.schemas.mp_fields.LOCATIONID_Type;
+import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
+import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
+import net.datastream.schemas.mp_results.mp0318_001.MP0318_GetLocation_001_Result;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -32,11 +39,29 @@ public class LocationRest extends EAMLightController {
     private InforClient inforClient;
 
     @GET
-    @Path("/{locationCode : .+}")
+    @Path("/{location}")
     @Produces("application/json")
-    public Response readLocation(@PathParam("locationCode") String locationCode) {
+    public Response readLocation(@PathParam("location") String location) {
         try {
-            return ok(inforClient.getLocationService().readLocation(authenticationTools.getInforContext(), locationCode));
+
+            MP0318_GetLocation_001 getLocation = new MP0318_GetLocation_001();
+            getLocation.setLOCATIONID(new LOCATIONID_Type());
+            getLocation.getLOCATIONID().setORGANIZATIONID(new ORGANIZATIONID_Type());
+            getLocation.getLOCATIONID().getORGANIZATIONID().setORGANIZATIONCODE(extractOrganizationCode(location));
+            getLocation.getLOCATIONID().setLOCATIONCODE( extractEntityCode(location) );
+            MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
+
+            getLocationResult = inforClient.getTools().performInforOperation(authenticationTools.getInforContext(), inforClient.getInforWebServicesToolkitClient()::getLocationOp , getLocation);
+
+//            Location location = tools.getInforFieldTools().transformInforObject(new Location(), locationInfor, context);
+//
+//            if(locationInfor.getParentLocationID() != null) {
+//                location.setHierarchyLocationCode(locationInfor.getParentLocationID().getLOCATIONCODE());
+//            }
+//
+//            return location;
+
+            return ok(getLocationResult);
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {

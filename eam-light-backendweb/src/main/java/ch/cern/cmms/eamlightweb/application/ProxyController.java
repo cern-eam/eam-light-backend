@@ -23,7 +23,7 @@ public class ProxyController extends EAMLightController {
     @Path("/customfields")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response readComments(@QueryParam("entityCode") String entityCode, @QueryParam("classCode") String classCode) {
+    public Response readCustomFields(@QueryParam("entityCode") String entityCode, @QueryParam("classCode") String classCode) {
         try {
             return ok(inforClient.getTools().getCustomFieldsTools().getInforCustomFields(authenticationTools.getInforContext(), entityCode, classCode));
         } catch (InforException e) {

@@ -46,19 +46,6 @@ public class EquipmentRest extends EAMLightController {
 	@Inject
 	private MTFWorkOrderServiceImpl mtfStandardWorkOrderService;
 
-	@GET
-	@Path("/")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response readEquipment(@QueryParam(value = "c") String equipment) {
-		try {
-			return ok(inforClient.getEquipmentFacadeService().readEquipment(authenticationTools.getInforContext(), equipment));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
 
 	@GET
 	@Path("/type")
