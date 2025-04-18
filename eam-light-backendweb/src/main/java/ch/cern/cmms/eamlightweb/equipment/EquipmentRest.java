@@ -46,76 +46,6 @@ public class EquipmentRest extends EAMLightController {
 	@Inject
 	private MTFWorkOrderServiceImpl mtfStandardWorkOrderService;
 
-
-	@GET
-	@Path("/type")
-	@Produces("application/json")
-	public Response readEquipmentType(@QueryParam("c") String equipmentCode) {
-		try {
-			return ok(inforClient.getEquipmentFacadeService().readEquipmentType(authenticationTools.getInforContext(), equipmentCode));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@POST
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response createEquipment(Equipment equipment) {
-		try {
-			// Generate new numeric code if the requested code starts with @
-			if (equipment.getCode()!=null && codeGeneratorService.isCodePrefix(equipment.getCode())) {
-				String newCode = codeGeneratorService.getNextEquipmentCode(equipment.getCode(),
-					authenticationTools.getInforContext(), equipment.getTypeCode());
-				equipment.setCode(newCode);
-			}
-
-			return ok(inforClient.getEquipmentFacadeService().createEquipment(authenticationTools.getInforContext(), equipment));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@PUT
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response updateEquipment(Equipment equipment) {
-		try {
-			InforContext context = authenticationTools.getInforContext();
-
-			if (equipment.getStatusCode().equals("D")) {
-				equipment.setStatusCode("I");
-				equipment = EquipmentTools.clearHierarchy(context, inforClient, equipment);
-				equipment.setStatusCode("D");
-			}
-
-			return ok(inforClient.getEquipmentFacadeService().updateEquipment(context, equipment));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@DELETE
-	@Path("/{equipment}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response deleteEquipment(@PathParam("equipment") String equipment) {
-		try {
-			inforClient.getEquipmentFacadeService().deleteEquipment(authenticationTools.getInforContext(), equipment);
-			return noConent();
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
 	@POST
 	@Path("/replace")
 	@Produces("application/json")
@@ -166,46 +96,6 @@ public class EquipmentRest extends EAMLightController {
 	public Response getEquipmentEvents(@QueryParam("c") String equipmentCode, @QueryParam("t") String equipmentType) {
 		try {
 			return ok(myWorkOrders.getObjectEvents(equipmentCode, equipmentType));
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
-	@Path("/init/{eqpType}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response initEquipment(@PathParam("eqpType") String eqpType) {
-		try {
-			Equipment equipment = new Equipment();
-
-			/*
-			//TODO: Uncomment once Infor fixes the web services used below
-			switch (eqpType) {
-				case "A":
-					equipment = inforClient.getAssetService().readAssetDefault(authenticationTools.getInforContext(), "");
-					break;
-				case "P":
-					equipment = inforClient.getPositionService().readPositionDefault(authenticationTools.getInforContext(), "");
-					break;
-				case "S":
-					equipment = inforClient.getSystemService().readSystemDefault(authenticationTools.getInforContext(), "");
-					break;
-				default:
-					throw generateFault("Equipment type not supported.");
-			}
-			*/
-
-			equipment.setTypeCode(eqpType);
-			equipment.setStateCode("GOOD");
-			equipment.setStatusCode("I");
-			equipment.setComissionDate(new Date());
-			equipment.setUserDefinedFields(new UserDefinedFields());
-			equipment.setCustomFields(inforClient.getTools().getCustomFieldsTools().getWSHubCustomFields(authenticationTools.getInforContext(), "OBJ", "*"));
-
-			return ok(equipment);
-		} catch (InforException e) {
-			return badRequest(e);
 		} catch(Exception e) {
 			return serverError(e);
 		}
