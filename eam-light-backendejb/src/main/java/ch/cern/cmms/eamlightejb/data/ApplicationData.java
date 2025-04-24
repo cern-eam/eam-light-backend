@@ -19,6 +19,8 @@ public class ApplicationData {
 
     public String getInforWSURL() {return Tools.getVariableValue("EAMLIGHT_INFOR_WS_URL"); }
 
+    public String getRESTURL() {return getInforWSURL().replace("/axis/services/EWSConnector", "/axis/restservices");}
+
     public String getAuthenticationMode() { return Tools.getVariableValue("EAMLIGHT_AUTHENTICATION_MODE"); }
 
     public String getDefaultUser() { return Tools.getVariableValue("EAMLIGHT_DEFAULT_USER"); }
