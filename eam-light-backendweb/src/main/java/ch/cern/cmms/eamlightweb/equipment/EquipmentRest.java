@@ -113,29 +113,6 @@ public class EquipmentRest extends EAMLightController {
 	}
 
 	@GET
-	@Path("/partsassociated/{parentScreen}/{equipment}")
-	@Produces("application/json")
-	public Response getPartsAssociated(@PathParam("parentScreen") String parentScreen,
-			@PathParam("equipment") String equipment) {
-		try {
-			GridRequest gridRequest = new GridRequest("402", "BSPARA", "414");
-
-			gridRequest.addParam("param.entity", "OBJ");
-			gridRequest.addParam("param.valuecode", equipment + "#" + authenticationTools.getInforContext().getOrganizationCode());
-
-			List<PartAssociated> parts = inforClient.getTools().getGridTools().convertGridResultToObject(PartAssociated.class,
-											null,
-											inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest));
-
-			return ok(parts);
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
 	@Path("/{eqCode}/mtfsteps/maxstep")
 	@Produces("application/json")
 	public Response getEquipmentStandardWOMaxStep(@PathParam("eqCode") String eqCode, @QueryParam("swo") String swo) {
