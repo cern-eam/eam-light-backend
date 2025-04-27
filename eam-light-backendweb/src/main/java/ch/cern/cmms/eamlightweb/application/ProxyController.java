@@ -3,6 +3,7 @@ package ch.cern.cmms.eamlightweb.application;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
@@ -20,12 +21,10 @@ import javax.ws.rs.core.*;
 import javax.enterprise.context.ApplicationScoped;
 import java.net.URI;
 
-import static ch.cern.eam.wshub.core.tools.Tools.extractEntityCode;
-import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
 
 @ApplicationScoped
 @Path("proxy")
-public class ProxyController extends EAMLightController {
+public class ProxyController extends EAMLightNativeRestController {
 
     @Inject
     private AuthenticationTools authenticationTools;

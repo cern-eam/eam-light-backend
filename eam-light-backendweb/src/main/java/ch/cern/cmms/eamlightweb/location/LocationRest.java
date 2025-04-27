@@ -2,6 +2,7 @@ package ch.cern.cmms.eamlightweb.location;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
+import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
@@ -26,11 +27,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.xml.ws.soap.SOAPFaultException;
 
 @Path("/locations")
 @ApplicationScoped
 @Interceptors({RESTLoggingInterceptor.class})
-public class LocationRest extends EAMLightController {
+public class LocationRest extends EAMLightNativeRestController {
 
     @Inject
     private AuthenticationTools authenticationTools;
@@ -43,26 +45,16 @@ public class LocationRest extends EAMLightController {
     @Produces("application/json")
     public Response readLocation(@PathParam("location") String location) {
         try {
-
             MP0318_GetLocation_001 getLocation = new MP0318_GetLocation_001();
             getLocation.setLOCATIONID(new LOCATIONID_Type());
             getLocation.getLOCATIONID().setORGANIZATIONID(new ORGANIZATIONID_Type());
             getLocation.getLOCATIONID().getORGANIZATIONID().setORGANIZATIONCODE(extractOrganizationCode(location));
             getLocation.getLOCATIONID().setLOCATIONCODE( extractEntityCode(location) );
-            MP0318_GetLocation_001_Result getLocationResult = new MP0318_GetLocation_001_Result();
 
-            getLocationResult = inforClient.getTools().performInforOperation(authenticationTools.getInforContext(), inforClient.getInforWebServicesToolkitClient()::getLocationOp , getLocation);
-
-//            Location location = tools.getInforFieldTools().transformInforObject(new Location(), locationInfor, context);
-//
-//            if(locationInfor.getParentLocationID() != null) {
-//                location.setHierarchyLocationCode(locationInfor.getParentLocationID().getLOCATIONCODE());
-//            }
-//
-//            return location;
+            MP0318_GetLocation_001_Result getLocationResult = inforClient.getTools().performInforOperation(authenticationTools.getInforContext(), inforClient.getInforWebServicesToolkitClient()::getLocationOp , getLocation);
 
             return ok(getLocationResult);
-        } catch (InforException e) {
+        } catch (SOAPFaultException e) {
             return badRequest(e);
         } catch (Exception e) {
             return serverError(e);
