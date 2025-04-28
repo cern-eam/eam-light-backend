@@ -1,7 +1,6 @@
 package ch.cern.cmms.eamlightweb.location;
 
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
@@ -13,7 +12,9 @@ import static ch.cern.eam.wshub.core.tools.Tools.extractOrganizationCode;
 import net.datastream.schemas.mp_fields.LOCATIONID_Type;
 import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
 import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
+import net.datastream.schemas.mp_functions.mp0319_001.MP0319_SyncLocation_001;
 import net.datastream.schemas.mp_results.mp0318_001.MP0318_GetLocation_001_Result;
+import net.datastream.schemas.mp_results.mp0319_001.MP0319_SyncLocation_001_Result;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -67,7 +68,7 @@ public class LocationRest extends EAMLightNativeRestController {
     public Response createLocation(Location location) {
         try {
             return ok(inforClient.getLocationService().createLocation(authenticationTools.getInforContext(), location));
-        } catch (InforException e) {
+        } catch (SOAPFaultException e) {
             return badRequest(e);
         } catch (Exception e) {
             return serverError(e);
@@ -75,12 +76,15 @@ public class LocationRest extends EAMLightNativeRestController {
     }
 
     @PUT
-    @Path("/{locationCode : .+}")
+    @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response updateLocation(@PathParam("locationCode") String locationCode, Location location) {
+    public Response updateLocation(net.datastream.schemas.mp_entities.location_001.Location location) {
         try {
-            return ok(inforClient.getLocationService().updateLocation(authenticationTools.getInforContext(), location));
+            MP0319_SyncLocation_001 syncLocation = new MP0319_SyncLocation_001();
+            syncLocation.setLocation(location);
+            MP0319_SyncLocation_001_Result result =  inforClient.getTools().performInforOperation(authenticationTools.getInforContext(), inforClient.getInforWebServicesToolkitClient()::syncLocationOp , syncLocation);
+            return ok(result);
         } catch (InforException e) {
             return badRequest(e);
         } catch (Exception e) {

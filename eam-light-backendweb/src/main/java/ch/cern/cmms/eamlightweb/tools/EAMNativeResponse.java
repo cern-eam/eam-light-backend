@@ -12,15 +12,15 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EAMNativeResponse<T> {
 
-	private T data;
+	private T result;
 
 	private List<Error> errors;
 
 	private EAMNativeResponse() {
 	}
 
-	private EAMNativeResponse(T data, List<Error> errors) {
-		this.data = data;
+	private EAMNativeResponse(T result, List<Error> errors) {
+		this.result = result;
 		this.errors = errors;
 	}
 
@@ -119,8 +119,8 @@ public class EAMNativeResponse<T> {
 	}
 
 	@JsonProperty("Result")
-	public T getData() {
-		return data;
+	public T getResult() {
+		return result;
 	}
 
 	@JsonProperty("ErrorAlert")
@@ -130,7 +130,7 @@ public class EAMNativeResponse<T> {
 
 	@Override
 	public String toString() {
-		return "EAMResponse [" + (data != null ? "data=" + data + ", " : "")
+		return "EAMResponse [" + (result != null ? "data=" + result + ", " : "")
 				+ (errors != null ? "errors=" + errors : "") + "]";
 	}
 
