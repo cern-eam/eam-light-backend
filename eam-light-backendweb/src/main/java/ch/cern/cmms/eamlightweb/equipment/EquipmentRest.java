@@ -74,23 +74,6 @@ public class EquipmentRest extends EAMLightController {
 	}
 
 	@GET
-	@Path("/history")
-	@Produces("application/json")
-	public Response getEquipmentHistory(@QueryParam("c") String equipmentCode) {
-		try {
-			GridRequest gridRequest = new GridRequest("EUMLWH");
-			gridRequest.setRowCount(2000);
-			gridRequest.addFilter("woobject", equipmentCode, "=", GridRequestFilter.JOINER.AND);
-			gridRequest.sortBy("wocompleted", "DESC");
-			return ok(GridTools.convertGridResultToObject(EquipmentHistory.class,
-					  null,
-					  inforClient.getGridsService().executeQuery(authenticationTools.getR5InforContext(), gridRequest)));
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
 	@Path("/events")
 	@Produces("application/json")
 	public Response getEquipmentEvents(@QueryParam("c") String equipmentCode, @QueryParam("t") String equipmentType) {
