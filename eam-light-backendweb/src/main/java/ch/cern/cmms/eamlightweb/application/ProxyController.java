@@ -6,12 +6,15 @@ import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.tools.InforException;
+import net.datastream.schemas.mp_fields.CATEGORYID;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
 import net.datastream.schemas.mp_fields.LOCATIONID_Type;
 import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
 import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
+import net.datastream.schemas.mp_functions.mp0324_001.MP0324_GetEquipmentCategory_001;
 import net.datastream.schemas.mp_functions.mp0328_002.MP0328_GetPositionParentHierarchy_002;
 import net.datastream.schemas.mp_results.mp0318_001.MP0318_GetLocation_001_Result;
+import net.datastream.schemas.mp_results.mp0324_001.MP0324_GetEquipmentCategory_001_Result;
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
 
 import javax.inject.Inject;
@@ -19,6 +22,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 import javax.enterprise.context.ApplicationScoped;
+import javax.xml.ws.soap.SOAPFaultException;
 import java.net.URI;
 
 
@@ -34,6 +38,24 @@ public class ProxyController extends EAMLightNativeRestController {
 
     @Inject
     private ApplicationData applicationData;
+
+    @GET
+    @Path("/category/{categoryCode}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public Response readCustomFields(@PathParam("categoryCode") String categoryCode) {
+        try {
+            MP0324_GetEquipmentCategory_001 getEquipmentCategory = new MP0324_GetEquipmentCategory_001();
+            getEquipmentCategory.setCATEGORYID(new CATEGORYID());
+            getEquipmentCategory.getCATEGORYID().setCATEGORYCODE(categoryCode);
+            MP0324_GetEquipmentCategory_001_Result result = inforClient.getTools().performInforOperation(authenticationTools.getInforContext(), inforClient.getInforWebServicesToolkitClient()::getEquipmentCategoryOp, getEquipmentCategory);
+            return ok(result);
+        } catch (SOAPFaultException e) {
+            return badRequest(e);
+        } catch(Exception e) {
+            return serverError(e);
+        }
+    }
 
     @GET
     @Path("/customfields")
@@ -99,7 +121,24 @@ public class ProxyController extends EAMLightNativeRestController {
         String method = request.getMethod();
         Entity<?> entity = (method.equals("GET") || method.equals("HEAD") || method.equals("OPTIONS")) ? null : Entity.json(body);
 
-        Response response = builder.method(method, entity);
-        return Response.fromResponse(response).build();
+        Response originalResponse = builder.method(method, entity);
+
+        // Create a copy of the response in order not to pass any caching headers
+        Response.ResponseBuilder responseBuilder = Response.status(originalResponse.getStatus()).entity(originalResponse.getEntity());
+
+        originalResponse.getHeaders().forEach((key, values) -> {
+            if (!key.equalsIgnoreCase("Cache-Control") &&
+                    !key.equalsIgnoreCase("Pragma") &&
+                    !key.equalsIgnoreCase("Expires")) {
+                values.forEach(value -> responseBuilder.header(key, value));
+            }
+        });
+
+        return responseBuilder
+                .header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .build();
+
     }
 }
