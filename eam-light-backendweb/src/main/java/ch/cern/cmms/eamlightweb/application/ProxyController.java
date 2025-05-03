@@ -2,18 +2,14 @@ package ch.cern.cmms.eamlightweb.application;
 
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
-import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.schemas.mp_fields.CATEGORYID;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
-import net.datastream.schemas.mp_fields.LOCATIONID_Type;
 import net.datastream.schemas.mp_fields.ORGANIZATIONID_Type;
-import net.datastream.schemas.mp_functions.mp0318_001.MP0318_GetLocation_001;
 import net.datastream.schemas.mp_functions.mp0324_001.MP0324_GetEquipmentCategory_001;
 import net.datastream.schemas.mp_functions.mp0328_002.MP0328_GetPositionParentHierarchy_002;
-import net.datastream.schemas.mp_results.mp0318_001.MP0318_GetLocation_001_Result;
 import net.datastream.schemas.mp_results.mp0324_001.MP0324_GetEquipmentCategory_001_Result;
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
 
@@ -102,43 +98,40 @@ public class ProxyController extends EAMLightNativeRestController {
     @HEAD
     @OPTIONS
     public Response proxy(@PathParam("path") String path, String body, @Context Request request) {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(URI.create(applicationData.getRESTURL() + "/" + path.replace("#", "%23")));
-        Invocation.Builder builder = target.request();
-
-        // Only send explicitly defined headers
-        String credentials = null;
         try {
-            credentials = authenticationTools.getInforContext().getCredentials().getUsername() + ":" + authenticationTools.getInforContext().getCredentials().getPassword();
+            Client client = ClientBuilder.newClient();
+            WebTarget target = client.target(URI.create(applicationData.getRESTURL() + "/" + path.replace("#", "%23")));
+            Invocation.Builder builder = target.request();
+
+            String credentials = authenticationTools.getInforContext().getCredentials().getUsername() + ":" + authenticationTools.getInforContext().getCredentials().getPassword();
+
+            builder.header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString(credentials.getBytes()));
+            builder.header("tenant", authenticationTools.getInforContext().getTenant());
+            builder.header("organization", authenticationTools.getOrganizationCode());
+            builder.header("accept", "application/json");
+            String method = request.getMethod();
+            Entity<?> entity = (method.equals("GET") || method.equals("HEAD") || method.equals("OPTIONS")) ? null : Entity.json(body);
+
+            Response originalResponse = builder.method(method, entity);
+
+            // Build new response from the original one and filter out caching headers
+            Response.ResponseBuilder responseBuilder = Response.status(originalResponse.getStatus()).entity(originalResponse.getEntity());
+
+            originalResponse.getHeaders().forEach((key, values) -> {
+                if (!key.equalsIgnoreCase("Cache-Control") && !key.equalsIgnoreCase("Pragma") && !key.equalsIgnoreCase("Expires")) {
+                    values.forEach(value -> responseBuilder.header(key, value));
+                }
+            });
+
+            return responseBuilder
+                    .header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+                    .header("Pragma", "no-cache")
+                    .header("Expires", "0")
+                    .build();
+
         } catch (Exception e) {
-
+            return serverError(e);
         }
-
-        builder.header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString(credentials.getBytes()));
-        builder.header("tenant", "infor");
-        builder.header("organization", authenticationTools.getOrganizationCode());
-        builder.header("accept", "application/json");
-        String method = request.getMethod();
-        Entity<?> entity = (method.equals("GET") || method.equals("HEAD") || method.equals("OPTIONS")) ? null : Entity.json(body);
-
-        Response originalResponse = builder.method(method, entity);
-
-        // Create a copy of the response in order not to pass any caching headers
-        Response.ResponseBuilder responseBuilder = Response.status(originalResponse.getStatus()).entity(originalResponse.getEntity());
-
-        originalResponse.getHeaders().forEach((key, values) -> {
-            if (!key.equalsIgnoreCase("Cache-Control") &&
-                    !key.equalsIgnoreCase("Pragma") &&
-                    !key.equalsIgnoreCase("Expires")) {
-                values.forEach(value -> responseBuilder.header(key, value));
-            }
-        });
-
-        return responseBuilder
-                .header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-                .header("Pragma", "no-cache")
-                .header("Expires", "0")
-                .build();
 
     }
 }
