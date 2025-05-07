@@ -34,6 +34,7 @@ public class AutocompletePUAsset extends EAMLightController {
 							 @QueryParam("part") String part, @QueryParam("code") String code) {
 
 		GridRequest gridRequest = new GridRequest("OSOBJA", GridRequest.GRIDTYPE.LIST, ApplicationData.AUTOCOMPLETE_RESULT_SIZE);
+		gridRequest.setUserFunctionName("OSOBJA");
 		gridRequest.addFilter("equipmentno", code.toUpperCase(), "CONTAINS", GridRequestFilter.JOINER.AND);
 
 		if (!part.isEmpty()) {
