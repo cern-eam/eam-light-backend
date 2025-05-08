@@ -123,7 +123,6 @@ public class ProxyController extends EAMLightNativeRestController {
 //                inforInterceptor.afterSuccess(INFOR_OPERATION.ACTIVITY_C, );
 //            }
             String path = uriInfo.getPath(false).replace("/proxy", "");
-            System.out.println("URL: " + applicationData.getRESTURL() + path);
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target(URI.create(applicationData.getRESTURL() + path));
             Invocation.Builder builder = target.request();
