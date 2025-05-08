@@ -21,22 +21,6 @@ public class AutocompleteEquipment extends EAMLightController {
 	@Inject
 	private EquipmentEJB equipmentEJB;
 
-	private GridRequest prepareGridRequest(GridRequest.GRIDTYPE gridType)  {
-		// Dataspy changed from 59 to nothing, to select default dataspy. To be reviewed after next PROD-to-TEST
-		GridRequest gridRequest = new GridRequest("LVOBJL");
-		gridRequest.setGridType(gridType);
-		gridRequest.setRowCount(10);
-		gridRequest.addParam("param.objectrtype", null);
-		gridRequest.addParam("param.loantodept", "true");
-		gridRequest.addParam("param.bypassdeptsecurity", "false");
-		gridRequest.addParam("parameter.filterutilitybill", null);
-		gridRequest.addParam("control.org", authenticationTools.getOrganizationCode());
-		gridRequest.addParam("param.cctrspcvalidation", "D");
-		gridRequest.addParam("param.department", null);
-
-		return gridRequest;
-	}
-
 	@GET
 	@Path("/eqp")
 	@Produces("application/json")

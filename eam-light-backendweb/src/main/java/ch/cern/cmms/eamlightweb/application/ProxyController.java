@@ -4,6 +4,8 @@ import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
+import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.schemas.mp_fields.CATEGORYID;
 import net.datastream.schemas.mp_fields.EQUIPMENTID_Type;
@@ -13,7 +15,12 @@ import net.datastream.schemas.mp_functions.mp0328_002.MP0328_GetPositionParentHi
 import net.datastream.schemas.mp_results.mp0324_001.MP0324_GetEquipmentCategory_001_Result;
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
@@ -34,6 +41,18 @@ public class ProxyController extends EAMLightNativeRestController {
 
     @Inject
     private ApplicationData applicationData;
+
+    @Inject
+    private InforInterceptor inforInterceptor;
+
+    @PostConstruct
+    public void init() {
+        try {
+            inforInterceptor = CDI.current().select(InforInterceptor.class).get();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 
     @GET
     @Path("/category/{categoryCode}")
@@ -97,10 +116,16 @@ public class ProxyController extends EAMLightNativeRestController {
     @DELETE
     @HEAD
     @OPTIONS
-    public Response proxy(@PathParam("path") String path, String body, @Context Request request) {
+    public Response proxy(String body, @Context Request request, @Context UriInfo uriInfo) {
         try {
+//            if (inforInterceptor != null) {
+//                InforRe
+//                inforInterceptor.afterSuccess(INFOR_OPERATION.ACTIVITY_C, );
+//            }
+            String path = uriInfo.getPath(false).replace("/proxy", "");
+            System.out.println("URL: " + applicationData.getRESTURL() + path);
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target(URI.create(applicationData.getRESTURL() + "/" + path.replace("#", "%23")));
+            WebTarget target = client.target(URI.create(applicationData.getRESTURL() + path));
             Invocation.Builder builder = target.request();
 
             String credentials = authenticationTools.getInforContext().getCredentials().getUsername() + ":" + authenticationTools.getInforContext().getCredentials().getPassword();
