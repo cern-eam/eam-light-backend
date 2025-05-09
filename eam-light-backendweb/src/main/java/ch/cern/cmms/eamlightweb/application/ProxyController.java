@@ -5,6 +5,9 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
+import ch.cern.eam.wshub.core.interceptors.beans.InforExtractedData;
+import ch.cern.eam.wshub.core.interceptors.beans.InforRequestData;
+import ch.cern.eam.wshub.core.interceptors.beans.InforResponseData;
 import ch.cern.eam.wshub.core.services.INFOR_OPERATION;
 import ch.cern.eam.wshub.core.tools.InforException;
 import net.datastream.schemas.mp_fields.CATEGORYID;
@@ -20,6 +23,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.sql.DataSource;
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
@@ -118,10 +122,7 @@ public class ProxyController extends EAMLightNativeRestController {
     @OPTIONS
     public Response proxy(String body, @Context Request request, @Context UriInfo uriInfo) {
         try {
-//            if (inforInterceptor != null) {
-//                InforRe
-//                inforInterceptor.afterSuccess(INFOR_OPERATION.ACTIVITY_C, );
-//            }
+            //log();
             String path = uriInfo.getPath(false).replace("/proxy", "");
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target(URI.create(applicationData.getRESTURL() + path));
@@ -155,6 +156,36 @@ public class ProxyController extends EAMLightNativeRestController {
 
         } catch (Exception e) {
             return serverError(e);
+        }
+
+    }
+
+
+    private void log() {
+        if (inforInterceptor == null) {
+            return;
+        }
+
+        try {
+            InforRequestData inforRequestData =  new InforRequestData.Builder()
+                    .withInforContext(authenticationTools.getInforContext())
+                    .withInput("TEST")
+                    .build();
+
+            InforResponseData inforResponseData = new InforResponseData.Builder()
+                    .withResponse("RESPONSE")
+                            .withResponseTime(10000l)
+                                    .build();
+
+            InforExtractedData inforExtractedData = new InforExtractedData.Builder()
+                    .withDataReference1("DF1").build();
+
+            //InforRe
+            inforInterceptor.afterSuccess(INFOR_OPERATION.ACTIVITY_C, inforRequestData, inforResponseData, inforExtractedData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("error: " + e.getMessage());
         }
 
     }
