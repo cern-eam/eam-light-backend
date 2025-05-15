@@ -18,6 +18,7 @@ import net.datastream.schemas.mp_functions.mp0324_001.MP0324_GetEquipmentCategor
 import net.datastream.schemas.mp_functions.mp0328_002.MP0328_GetPositionParentHierarchy_002;
 import net.datastream.schemas.mp_results.mp0324_001.MP0324_GetEquipmentCategory_001_Result;
 import net.datastream.schemas.mp_results.mp0328_002.MP0328_GetPositionParentHierarchy_002_Result;
+import org.jboss.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.spi.CDI;
@@ -166,6 +167,9 @@ public class ProxyController extends EAMLightNativeRestController {
     }
 
     private void log(String method, String path, String requestBody, Response response) {
+        Logger.getLogger("wshublogger").log(Logger.Level.DEBUG, requestBody);
+        // TODO save response as well
+
         if (inforInterceptor == null) {
             return;
         }
