@@ -5,6 +5,7 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
+import ch.cern.eam.wshub.core.interceptors.beans.InforErrorData;
 import ch.cern.eam.wshub.core.interceptors.beans.InforExtractedData;
 import ch.cern.eam.wshub.core.interceptors.beans.InforRequestData;
 import ch.cern.eam.wshub.core.interceptors.beans.InforResponseData;
@@ -122,7 +123,6 @@ public class ProxyController extends EAMLightNativeRestController {
     @OPTIONS
     public Response proxy(String body, @Context Request request, @Context UriInfo uriInfo) {
         try {
-            //log();
             String path = uriInfo.getPath(false).replace("/proxy", "");
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target(URI.create(applicationData.getRESTURL() + path));
@@ -148,11 +148,16 @@ public class ProxyController extends EAMLightNativeRestController {
                 }
             });
 
-            return responseBuilder
-                    .header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-                    .header("Pragma", "no-cache")
-                    .header("Expires", "0")
-                    .build();
+            Response response =  responseBuilder
+                        .header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+                        .header("Pragma", "no-cache")
+                        .header("Expires", "0")
+                        .build();
+
+
+            log(method, path, body, response);
+
+            return response;
 
         } catch (Exception e) {
             return serverError(e);
@@ -160,8 +165,7 @@ public class ProxyController extends EAMLightNativeRestController {
 
     }
 
-
-    private void log() {
+    private void log(String method, String path, String requestBody, Response response) {
         if (inforInterceptor == null) {
             return;
         }
@@ -169,7 +173,7 @@ public class ProxyController extends EAMLightNativeRestController {
         try {
             InforRequestData inforRequestData =  new InforRequestData.Builder()
                     .withInforContext(authenticationTools.getInforContext())
-                    .withInput("TEST")
+                    .withInput(requestBody)
                     .build();
 
             InforResponseData inforResponseData = new InforResponseData.Builder()
@@ -178,15 +182,29 @@ public class ProxyController extends EAMLightNativeRestController {
                                     .build();
 
             InforExtractedData inforExtractedData = new InforExtractedData.Builder()
-                    .withDataReference1("DF1").build();
+                    .withDataReference1(path).build();
 
-            //InforRe
-            inforInterceptor.afterSuccess(INFOR_OPERATION.ACTIVITY_C, inforRequestData, inforResponseData, inforExtractedData);
+            InforErrorData inforErrorData = new InforErrorData.Builder()
+                    .withException(new Exception("ERROR"))
+                            .build();
+
+            if (response.getStatus() == 200) {
+                inforInterceptor.afterSuccess(convert(method, path), inforRequestData, inforResponseData, inforExtractedData);
+            }
+
+            if (response.getStatus() == 400) {
+                inforInterceptor.afterError(convert(method, path), inforRequestData, inforErrorData, inforExtractedData);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("error: " + e.getMessage());
         }
 
+    }
+
+    private INFOR_OPERATION convert(String method, String path) {
+        //TODO
+        return INFOR_OPERATION.OTHER;
     }
 }
