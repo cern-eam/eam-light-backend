@@ -4,6 +4,7 @@ import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightNativeRestController;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
 import ch.cern.eam.wshub.core.interceptors.beans.InforErrorData;
 import ch.cern.eam.wshub.core.interceptors.beans.InforExtractedData;
@@ -23,10 +24,6 @@ import org.jboss.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.sql.DataSource;
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
@@ -48,7 +45,6 @@ public class ProxyController extends EAMLightNativeRestController {
     @Inject
     private ApplicationData applicationData;
 
-    @Inject
     private InforInterceptor inforInterceptor;
 
     @PostConstruct
@@ -129,9 +125,18 @@ public class ProxyController extends EAMLightNativeRestController {
             WebTarget target = client.target(URI.create(applicationData.getRESTURL() + path));
             Invocation.Builder builder = target.request();
 
-            String credentials = authenticationTools.getInforContext().getCredentials().getUsername() + ":" + authenticationTools.getInforContext().getCredentials().getPassword();
+            InforContext inforContext = authenticationTools.getInforContext();
 
-            builder.header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString(credentials.getBytes()));
+            if (inforContext.getCredentials() != null) {
+                String credentials = inforContext.getCredentials().getUsername() + ":" + inforContext.getCredentials().getPassword();
+                builder.header("Authorization", "Basic " + java.util.Base64.getEncoder().encodeToString(credentials.getBytes()));
+            }
+
+            if (inforContext.getSessionID() != null) {
+                builder.header("sessionid", inforContext.getSessionID());
+                builder.header("keepsession", "true");
+            }
+
             builder.header("tenant", authenticationTools.getInforContext().getTenant());
             builder.header("organization", authenticationTools.getOrganizationCode());
             builder.header("accept", "application/json");
@@ -154,7 +159,6 @@ public class ProxyController extends EAMLightNativeRestController {
                         .header("Pragma", "no-cache")
                         .header("Expires", "0")
                         .build();
-
 
             log(method, path, body, response);
 
