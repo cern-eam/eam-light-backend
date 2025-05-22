@@ -85,14 +85,4 @@ public class UserController extends EAMLightController {
 		}
 	}
 
-	@GET
-	@Path("/organizations/{userFunctionName}")
-	@Produces("application/json")
-	public Response readOrganizations(@PathParam("userFunctionName") String userFunctionName) {
-		GridRequest gridRequest = new GridRequest("LVORGC", GridRequest.GRIDTYPE.LOV);
-		gridRequest.addParam("parameter.mos", "+");
-		gridRequest.setUserFunctionName(userFunctionName);
-		return getPairListResponse(gridRequest, "organization", "org_desc");
-	}
-
 }
