@@ -5,17 +5,10 @@ import ch.cern.cmms.eamlightweb.codegenerator.CodeGeneratorService;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
-import ch.cern.cmms.eamlightweb.workorders.myworkorders.MyWorkOrders;
 import ch.cern.cmms.standardworkorders.MTFWorkOrderServiceImpl;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.client.InforContext;
-import ch.cern.eam.wshub.core.services.entities.UserDefinedFields;
-import ch.cern.eam.wshub.core.services.equipment.entities.Equipment;
 import ch.cern.eam.wshub.core.services.equipment.entities.EquipmentReplacement;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
-import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
 import ch.cern.eam.wshub.core.services.material.entities.PartAssociation;
-import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -39,8 +32,7 @@ public class EquipmentRest extends EAMLightController {
 	private EquipmentReplacementService equipmentReplacementService;
 	@Inject
 	private AuthenticationTools authenticationTools;
-	@Inject
-	private MyWorkOrders myWorkOrders;
+
 	@Inject
 	private CodeGeneratorService codeGeneratorService;
 	@Inject
@@ -68,17 +60,6 @@ public class EquipmentRest extends EAMLightController {
 			return ok(equipmentReplacementService.collectDetachableEquipment(authenticationTools.getInforContext(), oldEquipmentCode));
 		} catch (InforException e) {
 			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
-	@Path("/events")
-	@Produces("application/json")
-	public Response getEquipmentEvents(@QueryParam("c") String equipmentCode, @QueryParam("t") String equipmentType) {
-		try {
-			return ok(myWorkOrders.getObjectEvents(equipmentCode, equipmentType));
 		} catch(Exception e) {
 			return serverError(e);
 		}
