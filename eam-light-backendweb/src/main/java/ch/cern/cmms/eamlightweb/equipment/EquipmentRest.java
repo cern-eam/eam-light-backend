@@ -16,8 +16,6 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.util.Date;
-import java.util.List;
 
 @Path("/equipment")
 @ApplicationScoped
