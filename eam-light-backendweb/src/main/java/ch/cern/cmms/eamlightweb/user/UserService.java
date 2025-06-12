@@ -1,7 +1,7 @@
 package ch.cern.cmms.eamlightweb.user;
 
-import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
-
+import ch.cern.cmms.eamlightejb.cache.CacheUtils;
+import ch.cern.cmms.eamlightejb.cache.Cacheable;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.user.entities.ScreenInfo;
 import ch.cern.cmms.eamlightweb.user.entities.UserData;
@@ -10,13 +10,18 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.InforException;
+import com.github.benmanes.caffeine.cache.Cache;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isNotEmpty;
 
 @ApplicationScoped
-public class UserService {
+public class UserService implements Cacheable {
+
+    private final Cache<String, EAMUser> userCache = CacheUtils.buildDefaultCache();
 
     @Inject
     private ScreenService screenService;
@@ -24,7 +29,16 @@ public class UserService {
     private AuthenticationTools authenticationTools;
     @Inject
     private InforClient inforClient;
-    public static final Map<String, EAMUser> userCache = new ConcurrentHashMap<>();
+
+    @Override
+    public void clearCache() {
+        userCache.invalidateAll();
+    }
+
+    @Override
+    public void setExpiresAfter(long l, TimeUnit timeUnit) {
+        CacheUtils.updateCacheTimeout(userCache, l, timeUnit);
+    }
 
     public UserData getUserData(String currentScreen, String screenCode) throws InforException {
         UserData userData = new UserData();
@@ -96,20 +110,31 @@ public class UserService {
         }
 
         // 5. Checking access to the default screen
-        String stream = userData.getScreens().values().stream()
+        return userData.getScreens().values().stream()
                                      .filter(screenInfo -> functionCode.equals(screenInfo.getParentScreen()))
                                      .map(ScreenInfo::getScreenCode)
                                      .findFirst()
                                      .orElse(null);
-
-        return stream;
     }
 
     public EAMUser readUserSetup(InforContext inforContext, String userCode) throws InforException {
-        if (!userCache.containsKey(userCode)) {
-            userCache.put(userCode, inforClient.getUserSetupService().readUserSetup(inforContext, userCode));
+        try {
+            String userCacheKey = inforContext.getTenant() + "_" + userCode;
+            return userCache.get(userCacheKey, key -> loadUserSetup(inforContext, userCode));
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof InforException) {
+                throw (InforException) e.getCause();
+            }
+            throw new InforException("Failed to read user setup", null, null);
         }
-        return userCache.get(userCode);
+    }
+
+    private EAMUser loadUserSetup(InforContext inforContext, String userCode) {
+        try {
+            return inforClient.getUserSetupService().readUserSetup(inforContext, userCode);
+        } catch (InforException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Employee getEmployee(InforContext inforContext, String employeeCode) throws InforException {

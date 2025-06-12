@@ -59,7 +59,7 @@ public class NonConformityObservationsRest extends EAMLightController {
     @Consumes("application/json")
     public Response createNonConformityObservation(NonConformityObservation nonConformityObservation) {
         try {
-            return ok(inforClient.getNonconformityObservationService().createNonConformityObservation(authenticationTools.getInforContext(), nonConformityObservation));
+            return ok(inforClient.getNonConformityObservationService().createNonConformityObservation(authenticationTools.getInforContext(), nonConformityObservation));
         } catch (InforException e) {
             return badRequest(e);
         } catch(Exception e) {

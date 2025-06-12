@@ -4,6 +4,7 @@ import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter;
+import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -33,7 +34,7 @@ public class IndexGrids {
             gridRequest.setUserFunctionName("WSJOBS");
             gridRequest.addFilter("workordernum", keyword, operator);
             if (rowCount != null) gridRequest.setRowCount(rowCount);
-            List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
+            List<IndexResult> result = GridTools.convertGridResultToObject(IndexResult.class,
                     map,
                     inforClient.getGridsService().executeQuery(inforContext, gridRequest));
             result.forEach(indexResult -> indexResult.setType("JOB"));
@@ -79,7 +80,7 @@ public class IndexGrids {
             if (rowCount != null) gridRequest.setRowCount(rowCount);
 
             //gridRequest.addFilter("udfchar45", keyword, operator, GridRequestFilter.JOINER.OR);
-            List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
+            List<IndexResult> result = GridTools.convertGridResultToObject(IndexResult.class,
                     map,
                     inforClient.getGridsService().executeQuery(inforContext, gridRequest));
             result.forEach(indexResult -> indexResult.setType(type));
@@ -106,7 +107,7 @@ public class IndexGrids {
                 gridRequest.addFilter("class", classFilter, "IN", GridRequestFilter.JOINER.AND);
             }
             if (rowCount != null) gridRequest.setRowCount(rowCount);
-            List<IndexResult> result = inforClient.getTools().getGridTools().convertGridResultToObject(IndexResult.class,
+            List<IndexResult> result = GridTools.convertGridResultToObject(IndexResult.class,
                     map,
                     inforClient.getGridsService().executeQuery(inforContext, gridRequest));
             result.forEach(indexResult -> indexResult.setType("PART"));
@@ -126,7 +127,7 @@ public class IndexGrids {
         List<Runnable> runnables = new LinkedList<>();
         final Integer rowCount = rowCountTemp == null ? 10 : rowCountTemp;
 
-        Map<String, Runnable> entityTypeRunnableMap = new HashMap();
+        Map<String, Runnable> entityTypeRunnableMap = new HashMap<>();
         entityTypeRunnableMap.put("JOB", () -> result.addAll(searchWorkOrders(inforContext, keyword, "BEGINS", rowCount - result.size())));
         entityTypeRunnableMap.put("L", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJL", "L", false, entityClass, rowCount - result.size())));
         entityTypeRunnableMap.put("A", () -> result.addAll(searchEquipment(inforContext, keyword, "BEGINS", "OSOBJA", "A", true, entityClass, rowCount - result.size())));

@@ -1,12 +1,14 @@
 package ch.cern.cmms.eamlightejb.tools;
 
+import ch.cern.cmms.eamlightejb.cache.ExternalCache;
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightejb.tools.soaphandler.SOAPHandlerResolver;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.interceptors.InforInterceptor;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
-import java.security.cert.X509Certificate;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -18,10 +20,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class InforClientProducer {
@@ -33,6 +32,9 @@ public class InforClientProducer {
 
     @Inject
     private ApplicationData applicationData;
+
+    @Inject
+    private ExternalCache externalCache;
 
     @PostConstruct
     public void init() {
@@ -60,6 +62,7 @@ public class InforClientProducer {
                     .withExecutorService(executorService)
                     .withInforInterceptor(inforInterceptor)
                     .withLogger(Logger.getLogger("wshublogger"))
+                    .withCache(externalCache.getCacheMap())
                     .localizeResults(false)
                     .build();
 
