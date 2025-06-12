@@ -9,6 +9,10 @@
 
 	<artifactId>eam-light-backendejb</artifactId>
 	<packaging>ejb</packaging>
+	
+	<properties>
+		<caffeine.version>2.9.3</caffeine.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -43,6 +47,11 @@
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>3.3.5</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>${caffeine.version}</version>
 		</dependency>
 	</dependencies>
 
