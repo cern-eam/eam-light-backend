@@ -66,7 +66,7 @@ public class UserController extends EAMLightController {
 					}
 				}
 			}
-			return ok(inforClient.getScreenLayoutService().readScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity));
+			return ok(screenLayout);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return serverError(e);
