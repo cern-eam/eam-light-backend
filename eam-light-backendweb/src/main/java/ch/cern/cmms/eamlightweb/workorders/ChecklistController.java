@@ -6,7 +6,7 @@ import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
 import ch.cern.eam.wshub.core.services.workorders.entities.Activity;
 import ch.cern.eam.wshub.core.services.workorders.entities.TaskPlan;
-import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChecklist;
+import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChecklistItem;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChecklistSignature;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -28,10 +28,19 @@ public class ChecklistController extends EAMLightController {
 	@PUT
 	@Produces("application/json")
 	@Consumes("application/json")
-	public Response updateChecklist(WorkOrderActivityChecklist checklist) {
+	public Response updateChecklist(
+			WorkOrderActivityChecklistItem checklistItem,
+			@QueryParam("taskPlanCode") String taskPlanCode
+	) {
 		try {
-			return ok(inforClient.getChecklistService().updateWorkOrderActivityCheckList(authenticationTools.getInforContext(), checklist,
-					false));
+			TaskPlan taskPlan = new TaskPlan();
+			taskPlan.setCode(taskPlanCode);
+			taskPlan.setTaskRevision(BigInteger.ZERO);
+			return ok(inforClient.getChecklistService().updateWorkOrderChecklistItem(
+					authenticationTools.getInforContext(),
+					checklistItem,
+					taskPlan
+			));
 		} catch (InforException e) {
 			return badRequest(e);
 		} catch (Exception e) {
