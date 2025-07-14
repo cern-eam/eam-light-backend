@@ -12,6 +12,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestFilter.JOINER;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.Tools;
 import com.github.benmanes.caffeine.cache.Cache;
 
 import javax.annotation.PostConstruct;
@@ -63,7 +64,7 @@ public class ScreenService implements Cacheable {
 
     public Map<String, ScreenInfo> getScreens(InforContext context, String userGroup) throws InforException {
         try {
-            String screenCacheKey = context.getTenant() + "_" + userGroup;
+            String screenCacheKey = Tools.getCacheKeyWithLang(context, userGroup);
             return screenCache.get(screenCacheKey, key -> loadScreens(context, userGroup));
         } catch (RuntimeException e) {
             if (e.getCause() instanceof InforException) {
@@ -136,7 +137,7 @@ public class ScreenService implements Cacheable {
 
     public Map<String, List<Map<String, String>>> getReports(InforContext context, String userGroup) throws InforException {
         try {
-            String reportsCacheKey = context.getTenant() + "_" + userGroup;
+            String reportsCacheKey = Tools.getCacheKey(context, userGroup);
             return reportsCache.get(reportsCacheKey, key -> loadReports(context, userGroup));
         } catch (RuntimeException e) {
             if (e.getCause() instanceof InforException) {

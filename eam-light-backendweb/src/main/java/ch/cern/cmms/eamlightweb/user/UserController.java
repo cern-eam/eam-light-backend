@@ -3,7 +3,9 @@ package ch.cern.cmms.eamlightweb.user;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
+import ch.cern.cmms.eamlightweb.user.entities.UserData;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.administration.entities.ElementInfo;
 import ch.cern.eam.wshub.core.services.administration.entities.ScreenLayout;
@@ -35,7 +37,8 @@ public class UserController extends EAMLightController {
 	public Response readUserData(@QueryParam("currentScreen") String currentScreen,
 								 @QueryParam("screenCode") String screenCode) {
 		try {
-			return ok(userService.getUserData(currentScreen, screenCode));
+			final UserData userData = userService.getUserData(currentScreen, screenCode);
+			return ok(userData);
 		} catch (InforException e){
 			return forbidden(e);
 		} catch (Exception e) {
@@ -54,7 +57,9 @@ public class UserController extends EAMLightController {
 									 @QueryParam("lang") String language,
 									 @QueryParam("tabname") List<String> tabs) throws InforException {
 		try {
-			ScreenLayout screenLayout = inforClient.getScreenLayoutService().readScreenLayout(authenticationTools.getR5InforContext(), systemFunction, userFunction, tabs, userGroup, entity);
+			final InforContext r5InforContext = authenticationTools.getR5InforContext();
+			r5InforContext.setLanguage(language);
+			ScreenLayout screenLayout = inforClient.getScreenLayoutService().readScreenLayout(r5InforContext, systemFunction, userFunction, tabs, userGroup, entity);
 			for (ElementInfo elementInfo : screenLayout.getFields().values()) {
 				String xpath = elementInfo.getXpath();
 				if (xpath != null && xpath.startsWith("EAMID_")) {

@@ -10,6 +10,7 @@ import ch.cern.eam.wshub.core.client.InforContext;
 import ch.cern.eam.wshub.core.services.administration.entities.EAMUser;
 import ch.cern.eam.wshub.core.services.workorders.entities.Employee;
 import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.Tools;
 import com.github.benmanes.caffeine.cache.Cache;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -44,9 +45,11 @@ public class UserService implements Cacheable {
         UserData userData = new UserData();
 
         String userCode = authenticationTools.getInforContext().getCredentials().getUsername();
-        userData.setEamAccount(readUserSetup(authenticationTools.getInforContext(), userCode));
-        userData.setScreens(screenService.getScreens(authenticationTools.getR5InforContext(), userData.getEamAccount().getUserGroup()));
-
+        final EAMUser eamAccount = readUserSetup(authenticationTools.getInforContext(), userCode);
+        userData.setEamAccount(eamAccount);
+        final InforContext r5InforContext = authenticationTools.getR5InforContext();
+        r5InforContext.setLanguage(eamAccount.getLanguage());
+        userData.setScreens(screenService.getScreens(r5InforContext, userData.getEamAccount().getUserGroup()));
         userData.setAssetScreen(getScreenCode("OSOBJA", "asset", currentScreen, screenCode, userData));
         userData.setPositionScreen(getScreenCode("OSOBJP", "position", currentScreen, screenCode, userData));
         userData.setSystemScreen(getScreenCode("OSOBJS", "system", currentScreen, screenCode, userData));
@@ -119,7 +122,7 @@ public class UserService implements Cacheable {
 
     public EAMUser readUserSetup(InforContext inforContext, String userCode) throws InforException {
         try {
-            String userCacheKey = inforContext.getTenant() + "_" + userCode;
+            String userCacheKey = Tools.getCacheKey(inforContext, userCode);
             return userCache.get(userCacheKey, key -> loadUserSetup(inforContext, userCode));
         } catch (RuntimeException e) {
             if (e.getCause() instanceof InforException) {

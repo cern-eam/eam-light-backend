@@ -10,6 +10,7 @@ import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequestResult;
 import ch.cern.eam.wshub.core.tools.GridTools;
 import ch.cern.eam.wshub.core.tools.InforException;
+import ch.cern.eam.wshub.core.tools.Tools;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.LoadingCache;
@@ -47,7 +48,8 @@ public class ApplicationService implements Cacheable {
 
     public Map<String, String> getParams() throws InforException {
         InforContext context = authenticationTools.getInforContext();
-        String paramFieldCacheKey = context.getTenant() + "_params";
+        String paramFieldCacheKey = Tools.getCacheKey(context, "params");
+
         return paramFieldCache.get(paramFieldCacheKey);
     }
 
