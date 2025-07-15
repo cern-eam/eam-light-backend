@@ -18,6 +18,7 @@ import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 
 @Path("/users")
 @ApplicationScoped
@@ -57,6 +58,12 @@ public class UserController extends EAMLightController {
 									 @QueryParam("lang") String language,
 									 @QueryParam("tabname") List<String> tabs) throws InforException {
 		try {
+            if (language == null) {
+				final InforContext inforContext = authenticationTools.getInforContext();
+				final EAMUser eamUser = userService.readUserSetup(inforContext, inforContext.getCredentials().getUsername());
+				language = eamUser.getLanguage();
+			}
+
 			final InforContext r5InforContext = authenticationTools.getR5InforContext();
 			r5InforContext.setLanguage(language);
 			ScreenLayout screenLayout = inforClient.getScreenLayoutService().readScreenLayout(r5InforContext, systemFunction, userFunction, tabs, userGroup, entity);
