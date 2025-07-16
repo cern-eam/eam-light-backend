@@ -33,9 +33,12 @@ public class ChecklistController extends EAMLightController {
 			@QueryParam("taskPlanCode") String taskPlanCode
 	) {
 		try {
-			TaskPlan taskPlan = new TaskPlan();
-			taskPlan.setCode(taskPlanCode);
-			taskPlan.setTaskRevision(BigInteger.ZERO);
+			TaskPlan taskPlan = null;
+			if (taskPlanCode != null && !taskPlanCode.isEmpty()) {
+				taskPlan = new TaskPlan();
+				taskPlan.setCode(taskPlanCode);
+				taskPlan.setTaskRevision(BigInteger.ZERO);
+			}
 			return ok(inforClient.getChecklistService().updateWorkOrderChecklistItem(
 					authenticationTools.getInforContext(),
 					checklistItem,
