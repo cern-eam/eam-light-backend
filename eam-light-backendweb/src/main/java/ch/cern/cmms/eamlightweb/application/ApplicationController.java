@@ -2,11 +2,13 @@ package ch.cern.cmms.eamlightweb.application;
 
 import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.cache.CacheManager;
+import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.cmms.plugins.LDAPPlugin;
 import ch.cern.cmms.plugins.SharedPlugin;
 import ch.cern.eam.wshub.core.client.InforClient;
+import ch.cern.eam.wshub.core.client.InforContext;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -34,6 +36,8 @@ public class ApplicationController extends EAMLightController {
 	private SharedPlugin sharedPlugin;
 	@Inject
 	private LDAPPlugin ldapPlugin;
+    @Inject
+    private AuthenticationTools authenticationTools;
 
 	@GET
 	@Path("/hello")
@@ -49,7 +53,8 @@ public class ApplicationController extends EAMLightController {
 	@Consumes("application/json")
 	public Response readApplicationData() {
 		try {
-			return ok(applicationService.getParams());
+			final InforContext inforContext = authenticationTools.getInforContext();
+			return ok(applicationService.getParams(inforContext.getTenant()));
 		} catch(Exception e) {
 			return serverError(e);
 		}

@@ -46,10 +46,10 @@ public class ApplicationService implements Cacheable {
         CacheUtils.updateCacheTimeout(paramFieldCache, l, timeUnit);
     }
 
-    public Map<String, String> getParams() throws InforException {
-        InforContext context = authenticationTools.getInforContext();
+    public Map<String, String> getParams(String tenant) throws InforException {
+        InforContext context = new InforContext();
+        context.setTenant(tenant);
         String paramFieldCacheKey = Tools.getCacheKey(context, "params");
-
         return paramFieldCache.get(paramFieldCacheKey);
     }
 
@@ -73,9 +73,9 @@ public class ApplicationService implements Cacheable {
         return params;
     }
 
-    public Map<String, String> getServiceAccounts() throws InforException {
+    public Map<String, String> getServiceAccounts(String tenant) throws InforException {
         try {
-            Map<String, String> params = getParams();
+            Map<String, String> params = getParams(tenant);
             if (!params.containsKey(SERVICE_ACCOUNTS_PARAM)) {
                 return new HashMap<>();
             }

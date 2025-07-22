@@ -122,7 +122,7 @@ public class PartUsageRest extends EAMLightController {
 		try {
 			GridRequest gridRequest;
 			InforContext context = authenticationTools.getInforContext();
-			Map<String, String> applicationData = applicationService.getParams();
+			Map<String, String> applicationData = applicationService.getParams(context.getTenant());
 
 			List<Pair> udsLots = sharedPlugin.getUdsLots(extractEntityCode(part), inforClient, context, applicationData);
 

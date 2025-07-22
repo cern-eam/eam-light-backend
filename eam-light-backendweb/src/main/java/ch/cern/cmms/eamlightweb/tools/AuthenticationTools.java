@@ -147,17 +147,22 @@ public class AuthenticationTools {
 
     private  String getFinalUser(String authenticatedUser, String impersonatedUser) throws InforException {
         String authenticationMode = applicationData.getAuthenticationMode();
+        String tenant = request.getHeader("INFOR_TENANT");
+        if (isEmpty(tenant)) {
+            tenant = applicationData.getTenant();
+        }
         boolean allowImpersonation = isNotEmpty(impersonatedUser)
                 && Arrays.asList("SSO", "LOCAL", "OPENID", "KEYCLOAK").contains(authenticationMode)
-                && applicationService.getServiceAccounts().containsKey(authenticatedUser)
-                && userIsAllowed(authenticatedUser, impersonatedUser)
+                && applicationService.getServiceAccounts(tenant).containsKey(authenticatedUser)
+                && userIsAllowed(authenticatedUser, impersonatedUser, tenant)
                 ;
         return allowImpersonation ? impersonatedUser : authenticatedUser;
     }
 
-    private boolean userIsAllowed(String authenticatedUser, String impersonatedUser) throws InforException {
+    private boolean userIsAllowed(String authenticatedUser, String impersonatedUser, String tenant) throws InforException {
         try {
-            Set<String> egroupMembers = ldapPlugin.readEgroupMembers(applicationService.getServiceAccounts().get(authenticatedUser));
+            Set<String> egroupMembers =
+                    ldapPlugin.readEgroupMembers(applicationService.getServiceAccounts(tenant).get(authenticatedUser));
             return egroupMembers.contains(impersonatedUser);
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -197,8 +202,9 @@ public class AuthenticationTools {
     }
 
     private void checkCanImpersonateUser(String userCode) throws InforException {
-        String username = getInforContext().getCredentials().getUsername();
-        if (!userIsAllowed(username, userCode)) {
+        final InforContext inforContext = getInforContext();
+        String username = inforContext.getCredentials().getUsername();
+        if (!userIsAllowed(username, userCode, inforContext.getTenant())) {
             throw new InforException("" + username + " is not allowed to impersonate " + userCode + ".", null, null);
         }
     }
@@ -222,8 +228,8 @@ public class AuthenticationTools {
     }
 
     public InforContext getR5InforContext() throws InforException {
-        InforContext inforContext = this.getInforContext();
-
+        InforContext inforContext = new InforContext();
+        inforContext.setCredentials(new Credentials());
         // Username
         if (isEmpty(applicationData.getAdminUser())) {
             inforContext.getCredentials().setUsername(request.getHeader("INFOR_USER"));
