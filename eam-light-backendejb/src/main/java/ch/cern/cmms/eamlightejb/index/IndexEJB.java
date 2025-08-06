@@ -80,7 +80,7 @@ public class IndexEJB {
             "    WHERE obj_obrtype NOT IN ('*', 'C', 'I') " +
             "        AND ( " +
             "            obj_code LIKE :hint ESCAPE '\\' " +
-            "            OR obj_alias LIKE :hint ESCAPE '\\' " +
+            "            OR upper(obj_alias) LIKE upper(:hint) ESCAPE '\\' " +
             "            OR upper(obj_serialno) LIKE upper(:hint) ESCAPE '\\' " +
             "            OR obj_udfchar45 LIKE :hint ESCAPE '\\' " +
             "        ) " +
