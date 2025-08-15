@@ -4,7 +4,7 @@ import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
 import ch.cern.eam.wshub.core.client.InforClient;
-import ch.cern.eam.wshub.core.services.equipment.entities.NonConformityObservation;
+import ch.cern.eam.wshub.core.services.equipment.entities.NonconformityObservation;
 import ch.cern.eam.wshub.core.services.grids.entities.GridRequest;
 import ch.cern.eam.wshub.core.tools.InforException;
 
@@ -57,9 +57,9 @@ public class NonConformityObservationsRest extends EAMLightController {
     @Path("/")
     @Produces("application/json")
     @Consumes("application/json")
-    public Response createNonConformityObservation(NonConformityObservation nonConformityObservation) {
+    public Response createNonconformityObservation(NonconformityObservation nonconformityObservation) {
         try {
-            return ok(inforClient.getNonConformityObservationService().createNonConformityObservation(authenticationTools.getInforContext(), nonConformityObservation));
+            return ok(inforClient.getNonconformityObservationService().createNonconformityObservation(authenticationTools.getInforContext(), nonconformityObservation));
         } catch (InforException e) {
             return badRequest(e);
         } catch(Exception e) {
