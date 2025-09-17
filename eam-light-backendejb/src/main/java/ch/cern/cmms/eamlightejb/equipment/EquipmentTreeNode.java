@@ -15,50 +15,78 @@ import javax.persistence.Transient;
 @Entity
 @NamedNativeQueries({
     @NamedNativeQuery(name = EquipmentTreeNode.GET_TREE_ASBMGR,
-        query = "select id as id, name as name, null as parent from ASBMGR.C_NODES " +
-            " where id = :equipment " +
-            " union " +
-            " select id2 as id, childnode.name as name, id1 as parent from ASBMGR.C_NOD_STR " +
-            " left join ASBMGR.C_NODES childnode on childnode.id = id2 " +
-            " where id1 = :equipment ",
-        resultClass = EquipmentTreeNode.class),
+            query = "select id as id, name as name, null as parent from ASBMGR.C_NODES " +
+                    " where id = :equipment " +
+                    " union " +
+                    " select id2 as id, childnode.name as name, id1 as parent from ASBMGR.C_NOD_STR " +
+                    " left join ASBMGR.C_NODES childnode on childnode.id = id2 " +
+                    " where id1 = :equipment ",
+            resultClass = EquipmentTreeNode.class),
     @NamedNativeQuery(name = EquipmentTreeNode.GET_TREE,
-        query = "SELECT * FROM (  " +
-            "    SELECT   " + // INCLUDE ROOT NODE WITH NO PARENT
-            "        obj_code AS ID,   " +
-            "        null AS PARENT,   " +
-            "        obj_desc AS NAME,   " +
-            "        obj_obrtype AS TYPE,   " +
-            "        0 AS TREELEVEL,   " +
-            "        0 AS SEQUENCE,  " +
-            "        NULL AS STC_PARENTRTYPE  " +
-            "    FROM r5objects   " +
-            "    WHERE obj_code = :equipment   " +
-            "    UNION ALL  " +
-            "    SELECT   " +
-            "        obj_code AS ID,   " +
-            "        stc_parent AS PARENT,   " +
-            "        obj_desc AS NAME,   " +
-            "        obj_obrtype AS TYPE,   " +
-            "        MIN(LEVEL) AS TREELEVEL,   " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
-            "        MIN(stc_sequence) AS SEQUENCE,  " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
-            "        stc_parentrtype  " +
-            "    FROM   " +
-            "        r5structures tree  " +
-            "        INNER JOIN r5objects  " + // IF THEY ARE NOT USED (OUT OF SERVICE), DON'T INCLUDE THEM
-            "            ON obj_code = tree.stc_child  " + // UNIDIRECTIONAL ONLY
-            "            AND obj_notused = '-'   " +
-            "    WHERE  " +
-            "        stc_childtype IN ('P', 'A', 'S', 'L')  " +
-            "    START WITH tree.stc_parent = :equipment   " +
-            "    CONNECT BY NOCYCLE PRIOR tree.stc_child = tree.stc_parent   " +
-            "    GROUP BY obj_code, stc_parent, obj_desc, obj_obrtype, stc_parentrtype " +
-            // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
-            "	 ORDER BY treelevel, sequence  " +
-            ")   " +
-            "WHERE ROWNUM < 20000 ", // LIMIT FOR MEMORY
-        resultClass = EquipmentTreeNode.class),
-
+            query = "SELECT * FROM (  " +
+                    "    WITH tree AS (  " +
+                    "        SELECT   " +
+                    "            STC_childtype,   " +
+                    "            stc_childrtype,   " +
+                    "            stc_child,   " +
+                    "            obj_desc AS child_desc,   " +
+                    "            stc_parenttype,   " +
+                    "            stc_parentrtype,   " +
+                    "            stc_parent,   " +
+                    "            stc_sequence,   " +
+                    "            NVL(stc_lastsaved, stc_updated) stc_upd,   " +
+                    "            stc_child_org,   " +
+                    "            stc_parent_org   " +
+                    "        FROM r5structures   " +
+                    "            INNER JOIN r5objects   " +
+                    "                ON obj_code = stc_child   " +
+                    "                AND obj_notused = '-'   " +
+                    "        WHERE STC_CHILDTYPE NOT IN ('PB', 'PM')   " +
+                    "        UNION ALL   " +
+                    "        SELECT   " +
+                    "            placeholder02 AS stc_childtype,   " +
+                    "            placeholder02 AS stc_childrtype,   " +
+                    "            part || ' - ' || lot AS stc_child,   " +
+                    "            description AS child_desc,   " +
+                    "            obj_obtype AS stc_parenttype,   " +
+                    "            obj_obrtype AS stc_parentrtype,   " +
+                    "            main_equipment AS stc_parent,   " +
+                    "            NULL AS stc_sequence,   " +
+                    "            last_issue_date AS stc_upd,   " +
+                    "            placeholder03 AS stc_child_org,   " +
+                    "            obj_org AS stc_parent_org   " +
+                    "        FROM CERN_VW_EQP_PARTS   " +
+                    "            INNER JOIN r5objects ON obj_code = main_equipment   " +
+                    "        WHERE placeholder01 = '+'   " +
+                    "    )   " +
+                    "    SELECT   " + // INCLUDE ROOT NODE WITH NO PARENT
+                    "        obj_code AS ID,   " +
+                    "        NULL AS PARENT,   " +
+                    "        obj_desc AS NAME,   " +
+                    "        obj_obrtype AS TYPE,   " +
+                    "        0 AS TREELEVEL,   " +
+                    "        0 AS SEQUENCE,   " +
+                    "        NULL AS STC_PARENTRTYPE   " +
+                    "    FROM r5objects   " +
+                    "    WHERE obj_code = :equipment   " +
+                    "    UNION ALL   " +
+                    "    SELECT   " +
+                    "        stc_child AS ID,   " +
+                    "        stc_parent AS PARENT,   " +
+                    "        child_desc AS NAME,   " +
+                    "        stc_childrtype AS TYPE,   " +
+                    "        MIN(LEVEL) AS TREELEVEL,   " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
+                    "        MIN(stc_sequence) AS SEQUENCE,   " + // DONT VISIT NODES WE ALREADY KNOW THE CHILDREN OF
+                    "        stc_parentrtype   " +
+                    "    FROM tree   " +
+                    "    WHERE stc_childtype IN ('P', 'A', 'S', 'L', 'LOT', 'PART')   " +
+                    "    START WITH tree.stc_parent = :equipment   " +
+                    "    CONNECT BY NOCYCLE PRIOR tree.stc_child = tree.stc_parent   " +
+                    "    GROUP BY stc_child, stc_parent, child_desc, stc_childrtype, stc_parentrtype   " +
+                    "    ORDER BY treelevel, sequence, ID   " +
+                    ")   " +
+                    "WHERE ROWNUM < 20000 ", // LIMIT FOR MEMORY
+            resultClass = EquipmentTreeNode.class),
 })
 public class EquipmentTreeNode implements Serializable {
 
