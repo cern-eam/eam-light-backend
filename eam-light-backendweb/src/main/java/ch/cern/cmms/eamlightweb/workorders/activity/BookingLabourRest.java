@@ -46,39 +46,4 @@ public class BookingLabourRest extends EAMLightController {
 		}
 	}
 
-	@POST
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response createBookingLabour(LaborBooking bookingLabour) {
-		try {
-			// TODO Keep in mind that it must receive the TRADE field also, comming from the activity parent
-			return ok(inforClient.getLaborBookingService().createLaborBooking(authenticationTools.getInforContext(), bookingLabour));
-		} catch (InforException e) {
-			return badRequest(e);
-		} catch(Exception e) {
-			return serverError(e);
-		}
-	}
-
-	@GET
-	@Path("/init/{workorder}/{department}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	public Response initBookingLabour(@PathParam("workorder") String number,
-			@PathParam("department") String department) {
-		try {
-		LaborBooking bookingLabor = new LaborBooking();
-		//
-		bookingLabor.setDateWorked(new Date());
-		bookingLabor.setDepartmentCode(department);
-		bookingLabor.setWorkOrderNumber(number);
-		bookingLabor.setTypeOfHours("N");
-		// Employee
-		//TODO bookingLabor.setEmployeeCode(userData.getEamAccount().getCernId());
-		return ok(bookingLabor);
-	} catch(Exception e) {
-		return serverError(e);
-	}
-}
-
 }

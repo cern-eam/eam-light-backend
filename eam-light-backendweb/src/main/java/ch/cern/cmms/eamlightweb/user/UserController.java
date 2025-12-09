@@ -66,18 +66,13 @@ public class UserController extends EAMLightController {
 
 			final InforContext r5InforContext = authenticationTools.getR5InforContext();
 			r5InforContext.setLanguage(language);
-			ScreenLayout screenLayout = inforClient.getScreenLayoutService().readScreenLayout(r5InforContext, systemFunction, userFunction, tabs, userGroup, entity);
-			for (ElementInfo elementInfo : screenLayout.getFields().values()) {
-				String xpath = elementInfo.getXpath();
-				if (xpath != null && xpath.startsWith("EAMID_")) {
-					// Remove "EAMID_" and the next segment
-					String[] parts = xpath.split("_", 3); // split into 3 parts: ["EAMID", "xxx", "rest"]
-					if (parts.length == 3) {
-						String transformed = parts[2].replace("_", ".");
-						elementInfo.setXpath(transformed); // update xpath
-					}
-				}
-			}
+			r5InforContext.setLocalizeResults(false);
+			ScreenLayout screenLayout = inforClient.getScreenLayoutService()
+					.readScreenLayout(r5InforContext, systemFunction, userFunction, tabs, userGroup, entity);
+
+			screenLayout.getFields().values().forEach(this::normalizeXpath);
+
+			screenLayout.getTabs().values().forEach(tab -> tab.getFields().values().forEach(this::normalizeXpath));
 			return ok(screenLayout);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -94,6 +89,18 @@ public class UserController extends EAMLightController {
 			return ok(userToImpersonate);
 		} catch (InforException e) {
 			return serverError(e);
+		}
+	}
+
+	private void normalizeXpath(ElementInfo elementInfo) {
+		String xpath = elementInfo.getXpath();
+		if (xpath != null && xpath.startsWith("EAMID_")) {
+			String[] parts = xpath.split("_", 3); // ["EAMID", "xxx", "rest"]
+			if (parts.length == 3) {
+				String transformed = parts[2].replace("_", ".")
+						.replace("ACTIVITYCODE.Content", "ACTIVITYCODE.value");
+				elementInfo.setXpath(transformed);
+			}
 		}
 	}
 
