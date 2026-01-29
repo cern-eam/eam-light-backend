@@ -17,6 +17,8 @@ public class UserData {
 	private String locationScreen;
 	private String ncrScreen;
 
+	private String ncrWorkOrderScreen;
+
 	private Map<String, List<Map<String, String>>> reports;
 
 	public EAMUser getEamAccount() {
@@ -101,6 +103,14 @@ public class UserData {
 
 	public void setNcrScreen(String ncrScreen) {
 		this.ncrScreen = ncrScreen;
+	}
+
+	public String getNcrWorkOrderScreen() {
+		return ncrWorkOrderScreen;
+	}
+
+	public void setNcrWorkOrderScreen(String ncrWorkOrderScreen) {
+		this.ncrWorkOrderScreen = ncrWorkOrderScreen;
 	}
 
 	@Override

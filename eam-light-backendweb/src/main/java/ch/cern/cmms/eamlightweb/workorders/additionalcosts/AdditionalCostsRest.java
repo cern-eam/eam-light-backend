@@ -57,18 +57,4 @@ public class AdditionalCostsRest extends EAMLightController {
         }
     }
 
-    @POST
-    @Path("/{workorder}/additionalcosts")
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Response createAdditionalCost(@PathParam("workorder") String workorder, WorkOrderAdditionalCosts additionalCost) {
-        try {
-            additionalCost.setWorkOrderNumber(workorder);
-            return ok(inforClient.getWorkOrderMiscService().createWorkOrderAdditionalCost(authenticationTools.getInforContext(), additionalCost));
-        } catch (InforException e) {
-            return badRequest(e);
-        } catch(Exception e) {
-            return serverError(e);
-        }
-    }
 }
