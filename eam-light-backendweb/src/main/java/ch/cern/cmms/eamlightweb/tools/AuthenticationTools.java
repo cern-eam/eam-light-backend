@@ -251,6 +251,13 @@ public class AuthenticationTools {
             inforContext.setOrganizationCode(request.getHeader("INFOR_ORGANIZATION"));
         }
 
+        // Tenant
+        if (isEmpty(request.getHeader("INFOR_TENANT"))) {
+            inforContext.setTenant(applicationData.getTenant());
+        } else {
+            inforContext.setTenant(request.getHeader("INFOR_TENANT"));
+        }
+
         // Sessionid
         if (!isEmpty(request.getHeader("INFOR_SESSIONID"))) {
             inforContext.setSessionID(request.getHeader("INFOR_SESSIONID"));
