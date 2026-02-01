@@ -58,6 +58,7 @@ public class UserService implements Cacheable {
         userData.setLocationScreen(getScreenCode("OSOBJL", "location", currentScreen, screenCode, userData));
         userData.setNcrScreen(getScreenCode("OSNCHD", "ncr", currentScreen, screenCode, userData));
         userData.setNcrWorkOrderScreen("OSJOBS");
+        userData.setManufacturerScreen("SSMANU");
 
         userData.setReports(screenService.getReports(authenticationTools.getInforContext(), userData.getEamAccount().getUserGroup()));
 

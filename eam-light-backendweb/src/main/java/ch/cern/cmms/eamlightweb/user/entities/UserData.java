@@ -16,8 +16,8 @@ public class UserData {
 	private String partScreen;
 	private String locationScreen;
 	private String ncrScreen;
-
 	private String ncrWorkOrderScreen;
+	private String manufacturerScreen;
 
 	private Map<String, List<Map<String, String>>> reports;
 
@@ -111,6 +111,14 @@ public class UserData {
 
 	public void setNcrWorkOrderScreen(String ncrWorkOrderScreen) {
 		this.ncrWorkOrderScreen = ncrWorkOrderScreen;
+	}
+
+	public String getManufacturerScreen() {
+		return manufacturerScreen;
+	}
+
+	public void setManufacturerScreen(String manufacturerScreen) {
+		this.manufacturerScreen = manufacturerScreen;
 	}
 
 	@Override
