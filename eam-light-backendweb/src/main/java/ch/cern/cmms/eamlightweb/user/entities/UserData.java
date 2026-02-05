@@ -18,6 +18,7 @@ public class UserData {
 	private String ncrScreen;
 	private String ncrWorkOrderScreen;
 	private String manufacturerScreen;
+	private String lotScreen;
 
 	private Map<String, List<Map<String, String>>> reports;
 
@@ -119,6 +120,14 @@ public class UserData {
 
 	public void setManufacturerScreen(String manufacturerScreen) {
 		this.manufacturerScreen = manufacturerScreen;
+	}
+
+	public String getLotScreen() {
+		return lotScreen;
+	}
+
+	public void setLotScreen(String lotScreen) {
+		this.lotScreen = lotScreen;
 	}
 
 	@Override
