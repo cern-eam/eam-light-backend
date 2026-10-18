@@ -25,12 +25,16 @@ public class ApplicationData {
 
     public String getDefaultUser() { return Tools.getVariableValue("EAMLIGHT_DEFAULT_USER"); }
 
+
+
     //
     // ADMIN CREDENTIALS
     //
     public String getAdminPassword() { return Tools.getVariableValue("EAMLIGHT_ADMIN_PASSWORD"); }
 
     public String getAdminUser() { return Tools.getVariableValue("EAMLIGHT_ADMIN_USER"); }
+
+    public String getSignaturePassword() { return Tools.getVariableValue("EAMLIGHT_SIGNATURE_PASSWORD"); }
 
     public String getLDAPServer() { return Tools.getVariableValue("EAMLIGHT_LDAP_SERVER"); }
 

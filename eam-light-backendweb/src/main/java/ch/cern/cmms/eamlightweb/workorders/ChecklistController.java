@@ -1,5 +1,6 @@
 package ch.cern.cmms.eamlightweb.workorders;
 
+import ch.cern.cmms.eamlightejb.data.ApplicationData;
 import ch.cern.cmms.eamlightweb.tools.AuthenticationTools;
 import ch.cern.cmms.eamlightweb.tools.EAMLightController;
 import ch.cern.cmms.eamlightweb.tools.interceptors.RESTLoggingInterceptor;
@@ -9,6 +10,7 @@ import ch.cern.eam.wshub.core.services.workorders.entities.TaskPlan;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChecklistItem;
 import ch.cern.eam.wshub.core.services.workorders.entities.WorkOrderActivityChecklistSignature;
 import ch.cern.eam.wshub.core.tools.InforException;
+import static ch.cern.eam.wshub.core.tools.DataTypeTools.isEmpty;
 
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -24,6 +26,8 @@ public class ChecklistController extends EAMLightController {
 	private InforClient inforClient;
 	@Inject
 	private AuthenticationTools authenticationTools;
+    @Inject
+    private ApplicationData applicationData;
 
 	@PUT
 	@Produces("application/json")
@@ -71,6 +75,11 @@ public class ChecklistController extends EAMLightController {
 	@Consumes("application/json")
 	public Response eSignWorkOrderActivityChecklist(WorkOrderActivityChecklistSignature workOrderActivityCheckListSignature) {
 		try {
+			if (workOrderActivityCheckListSignature != null
+					&& isEmpty(workOrderActivityCheckListSignature.getPassword())
+					&& authenticationTools.getInforContext().getCredentials().getUsername().equalsIgnoreCase(workOrderActivityCheckListSignature.getUserCode())) {
+				workOrderActivityCheckListSignature.setPassword(applicationData.getSignaturePassword());
+			}
 			return ok(inforClient.getChecklistService().eSignWorkOrderActivityChecklist(authenticationTools.getInforContext(), workOrderActivityCheckListSignature));
 		} catch (InforException e) {
 			return badRequest(e);
