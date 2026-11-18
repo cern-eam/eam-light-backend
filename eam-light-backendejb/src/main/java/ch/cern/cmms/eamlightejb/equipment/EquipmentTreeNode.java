@@ -96,15 +96,15 @@ import javax.persistence.Transient;
             "        stc_child AS ID, " +
             "        stc_parent AS PARENT, " +
             "        child_desc AS NAME, " +
-            "        stc_childrtype AS TYPE, " +
+            "        CASE WHEN stc_childtype = 'R' THEN 'R' ELSE stc_childrtype END AS TYPE, " +
             "        MIN(LEVEL) AS TREELEVEL, " +
             "        MIN(stc_sequence) AS SEQUENCE, " +
             "        stc_parentrtype " +
             "    FROM tree " +
-            "    WHERE stc_childtype IN ('P', 'A', 'S', 'L', 'LOT', 'PART') " +
+            "    WHERE stc_childtype IN ('P', 'A', 'S', 'L', 'LOT', 'PART', 'R') " +
             "    START WITH tree.stc_parent = :equipment " +
             "    CONNECT BY NOCYCLE PRIOR tree.stc_child = tree.stc_parent " +
-            "    GROUP BY stc_child, stc_parent, child_desc, stc_childrtype, stc_parentrtype " +
+            "    GROUP BY stc_child, stc_parent, child_desc, stc_childtype, stc_childrtype, stc_parentrtype " +
             "    ORDER BY treelevel, sequence, ID " +
             ") " +
             "WHERE ROWNUM < 20000", // LIMIT FOR MEMORY
