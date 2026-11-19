@@ -75,6 +75,7 @@ public class IndexResult implements Serializable {
 		case "P":/* Position */
 			link = "position/" + code;
 			break;
+		case "R":
 		case "S":/* System */
 			link = "system/" + code;
 			break;
